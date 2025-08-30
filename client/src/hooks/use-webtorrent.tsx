@@ -283,8 +283,14 @@ export function useWebTorrent() {
                     
                     // Use getBlobURL instead of renderTo for better compatibility
                     videoFile.getBlobURL((err: any, url: string) => {
-                      if (!err && url) {
-                        console.log('✅ getBlobURL SUCCESS! Got blob URL:', url.substring(0, 60) + '...');
+                      console.log('🔍 getBlobURL callback fired');
+                      console.log('Error:', err);
+                      console.log('URL:', url);
+                      console.log('URL type:', typeof url);
+                      console.log('URL length:', url ? url.length : 'undefined/null');
+                      
+                      if (!err && url && url.length > 0 && url.startsWith('blob:')) {
+                        console.log('✅ getBlobURL SUCCESS! Got valid blob URL:', url.substring(0, 60) + '...');
                         
                         // Set the blob URL as video source
                         videoElement.src = url;
