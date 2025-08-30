@@ -33,6 +33,8 @@ export const videos = pgTable("videos", {
   magnetUri: text("magnet_uri"),
   infoHash: text("info_hash"),
   size: varchar("size"),
+  fileData: text("file_data"), // Base64 encoded file data
+  mimeType: text("mime_type"), // Video MIME type
   roomId: varchar("room_id").notNull(),
   uploadedBy: varchar("uploaded_by").notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
@@ -103,9 +105,11 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     type: z.literal("video_upload"),
     data: z.object({
       name: z.string(),
-      magnetUri: z.string(),
+      magnetUri: z.string().nullable(),
       infoHash: z.string(),
       size: z.string(),
+      fileData: z.string().optional(),
+      mimeType: z.string().optional(),
       roomId: z.string(),
     }),
   }),

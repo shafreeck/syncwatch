@@ -182,6 +182,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 magnetUri: message.data.magnetUri,
                 infoHash: message.data.infoHash,
                 size: message.data.size,
+                fileData: message.data.fileData,
+                mimeType: message.data.mimeType,
                 roomId: message.data.roomId,
                 uploadedBy: socket.userId,
               });

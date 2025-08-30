@@ -213,19 +213,27 @@ export function useWebSocket() {
     console.log("Starting video upload process for:", file.name);
     
     try {
-      // Create a local blob URL for immediate playback
-      const fileUrl = URL.createObjectURL(file);
-      console.log("Created file URL for local playback:", fileUrl);
+      // Convert file to base64 for storage
+      const reader = new FileReader();
+      const fileDataPromise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
       
-      // Use simple approach - just upload with blob URL
+      const fileData = await fileDataPromise;
+      console.log("File converted to base64, size:", fileData.length);
+      
       const mockInfoHash = Math.random().toString(36).substring(7);
       
       console.log("Sending video upload message...");
       sendMessage("video_upload", {
         name: file.name,
-        magnetUri: fileUrl, // Use file URL as magnetUri for compatibility
+        magnetUri: null, // Will create blob URL from stored data
         infoHash: mockInfoHash,
         size: file.size.toString(),
+        fileData: fileData,
+        mimeType: file.type,
         roomId: room.id,
       });
       

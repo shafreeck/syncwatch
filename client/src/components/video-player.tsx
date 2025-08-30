@@ -59,8 +59,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     video.src = '';
     video.load();
     
-    // Check if we have a magnetUri that's a blob URL or file URL  
-    if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
+    // Priority: fileData (base64) > magnetUri (blob/file URL) > magnet link
+    if (currentVideo.fileData) {
+      console.log("Loading video from stored file data:", currentVideo.name);
+      video.src = currentVideo.fileData;
+      video.load();
+    } else if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
       console.log("Loading local video file:", currentVideo.name);
       video.src = currentVideo.magnetUri;
       video.load();
