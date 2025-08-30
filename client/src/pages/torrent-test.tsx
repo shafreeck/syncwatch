@@ -55,21 +55,23 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        // Use renderTo without autoplay
-        videoFile.renderTo(videoContainerRef.current, {
+        // Create a video element manually
+        const videoElement = document.createElement('video');
+        videoElement.controls = true;
+        videoElement.className = 'w-full max-w-2xl';
+        videoContainerRef.current.appendChild(videoElement);
+        
+        // Use renderTo with the video element
+        videoFile.renderTo(videoElement, {
           autoplay: false,
-          controls: true,
           maxBlobLength: 200 * 1000 * 1000  // 200MB for progressive streaming
-        }, (err: any, videoElement: HTMLVideoElement) => {
+        }, (err: any) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
             console.error('❌ renderTo failed:', err);
           } else {
             setStatus('📺 Video ready - will auto-play when loaded');
-            console.log('✅ renderTo SUCCESS - auto-playing');
-            
-            // Apply styling
-            videoElement.className = 'w-full max-w-2xl';
+            console.log('✅ renderTo SUCCESS');
             
             // Log streaming strategy
             const isMediaSource = videoElement.src?.includes('mediasource');
