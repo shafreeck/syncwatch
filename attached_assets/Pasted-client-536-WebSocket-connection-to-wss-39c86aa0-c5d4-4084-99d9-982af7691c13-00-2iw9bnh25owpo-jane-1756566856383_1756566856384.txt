@@ -1,0 +1,1098 @@
+client:536 WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=gfAE6r0BDgqs' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+chunk-MQ6MFIVI.js?v=fd0beae7:2383 A soft navigation has been detected: https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/room/5005c382-a255-4860-9869-10bbc3893bae
+use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.5% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.6% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.7% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.8% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 20.9% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 21.0% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:249 === VIDEO STATE CHECK ===
+use-webtorrent.tsx:250 readyState: 1
+use-webtorrent.tsx:251 networkState: 2
+use-webtorrent.tsx:252 has src: true
+use-webtorrent.tsx:253 duration: 888.064
+use-webtorrent.tsx:254 paused: true
+use-webtorrent.tsx:255 ended: false
+use-webtorrent.tsx:256 error: null
+use-webtorrent.tsx:257 current time: 0
+use-webtorrent.tsx:268 ⏳ Video has metadata but waiting for more data...
+use-webtorrent.tsx:346 Will check again in 2 seconds...
+use-webtorrent.tsx:249 === VIDEO STATE CHECK ===
+use-webtorrent.tsx:250 readyState: 1
+use-webtorrent.tsx:251 networkState: 2
+use-webtorrent.tsx:252 has src: true
+use-webtorrent.tsx:253 duration: 888.064
+use-webtorrent.tsx:254 paused: true
+use-webtorrent.tsx:255 ended: false
+use-webtorrent.tsx:256 error: null
+use-webtorrent.tsx:257 current time: 0
+use-webtorrent.tsx:268 ⏳ Video has metadata but waiting for more data...
+use-webtorrent.tsx:346 Will check again in 2 seconds...
+use-webtorrent.tsx:447 Download: 30.0% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.0% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.0% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.0% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.0% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.1% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.2% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.3% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.4% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.5% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.6% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.7% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.8% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 30.9% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 31.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 31.0% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 31.0% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 31.0% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 31.0% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:249 === VIDEO STATE CHECK ===
+use-webtorrent.tsx:250 readyState: 1
+use-webtorrent.tsx:251 networkState: 2
+use-webtorrent.tsx:252 has src: true
+use-webtorrent.tsx:253 duration: 888.064
+use-webtorrent.tsx:254 paused: true
+use-webtorrent.tsx:255 ended: false
+use-webtorrent.tsx:256 error: null
+use-webtorrent.tsx:257 current time: 0
+use-webtorrent.tsx:268 ⏳ Video has metadata but waiting for more data...
+use-webtorrent.tsx:272 🏁 30%+ downloaded. Trying Blob URL approach for compatibility...
+use-webtorrent.tsx:277 💾 Attempting getBlobURL for better browser compatibility...
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+use-webtorrent.tsx:223 ❌ Video error event: Event
+use-webtorrent.tsx:224 ❌ Video error details: null
+use-webtorrent.tsx:398 Video error: Event null
+(anonymous) @ use-webtorrent.tsx:398
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+use-webtorrent.tsx:223 ❌ Video error event: Event
+use-webtorrent.tsx:224 ❌ Video error details: MediaError
+use-webtorrent.tsx:226 ❌ Error code: 4
+use-webtorrent.tsx:227 ❌ Error message: MEDIA_ELEMENT_ERROR: Empty src attribute
+use-webtorrent.tsx:398 Video error: Event MediaError
+(anonymous) @ use-webtorrent.tsx:398
+use-webtorrent.tsx:372 Video state: Object
+webtorrent.min.js:6 Uncaught Error: Unhandled error. (MEDIA_ELEMENT_ERROR: Empty src attribute)
+    at module.exports.emit (webtorrent.min.js:6:177860)
+    at ReadableState.afterDestroy (webtorrent.min.js:16:164488)
+    at module.exports._destroy (webtorrent.min.js:1:2936)
+    at ReadableState.updateNonPrimary (webtorrent.min.js:16:176746)
+    at ReadableState.update (webtorrent.min.js:16:176282)
+    at ReadableState.updateReadNT (webtorrent.min.js:16:165300)
+use-webtorrent.tsx:447 Download: 40.0% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.0% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.0% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.0% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.1% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.2% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.3% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.4% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.5% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.7% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 40.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 41.0% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 41.0% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 41.0% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 41.0% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 41.0% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.0% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.0% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.0% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.0% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.0% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.1% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.2% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.3% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.4% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.5% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.6% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.7% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.8% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 50.9% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 51.0% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 51.0% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 51.0% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 51.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 51.0% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+video-player.tsx:106 Toggle play - video state: Object
+video-player.tsx:113 Attempting to play video...
+video-player.tsx:117 Video not loaded, trying to reload...
+use-webtorrent.tsx:193 ✅ Video play event fired!
+use-webtorrent.tsx:236 ⏳ Video waiting for data
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:223 ❌ Video error event: Event
+use-webtorrent.tsx:224 ❌ Video error details: MediaError
+use-webtorrent.tsx:226 ❌ Error code: 4
+use-webtorrent.tsx:227 ❌ Error message: MEDIA_ELEMENT_ERROR: Empty src attribute
+use-webtorrent.tsx:214 Video error: Event MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:138 ❌ renderTo error: Event
+use-webtorrent.tsx:141 Trying getBlobURL fallback...
+use-webtorrent.tsx:214 Video error: MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:214 ✗ Play failed: NotSupportedError Failed to load because no supported source was found.
+console.error @ use-webtorrent.tsx:214
+video-player.tsx:127 Video debug info: Object
+video-player.tsx:136 🔄 Play failed, attempting to reload torrent stream...
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:223 ❌ Video error event: Event
+use-webtorrent.tsx:224 ❌ Video error details: MediaError
+use-webtorrent.tsx:226 ❌ Error code: 4
+use-webtorrent.tsx:227 ❌ Error message: MEDIA_ELEMENT_ERROR: Empty src attribute
+use-webtorrent.tsx:214 Video error: Event MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:138 ❌ renderTo error: Event
+use-webtorrent.tsx:141 Trying getBlobURL fallback...
+use-webtorrent.tsx:214 Video error: MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:447 Download: 60.0% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.0% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.0% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.0% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.0% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.1% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3251 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3254 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3257 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3260 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.2% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.3% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3251 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3254 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3257 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.4% | Speed: ↓3260 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3260 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3263 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.5% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.6% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3251 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3254 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3257 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3260 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3263 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.7% | Speed: ↓3267 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.8% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3251 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 60.9% | Speed: ↓3254 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 61.0% | Speed: ↓3254 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 61.0% | Speed: ↓3257 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 61.0% | Speed: ↓3260 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 61.0% | Speed: ↓3263 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 61.0% | Speed: ↓3267 KB/s ↑0 MB/s | Peers: 1
+video-player.tsx:144 🔄 Reloading torrent for playback...
+3webtorrent.min.js:6 Uncaught Error: Readable stream closed before ending
+    at Pipeline.done (webtorrent.min.js:16:177717)
+    at ReadableState.afterDestroy (webtorrent.min.js:16:164657)
+    at module.exports._destroy (webtorrent.min.js:1:2936)
+    at ReadableState.updateNonPrimary (webtorrent.min.js:16:176746)
+    at ReadableState.update (webtorrent.min.js:16:176282)
+    at ReadableState.updateReadNT (webtorrent.min.js:16:165300)
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:223 ❌ Video error event: Event
+use-webtorrent.tsx:224 ❌ Video error details: MediaError
+use-webtorrent.tsx:226 ❌ Error code: 4
+use-webtorrent.tsx:227 ❌ Error message: MEDIA_ELEMENT_ERROR: Empty src attribute
+use-webtorrent.tsx:214 Video error: Event MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:138 ❌ renderTo error: Event
+use-webtorrent.tsx:141 Trying getBlobURL fallback...
+webtorrent.min.js:1 Uncaught TypeError: Cannot read properties of null (reading 'pieceLength')
+    at new module.exports (webtorrent.min.js:1:1441)
+    at module.exports.createReadStream (webtorrent.min.js:1:5151)
+    at module.exports.getBlob (webtorrent.min.js:1:5544)
+    at module.exports.getBlobURL (webtorrent.min.js:1:5601)
+    at use-webtorrent.tsx:142:29
+    at HTMLVideoElement.fatalError (webtorrent.min.js:16:64467)
+use-webtorrent.tsx:214 Video error: MediaError
+console.error @ use-webtorrent.tsx:214
+use-webtorrent.tsx:99 Torrent loaded for progressive streaming: Sintel.mp4
+use-webtorrent.tsx:110 Selected video file for progressive download: Sintel.mp4
+use-webtorrent.tsx:114 Setting up video streaming... Sintel.mp4 File size: 129241752
+use-webtorrent.tsx:123 File selected for priority download
+use-webtorrent.tsx:126 Testing renderTo method...
+use-webtorrent.tsx:130 Creating new video stream...
+use-webtorrent.tsx:164 Setting up video event listeners for debugging...
+use-webtorrent.tsx:368 ✓ renderTo should enable immediate progressive playback
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:167 🎬 Video loadstart fired
+use-webtorrent.tsx:383 Video: loadstart
+use-webtorrent.tsx:372 Video state: Object
+2use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓4 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓5 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓8 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓11 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓14 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.0% | Speed: ↓18 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓18 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓21 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓24 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓27 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓30 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓34 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓37 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓40 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.1% | Speed: ↓43 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓43 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓46 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓50 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓53 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓56 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓59 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓62 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓66 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.2% | Speed: ↓69 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓69 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓72 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓75 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓79 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓82 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓85 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓88 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓91 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.3% | Speed: ↓95 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓95 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓98 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓101 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓104 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓107 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓111 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓114 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓117 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.4% | Speed: ↓120 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓120 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓123 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓127 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓130 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓133 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓136 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓139 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓143 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.5% | Speed: ↓146 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓146 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓149 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓152 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓159 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓162 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓165 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.6% | Speed: ↓168 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓168 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓175 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓178 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓181 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:171 🎬 Video loadedmetadata fired, duration: 888.064
+use-webtorrent.tsx:388 Video: metadata loaded, duration: 888.064
+use-webtorrent.tsx:372 Video state: Object
+2use-webtorrent.tsx:152 ✓ renderTo called successfully
+use-webtorrent.tsx:171 🎬 Video loadedmetadata fired, duration: 888.064
+use-webtorrent.tsx:388 Video: metadata loaded, duration: 888.064
+use-webtorrent.tsx:372 Video state: Object
+use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓181 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓184 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓191 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.7% | Speed: ↓194 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓194 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓197 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓200 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓207 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓210 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓213 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓216 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.8% | Speed: ↓219 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓223 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓226 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓229 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓232 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓239 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓242 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 0.9% | Speed: ↓245 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 1.0% | Speed: ↓245 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 1.0% | Speed: ↓248 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 1.0% | Speed: ↓251 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 1.0% | Speed: ↓255 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 1.0% | Speed: ↓258 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.0% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:418 🎬 5.1% downloaded - Progressive playback should be available!
+use-webtorrent.tsx:423 Video element status: {src: 'HAS SRC ✓', readyState: 1, networkState: 2, duration: 888.064}
+use-webtorrent.tsx:434 ✓ Video source already set: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-...
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:452 🔍 Manual progressive playback check at 5%...
+use-webtorrent.tsx:455 ✓ Video element found: {src: 'HAS SRC', readyState: 1}
+use-webtorrent.tsx:249 === VIDEO STATE CHECK ===
+use-webtorrent.tsx:250 readyState: 1
+use-webtorrent.tsx:251 networkState: 2
+use-webtorrent.tsx:252 has src: true
+use-webtorrent.tsx:253 duration: 888.064
+use-webtorrent.tsx:254 paused: true
+use-webtorrent.tsx:255 ended: false
+use-webtorrent.tsx:256 error: null
+use-webtorrent.tsx:257 current time: 0
+use-webtorrent.tsx:268 ⏳ Video has metadata but waiting for more data...
+use-webtorrent.tsx:346 Will check again in 2 seconds...
+use-webtorrent.tsx:447 Download: 10.0% | Speed: ↓2532 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.0% | Speed: ↓2535 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.0% | Speed: ↓2538 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.0% | Speed: ↓2541 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.0% | Speed: ↓2544 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2544 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2548 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2551 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2554 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2557 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2560 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2564 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2567 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.1% | Speed: ↓2570 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2570 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2573 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2576 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2580 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2583 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2586 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2589 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2593 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.2% | Speed: ↓2596 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2596 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2599 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2602 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2605 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2609 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2612 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2615 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2618 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.3% | Speed: ↓2621 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2621 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2625 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2628 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2631 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2634 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2637 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2641 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2644 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.4% | Speed: ↓2647 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2647 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2650 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2653 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2657 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2660 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2663 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2666 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.5% | Speed: ↓2669 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2669 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2673 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2676 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2679 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2682 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2685 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2689 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2692 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.6% | Speed: ↓2695 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2695 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2698 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2701 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2705 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2708 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2711 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2714 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2717 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.7% | Speed: ↓2721 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2721 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2724 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2727 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2730 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2733 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2737 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2740 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2743 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.8% | Speed: ↓2746 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2746 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2749 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2753 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2756 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2759 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2762 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2765 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2769 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 10.9% | Speed: ↓2772 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 11.0% | Speed: ↓2772 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 11.0% | Speed: ↓2775 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 11.0% | Speed: ↓2778 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:447 Download: 11.0% | Speed: ↓2781 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:447 Download: 11.0% | Speed: ↓2785 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:249 === VIDEO STATE CHECK ===
+use-webtorrent.tsx:250 readyState: 1
+use-webtorrent.tsx:251 networkState: 2
+use-webtorrent.tsx:252 has src: true
+use-webtorrent.tsx:253 duration: 888.064
+use-webtorrent.tsx:254 paused: true
+use-webtorrent.tsx:255 ended: false
+use-webtorrent.tsx:256 error: null
+use-webtorrent.tsx:257 current time: 0
+use-webtorrent.tsx:268 ⏳ Video has metadata but waiting for more data...
+use-webtorrent.tsx:346 Will check again in 2 seconds...
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ Download: 20.0% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.0% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.0% | Speed: ↓3106 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.0% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.0% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3126 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3129 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3132 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.2% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.2% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3106 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.4% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3126 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3129 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3132 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.4% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.5% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.5% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3126 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3129 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3132 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.7% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.7% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3126 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3129 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3132 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+ Download: 21.0% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+ Download: 21.0% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...

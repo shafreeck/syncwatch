@@ -268,78 +268,96 @@ export function useWebTorrent() {
               console.log('⏳ Video has metadata but waiting for more data...');
               
               // Check how much has been downloaded
-              if (torrent && torrent.progress > 0.3) {
-                console.log('🏁 30%+ downloaded. Trying Blob URL approach for compatibility...');
+              if (torrent && torrent.progress > 0.25) {
+                console.log('🏁 25%+ downloaded. Trying direct buffer streaming...');
                 
                 const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
                 
                 if (videoFile) {
-                  console.log('💾 Attempting getBlobURL for better browser compatibility...');
+                  console.log('💾 Attempting direct buffer streaming approach...');
                   
                   try {
-                    // Clear current src first to avoid conflicts
-                    videoElement.src = '';
-                    videoElement.load();
+                    console.log('🔧 Checking if videoFile has getBuffer method...');
                     
-                    // Use getBlobURL instead of renderTo for better compatibility
-                    videoFile.getBlobURL((err: any, url: string) => {
-                      console.log('🔍 getBlobURL callback fired');
-                      console.log('Error:', err);
-                      console.log('URL:', url);
-                      console.log('URL type:', typeof url);
-                      console.log('URL length:', url ? url.length : 'undefined/null');
+                    // Try to get partial buffer directly
+                    if (typeof videoFile.getBuffer === 'function') {
+                      console.log('✅ getBuffer method available, requesting partial data...');
                       
-                      if (!err && url && url.length > 0 && url.startsWith('blob:')) {
-                        console.log('✅ getBlobURL SUCCESS! Got valid blob URL:', url.substring(0, 60) + '...');
+                      // Request partial buffer (first 25% should be enough for video headers)
+                      videoFile.getBuffer((err: any, buffer: ArrayBuffer) => {
+                        console.log('🔍 getBuffer callback fired');
+                        console.log('Error:', err);
+                        console.log('Buffer:', buffer);
+                        console.log('Buffer type:', typeof buffer);
+                        console.log('Buffer size:', buffer ? buffer.byteLength : 'undefined/null');
                         
-                        // Set the blob URL as video source
-                        videoElement.src = url;
-                        videoElement.load();
-                        
-                        console.log('📹 Video source updated to blob URL');
-                        
-                        // Wait for metadata and attempt play
-                        const onMetadataLoaded = () => {
-                          console.log('✅ Blob video metadata loaded successfully!');
-                          console.log('Video ready state:', videoElement.readyState);
-                          console.log('Video duration:', videoElement.duration);
+                        if (!err && buffer && buffer.byteLength > 0) {
+                          console.log('✅ Got buffer! Size:', buffer.byteLength, 'bytes');
                           
-                          videoElement.removeEventListener('loadedmetadata', onMetadataLoaded);
+                          // Create blob from buffer
+                          const blob = new Blob([buffer], { type: 'video/mp4' });
+                          const blobUrl = URL.createObjectURL(blob);
                           
-                          // Try to play after a short delay
+                          console.log('🎬 Created blob URL from buffer:', blobUrl.substring(0, 60) + '...');
+                          
+                          // Clear and set new source
+                          videoElement.src = '';
+                          videoElement.load();
+                          videoElement.src = blobUrl;
+                          videoElement.load();
+                          
+                          console.log('📹 Video source set to buffer-based blob URL');
+                          
+                          // Attempt to play
                           setTimeout(() => {
-                            console.log('🎬 Attempting to play blob video...');
                             videoElement.play().then(() => {
-                              console.log('🎉 MAJOR SUCCESS! Blob URL video is now playing!');
+                              console.log('🎉 AMAZING SUCCESS! Buffer-based video playing!');
                             }).catch(playErr => {
-                              console.log('❌ Blob video play failed:', playErr.message);
-                              console.log('Final video state:', {
-                                readyState: videoElement.readyState,
-                                networkState: videoElement.networkState,
-                                duration: videoElement.duration,
-                                error: videoElement.error,
-                                src: videoElement.src.substring(0, 50)
-                              });
+                              console.log('❌ Buffer video play failed:', playErr.message);
                             });
-                          }, 800);
-                        };
-                        
-                        // Add event listener for metadata
-                        videoElement.addEventListener('loadedmetadata', onMetadataLoaded);
-                        
-                        // Also try immediate play in case metadata is already loaded
-                        if (videoElement.readyState >= 1) {
-                          onMetadataLoaded();
+                          }, 1000);
+                          
+                        } else {
+                          console.log('❌ getBuffer failed or returned empty:', err?.message || 'No buffer');
                         }
-                        
-                      } else {
-                        console.log('❌ getBlobURL failed:', err?.message || 'Unknown error');
-                        console.log('🔄 getBlobURL not working, keeping renderTo as fallback');
-                      }
-                    });
-                  } catch (blobErr) {
-                    console.log('❌ getBlobURL exception:', blobErr);
-                    console.log('🔄 Exception occurred, keeping renderTo as fallback');
+                      });
+                    } else {
+                      console.log('❌ getBuffer method not available on videoFile');
+                      console.log('Available methods:', Object.getOwnPropertyNames(videoFile.__proto__));
+                      
+                      // Fallback: try to force stream connection
+                      console.log('🔄 Fallback: forcing new renderTo connection...');
+                      
+                      // Clear completely and try fresh renderTo
+                      videoElement.pause();
+                      videoElement.src = '';
+                      videoElement.load();
+                      
+                      setTimeout(() => {
+                        console.log('🎬 Attempting fresh renderTo after cleanup...');
+                        try {
+                          videoFile.renderTo(videoElement, {}, (err: any) => {
+                            if (err) {
+                              console.log('❌ Fresh renderTo failed:', err.message);
+                            } else {
+                              console.log('✅ Fresh renderTo connection established');
+                              
+                              // Force play attempt
+                              setTimeout(() => {
+                                videoElement.play().then(() => {
+                                  console.log('🎉 Fresh renderTo SUCCESS!');
+                                }).catch(e => console.log('❌ Fresh renderTo play failed:', e.message));
+                              }, 1500);
+                            }
+                          });
+                        } catch (freshErr) {
+                          console.log('❌ Fresh renderTo exception:', freshErr);
+                        }
+                      }, 500);
+                    }
+                    
+                  } catch (bufferErr) {
+                    console.log('❌ Buffer streaming exception:', bufferErr);
                   }
                 }
               } else {
