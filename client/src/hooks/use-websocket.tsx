@@ -102,12 +102,19 @@ export function useWebSocket() {
   }, [toast]);
 
   const handleMessage = (message: any) => {
+    console.log('Received WebSocket message:', message.type, message.data);
     switch (message.type) {
       case "room_state":
+        console.log('Setting room state:', {
+          room: message.data.room,
+          users: message.data.users?.length,
+          messages: message.data.messages?.length,
+          videos: message.data.videos?.length
+        });
         setRoom(message.data.room);
-        setUsers(message.data.users);
-        setMessages(message.data.messages);
-        setVideos(message.data.videos);
+        setUsers(message.data.users || []);
+        setMessages(message.data.messages || []);
+        setVideos(message.data.videos || []);
         break;
 
       case "user_joined":
@@ -213,8 +220,14 @@ export function useWebSocket() {
   }, [sendMessage, room]);
 
   const uploadVideo = useCallback(async (file: File) => {
+    console.log('Upload attempt - room state:', room);
     if (!room) {
-      console.error("No room available for upload");
+      console.error("No room available for upload - room state:", room);
+      toast({
+        title: "Not in a room",
+        description: "Please join a room before uploading videos",
+        variant: "destructive",
+      });
       return;
     }
     
