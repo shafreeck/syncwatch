@@ -137,6 +137,21 @@ export function useWebSocket() {
         const selectedVideo = videos.find(v => v.id === message.data.videoId);
         if (selectedVideo) {
           setCurrentVideo(selectedVideo);
+          console.log("Setting current video:", selectedVideo);
+        } else {
+          // If video not found in current videos list, create it from message data
+          const videoFromMessage = {
+            id: message.data.videoId,
+            magnetUri: message.data.magnetUri,
+            name: "Selected Video",
+            size: undefined,
+            infoHash: undefined,
+            roomId: room?.id || "",
+            uploadedBy: "",
+            uploadedAt: new Date()
+          };
+          setCurrentVideo(videoFromMessage);
+          console.log("Setting current video from message:", videoFromMessage);
         }
         break;
 

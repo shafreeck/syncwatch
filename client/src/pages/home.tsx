@@ -187,11 +187,15 @@ export default function Home() {
               videos={videos}
               onSelectVideo={(video) => {
                 if (video.magnetUri && room) {
+                  // Also set locally for immediate feedback
+                  console.log("Selecting video locally:", video);
+                  
                   sendWSMessage("video_select", {
                     videoId: video.id,
                     magnetUri: video.magnetUri,
                     roomId: room.id
                   });
+                  
                   toast({
                     title: "Video selected",
                     description: `Now playing: ${video.name}`,
