@@ -4,7 +4,7 @@ export default function TorrentTest() {
   const [magnetUrl, setMagnetUrl] = useState('');
   const [status, setStatus] = useState('');
   const [progress, setProgress] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<any>(null);
 
   useEffect(() => {
@@ -27,8 +27,8 @@ export default function TorrentTest() {
   }, []);
 
   const loadTorrent = () => {
-    if (!clientRef.current || !magnetUrl || !videoRef.current) {
-      setStatus('Missing client, URL, or video element');
+    if (!clientRef.current || !magnetUrl || !videoContainerRef.current) {
+      setStatus('Missing client, URL, or video container');
       return;
     }
 
@@ -42,19 +42,42 @@ export default function TorrentTest() {
         file.name.match(/\.(mp4|webm|avi|mov|mkv)$/i)
       );
       
-      if (videoFile && videoRef.current) {
+      if (videoFile && videoContainerRef.current) {
         setStatus(`Setting up video: ${videoFile.name}`);
         
-        // Use renderTo with maxBlobLength: 0 option to force streaming
-        videoFile.renderTo(videoRef.current, { maxBlobLength: 0 }, (err: any) => {
+        // Clear previous video elements
+        videoContainerRef.current.innerHTML = '';
+        
+        // Use appendTo like Instant.io does - this is the key!
+        videoFile.appendTo(videoContainerRef.current, {
+          autoplay: false,
+          controls: true,
+          maxBlobLength: 2 * 1000 * 1000 * 1000  // 2GB like Instant.io
+        }, (err: any, videoElement: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
+            console.error('❌ appendTo failed:', err);
           } else {
             setStatus('Video ready for streaming - click play!');
-            console.log('✅ renderTo SUCCESS with streaming strategy');
-            console.log('Video src:', videoRef.current?.src);
-            console.log('Video readyState:', videoRef.current?.readyState);
-            console.log('SRC type:', videoRef.current?.src?.startsWith('blob:') ? 'BLOB_URL (BAD)' : 'STREAMING (GOOD)');
+            console.log('✅ appendTo SUCCESS with Instant.io strategy');
+            console.log('Video src:', videoElement.src);
+            console.log('Video readyState:', videoElement.readyState);
+            console.log('SRC type:', videoElement.src?.startsWith('blob:') ? 'BLOB_URL' : 'STREAMING/OTHER');
+            console.log('Video element:', videoElement);
+            
+            // Apply styling to the created video element
+            videoElement.className = 'w-full max-w-2xl';
+            
+            videoElement.addEventListener('loadedmetadata', () => {
+              console.log('✅ Metadata loaded - duration:', videoElement.duration);
+            });
+            videoElement.addEventListener('canplay', () => {
+              console.log('✅ Can play - readyState:', videoElement.readyState);
+            });
+            videoElement.addEventListener('error', (e) => {
+              console.error('❌ Video error:', e);
+              console.error('Video error details:', videoElement.error);
+            });
           }
         });
       } else {
@@ -115,16 +138,14 @@ export default function TorrentTest() {
           </div>
         )}
         
-        <video
-          ref={videoRef}
-          controls
-          className="w-full max-w-2xl"
-          onLoadedMetadata={() => console.log('Metadata loaded')}
-          onCanPlay={() => console.log('Can play')}
-          onError={(e) => console.error('Video error:', e)}
+        <div
+          ref={videoContainerRef}
+          className="w-full max-w-2xl min-h-[200px] border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800 flex items-center justify-center"
         >
-          Your browser does not support the video tag.
-        </video>
+          <div className="text-gray-500 dark:text-gray-400">
+            Video will appear here after loading torrent
+          </div>
+        </div>
       </div>
       
       <div className="mt-8 p-4 bg-gray-100 rounded-md">
