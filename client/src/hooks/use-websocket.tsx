@@ -201,61 +201,35 @@ export function useWebSocket() {
   }, [sendMessage, room]);
 
   const uploadVideo = useCallback(async (file: File) => {
-    if (!room) return;
+    if (!room) {
+      console.error("No room available for upload");
+      return;
+    }
+    
+    console.log("Starting video upload process for:", file.name);
     
     try {
       // Create a local blob URL for immediate playback
       const fileUrl = URL.createObjectURL(file);
       console.log("Created file URL for local playback:", fileUrl);
       
-      // Try to create a real torrent from the file
-      const webTorrentScript = document.querySelector('script[src*="webtorrent"]');
-      if (webTorrentScript && window.WebTorrent) {
-        const tempClient = new window.WebTorrent();
-        
-        tempClient.seed(file, (torrent: any) => {
-          console.log("Real torrent created:", torrent.magnetURI);
-          
-          sendMessage("video_upload", {
-            name: file.name,
-            magnetUri: fileUrl, // Use fileUrl as magnetUri for immediate playback
-            infoHash: torrent.infoHash,
-            size: file.size.toString(),
-            roomId: room.id,
-          });
-          
-          // Keep the torrent seeding
-          setTimeout(() => {
-            tempClient.destroy();
-          }, 300000); // Keep seeding for 5 minutes
-        });
-      } else {
-        // WebTorrent not available, use local file only
-        const mockInfoHash = Math.random().toString(36).substring(7);
-        
-        sendMessage("video_upload", {
-          name: file.name,
-          magnetUri: fileUrl, // Use file URL as magnetUri for compatibility
-          infoHash: mockInfoHash,
-          size: file.size.toString(),
-          roomId: room.id,
-        });
-      }
-      
-    } catch (error) {
-      console.error("Failed to process video file:", error);
-      
-      // Create a fallback URL
-      const fileUrl = URL.createObjectURL(file);
+      // Use simple approach - just upload with blob URL
       const mockInfoHash = Math.random().toString(36).substring(7);
       
+      console.log("Sending video upload message...");
       sendMessage("video_upload", {
         name: file.name,
-        magnetUri: fileUrl,
+        magnetUri: fileUrl, // Use file URL as magnetUri for compatibility
         infoHash: mockInfoHash,
         size: file.size.toString(),
         roomId: room.id,
       });
+      
+      console.log("Video upload message sent successfully");
+      
+    } catch (error) {
+      console.error("Failed to process video file:", error);
+      throw error; // Re-throw to trigger toast error in upload component
     }
   }, [sendMessage, room]);
 

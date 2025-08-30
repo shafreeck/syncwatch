@@ -170,7 +170,12 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
           className="hidden"
           onChange={(e) => {
             onDebugLog?.(`File input onChange triggered`);
-            handleFileSelect(e.target.files);
+            try {
+              handleFileSelect(e.target.files);
+            } catch (error) {
+              onDebugLog?.(`Error in handleFileSelect: ${error}`);
+              console.error("File select error:", error);
+            }
           }}
           data-testid="input-file-upload"
         />
