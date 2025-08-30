@@ -72,9 +72,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, on
     video.src = '';
     video.load();
     
-    // Check if we have a direct magnetUri that's a blob URL
-    if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('blob:')) {
-      onDebugLog?.(`VideoPlayer: Setting blob URL as source`);
+    // Check if we have a magnetUri that's a blob URL or file URL
+    if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
+      onDebugLog?.(`VideoPlayer: Setting file URL as source`);
       video.src = currentVideo.magnetUri;
       video.load();
       

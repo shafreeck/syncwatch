@@ -218,11 +218,10 @@ export function useWebSocket() {
           
           sendMessage("video_upload", {
             name: file.name,
-            magnetUri: torrent.magnetURI,
+            magnetUri: fileUrl, // Use fileUrl as magnetUri for immediate playback
             infoHash: torrent.infoHash,
             size: file.size.toString(),
             roomId: room.id,
-            fileUrl: fileUrl, // Include local file URL for immediate playback
           });
           
           // Keep the torrent seeding
@@ -240,7 +239,6 @@ export function useWebSocket() {
           infoHash: mockInfoHash,
           size: file.size.toString(),
           roomId: room.id,
-          fileUrl: fileUrl,
         });
       }
       
@@ -257,7 +255,6 @@ export function useWebSocket() {
         infoHash: mockInfoHash,
         size: file.size.toString(),
         roomId: room.id,
-        fileUrl: fileUrl,
       });
     }
   }, [sendMessage, room]);
