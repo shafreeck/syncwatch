@@ -123,38 +123,88 @@ export function useWebTorrent() {
           console.log('File selected for priority download');
           
           // Try renderTo method for progressive streaming
-          console.log('Testing renderTo method...');
+          console.log('🎬 Using proper WebTorrent appendTo method for streaming...');
           let streamCreated = false;
           
           const createVideoStream = () => {
-            console.log('Creating new video stream...');
+            console.log('Creating new video stream with appendTo...');
             try {
               // Clear existing source to avoid conflicts
+              videoElement.pause();
               videoElement.src = '';
               videoElement.load();
               
-              videoFile.renderTo(videoElement, (err: any) => {
+              console.log('🧹 Video element cleared, starting appendTo...');
+              
+              // Use WebTorrent's official appendTo method for streaming
+              videoFile.appendTo(videoElement, {
+                autoplay: false,  // We'll handle play manually
+                muted: true,
+                controls: true
+              }, (err: any, element: HTMLVideoElement) => {
                 if (err) {
-                  console.log('❌ renderTo error:', err);
+                  console.log('❌ appendTo error:', err);
                   
-                  // If renderTo fails, try getBlobURL as fallback
-                  console.log('Trying getBlobURL fallback...');
-                  videoFile.getBlobURL((blobErr: any, url: string) => {
-                    if (!blobErr && url) {
-                      console.log('✓ Fallback: getBlobURL success');
-                      videoElement.src = url;
-                      videoElement.load();
+                  // If appendTo fails, try renderTo as fallback
+                  console.log('🔄 Trying renderTo fallback...');
+                  videoFile.renderTo(videoElement, (renderErr: any) => {
+                    if (renderErr) {
+                      console.log('❌ renderTo fallback also failed:', renderErr);
                     } else {
-                      console.log('❌ Both methods failed');
+                      console.log('✓ Fallback: renderTo success');
+                      streamCreated = true;
                     }
                   });
                 } else {
-                  console.log('✓ renderTo called successfully');
+                  console.log('✅ appendTo SUCCESS! Video file attached to element');
+                  console.log('📹 Video element ready:', {
+                    readyState: element.readyState,
+                    networkState: element.networkState,
+                    duration: element.duration,
+                    src: element.src?.substring(0, 60) + '...'
+                  });
                   streamCreated = true;
+                  
+                  // Set up metadata loaded handler
+                  const onMetadataLoaded = () => {
+                    console.log('🎯 Video metadata loaded via appendTo!');
+                    console.log('Video specs:', {
+                      duration: element.duration,
+                      videoWidth: element.videoWidth,
+                      videoHeight: element.videoHeight,
+                      readyState: element.readyState
+                    });
+                    
+                    element.removeEventListener('loadedmetadata', onMetadataLoaded);
+                  };
+                  
+                  // Listen for metadata loaded
+                  element.addEventListener('loadedmetadata', onMetadataLoaded);
+                  
+                  // If metadata already available, call immediately
+                  if (element.readyState >= 1) {
+                    console.log('🏃‍♂️ Metadata already available via appendTo');
+                    onMetadataLoaded();
+                  }
                 }
               });
             } catch (e) {
-              console.log('✗ renderTo failed:', e);
+              console.log('❌ appendTo failed with exception:', e);
+              console.log('🔄 Falling back to renderTo...');
+              
+              // Final fallback to renderTo
+              try {
+                videoFile.renderTo(videoElement, (err: any) => {
+                  if (err) {
+                    console.log('❌ Final renderTo fallback failed:', err);
+                  } else {
+                    console.log('✓ Final renderTo fallback success');
+                    streamCreated = true;
+                  }
+                });
+              } catch (renderErr) {
+                console.log('❌ Final renderTo exception:', renderErr);
+              }
             }
           };
           
