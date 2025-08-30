@@ -29,11 +29,14 @@ export function useWebTorrent() {
             ]
           },
           dht: false,
-          webSeeds: false
+          webSeeds: false,
+          maxConns: 55,
+          downloadLimit: -1,
+          uploadLimit: -1
         });
         setClient(webTorrentClient);
         setIsLoading(false);
-        console.log("WebTorrent client initialized");
+        console.log("WebTorrent client initialized for progressive streaming");
       }
     };
     script.onerror = () => {
@@ -61,37 +64,60 @@ export function useWebTorrent() {
       client.remove(currentTorrent.current);
     }
 
-    const torrent = client.add(magnetUri, (torrent: any) => {
-      console.log("Torrent loaded:", torrent.name);
+    const torrent = client.add(magnetUri, {
+      strategy: 'sequential'  // Download pieces in order for progressive playback
+    }, (torrent: any) => {
+      console.log("Torrent loaded for progressive streaming:", torrent.name);
       setIsSeeding(true);
 
       // Find video file
       const videoFile = torrent.files.find((file: any) => 
         file.name.match(/\.(mp4|webm|ogg|avi|mov)$/i)
       );
+      
+      // Set priority for progressive download
+      if (videoFile) {
+        videoFile.select();
+        console.log("Selected video file for progressive download:", videoFile.name);
+      }
 
       if (videoFile && videoElement) {
         try {
-          // Use blob URL instead of streaming for better compatibility
-          videoFile.getBlobURL((err: any, url: string) => {
-            if (err) {
-              console.error('Error creating blob URL:', err);
-              return;
-            }
-            console.log('Setting video source to blob URL:', url);
-            videoElement.src = url;
-            videoElement.load();
+          // Stream video for progressive playback (watch while downloading)
+          console.log('Starting progressive video streaming...');
+          videoFile.streamTo(videoElement, {
+            autoplay: false,
+            controls: true
           });
+          
+          // Allow playback to start when enough data is buffered
+          videoElement.addEventListener('canplay', () => {
+            console.log('Video ready for progressive playback');
+          });
+          
         } catch (error) {
-          console.error('Error setting up video playback:', error);
+          console.error('Error setting up progressive streaming:', error);
+          // Fallback to blob URL if streaming fails
+          videoFile.getBlobURL((err: any, url: string) => {
+            if (!err) {
+              videoElement.src = url;
+              videoElement.load();
+            }
+          });
         }
       }
     });
 
     torrent.on("download", () => {
-      setDownloadProgress((torrent.downloaded / torrent.length) * 100);
+      const progress = (torrent.downloaded / torrent.length) * 100;
+      setDownloadProgress(progress);
       setUploadSpeed(Math.round(torrent.uploadSpeed / 1024 / 1024 * 10) / 10);
       setPeers(torrent.numPeers);
+      
+      // Log progressive download status
+      if (progress > 0 && progress < 100) {
+        console.log(`Progressive download: ${progress.toFixed(1)}% - ${Math.round(torrent.downloadSpeed / 1024)} KB/s`);
+      }
     });
 
     torrent.on("upload", () => {
