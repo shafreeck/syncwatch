@@ -131,40 +131,82 @@ export function useWebTorrent() {
             console.log('✗ renderTo failed:', e);
           }
           
-          // Since renderTo worked, let's check if we can trigger autoplay
-          console.log('Checking if video is ready for autoplay...');
+          // Add comprehensive video event listeners to debug the issue
+          console.log('Setting up video event listeners for debugging...');
           
-          // Wait a bit for renderTo to set up the video source
-          setTimeout(() => {
-            console.log('Video readyState:', videoElement.readyState);
-            console.log('Video has src:', !!videoElement.src);
-            console.log('Video duration:', videoElement.duration);
-            
-            if (videoElement.readyState >= 2) { // HAVE_CURRENT_DATA
-              console.log('✓ Video has enough data! Attempting autoplay...');
-              videoElement.play().then(() => {
-                console.log('✓ SUCCESS: Video is now playing!');
-              }).catch(e => {
-                console.log('Autoplay blocked by browser policy - user needs to click play:', e.message);
-              });
-            } else if (videoElement.readyState >= 1) { // HAVE_METADATA
-              console.log('✓ Video metadata loaded, waiting for more data...');
-              
-              // Listen for when we have enough data
-              const handleCanPlay = () => {
-                console.log('✓ Video can now play! Attempting autoplay...');
-                videoElement.play().then(() => {
-                  console.log('✓ SUCCESS: Video is now playing!');
-                }).catch(e => {
-                  console.log('Autoplay blocked - user can click play:', e.message);
-                });
-              };
-              
-              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
-            } else {
-              console.log('Video not ready yet, readyState:', videoElement.readyState);
+          videoElement.addEventListener('loadstart', () => {
+            console.log('🎬 Video loadstart fired');
+          });
+          
+          videoElement.addEventListener('loadedmetadata', () => {
+            console.log('🎬 Video loadedmetadata fired, duration:', videoElement.duration);
+          });
+          
+          videoElement.addEventListener('loadeddata', () => {
+            console.log('🎬 Video loadeddata fired, readyState:', videoElement.readyState);
+          });
+          
+          videoElement.addEventListener('canplay', () => {
+            console.log('🎬 Video canplay fired! Attempting play...');
+            videoElement.play().then(() => {
+              console.log('✅ SUCCESS: Video started playing!');
+            }).catch(e => {
+              console.log('❌ Play failed:', e.message, e.name);
+              console.log('Video error object:', videoElement.error);
+            });
+          });
+          
+          videoElement.addEventListener('canplaythrough', () => {
+            console.log('🎬 Video canplaythrough fired!');
+          });
+          
+          videoElement.addEventListener('play', () => {
+            console.log('✅ Video play event fired!');
+          });
+          
+          videoElement.addEventListener('playing', () => {
+            console.log('✅ Video playing event fired!');
+          });
+          
+          videoElement.addEventListener('error', (e) => {
+            console.log('❌ Video error event:', e);
+            console.log('❌ Video error details:', videoElement.error);
+            if (videoElement.error) {
+              console.log('❌ Error code:', videoElement.error.code);
+              console.log('❌ Error message:', videoElement.error.message);
             }
-          }, 2000);
+          });
+          
+          videoElement.addEventListener('stalled', () => {
+            console.log('⚠️ Video stalled');
+          });
+          
+          videoElement.addEventListener('waiting', () => {
+            console.log('⏳ Video waiting for data');
+          });
+          
+          // Check video state after a delay
+          setTimeout(() => {
+            console.log('=== VIDEO STATE CHECK ===');
+            console.log('readyState:', videoElement.readyState);
+            console.log('networkState:', videoElement.networkState);
+            console.log('has src:', !!videoElement.src);
+            console.log('duration:', videoElement.duration);
+            console.log('paused:', videoElement.paused);
+            console.log('ended:', videoElement.ended);
+            console.log('error:', videoElement.error);
+            console.log('current time:', videoElement.currentTime);
+            
+            // Manual play attempt
+            if (videoElement.readyState >= 2) {
+              console.log('🎯 Manual play attempt...');
+              videoElement.play().then(() => {
+                console.log('✅ Manual play SUCCESS!');
+              }).catch(e => {
+                console.log('❌ Manual play FAILED:', e.message, e.name);
+              });
+            }
+          }, 3000);
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
