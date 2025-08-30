@@ -122,49 +122,42 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Create blob URL immediately - let's see what happens
-          console.log('Creating blob URL immediately for testing...');
-          videoFile.getBlobURL((err: any, url: string) => {
-            if (!err && url) {
-              console.log('✓ Blob URL created successfully!');
-              console.log('Setting video source to:', url.substring(0, 50) + '...');
-              videoElement.src = url;
-              videoElement.load();
+          // Test: Try simple renderTo without options first
+          console.log('Testing renderTo method...');
+          try {
+            videoFile.renderTo(videoElement);
+            console.log('✓ renderTo called successfully');
+          } catch (e) {
+            console.log('✗ renderTo failed:', e);
+          }
+          
+          // Also test getBlobURL with verbose logging
+          console.log('Testing getBlobURL method...');
+          try {
+            const result = videoFile.getBlobURL((err: any, url: string) => {
+              console.log('=== getBlobURL CALLBACK EXECUTED ===');
+              console.log('Error:', err);
+              console.log('URL:', url ? url.substring(0, 50) + '...' : 'NO URL');
               
-              // Try autoplay when ready
-              const handleCanPlay = () => {
-                console.log('✓ Video ready for playback! Attempting autoplay...');
-                videoElement.play().catch(e => {
-                  console.log('Autoplay blocked, user can click play button');
-                });
-              };
-              
-              const handleLoadedData = () => {
-                console.log('✓ Video data loaded successfully!');
-              };
-              
-              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
-              videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
-              
-            } else {
-              console.log('✗ getBlobURL failed:', err);
-              console.log('Will try again when more data is available...');
-              
-              // Try again after a delay
-              setTimeout(() => {
-                console.log('Retrying getBlobURL after delay...');
-                videoFile.getBlobURL((err2: any, url2: string) => {
-                  if (!err2 && url2) {
-                    console.log('✓ Retry successful! Blob URL created:', url2.substring(0, 50) + '...');
-                    videoElement.src = url2;
-                    videoElement.load();
-                  } else {
-                    console.log('✗ Retry also failed:', err2);
-                  }
-                });
-              }, 5000);
-            }
-          });
+              if (!err && url) {
+                console.log('✓ SUCCESS: Setting video source!');
+                videoElement.src = url;
+                videoElement.load();
+                
+                // Try autoplay
+                setTimeout(() => {
+                  videoElement.play().catch(e => {
+                    console.log('Autoplay blocked, user can click play');
+                  });
+                }, 1000);
+              } else {
+                console.log('✗ FAILED: getBlobURL error or no URL');
+              }
+            });
+            console.log('getBlobURL returned:', result);
+          } catch (e) {
+            console.log('✗ getBlobURL threw error:', e);
+          }
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
