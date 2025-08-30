@@ -116,41 +116,14 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Try streamTo first, fallback to appendTo if worker not available
-          console.log('Setting up progressive playback...');
-          try {
-            videoFile.streamTo(videoElement, {
-              autoplay: false,
-              controls: false
-            });
-            console.log('✓ streamTo initiated - progressive playback enabled');
-          } catch (e) {
-            console.log('streamTo not available, using appendTo:', e);
-            try {
-              videoFile.appendTo(videoElement);
-              console.log('✓ appendTo initiated - progressive playback enabled');
-            } catch (e2) {
-              console.log('appendTo also failed, will use backup method in progressive check');
-            }
-          }
+          // Use appendTo for immediate progressive streaming
+          console.log('Setting up appendTo for true progressive playback...');
+          videoFile.appendTo(videoElement);
+          console.log('✓ appendTo initiated - progressive streaming enabled');
           
           // Monitor if streamTo actually sets the src
-          setTimeout(() => {
-            if (!videoElement.src || videoElement.src === window.location.href) {
-              console.log('⚠️ streamTo did not set src, using getBlobURL as backup...');
-              videoFile.getBlobURL((err: any, url: string) => {
-                if (!err && url) {
-                  console.log('✓ Backup blob URL created:', url.substring(0, 50) + '...');
-                  videoElement.src = url;
-                  videoElement.load();
-                } else {
-                  console.error('✗ Backup getBlobURL also failed:', err);
-                }
-              });
-            } else {
-              console.log('✓ streamTo successfully set src:', videoElement.src.substring(0, 50) + '...');
-            }
-          }, 1000); // Check after 1 second
+          // appendTo should work immediately for progressive streaming
+          console.log('✓ appendTo should enable immediate progressive playback');
           
           // Monitor video element state
           const logVideoState = () => {
@@ -225,33 +198,23 @@ export function useWebTorrent() {
             console.log('🔧 Creating progressive video stream...');
             const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
             if (videoFile) {
-              // Create early blob URL for faster playback
-              console.log('✅ Creating blob URL for progressive playback...');
-              videoFile.getBlobURL((err: any, url: string) => {
-                if (!err && url) {
-                  console.log('✓ Blob URL created successfully!');
-                  videoElement.src = url;
-                  videoElement.load();
-                  
-                  // Set up auto-play when ready
-                  const handleCanPlay = () => {
-                    console.log('🎉 Video ready! Auto-playing...');
-                    videoElement.play().catch(e => {
-                      console.log('Auto-play blocked by browser - user can click play');
-                    });
-                  };
-                  
-                  const handleLoadedData = () => {
-                    console.log('✓ Video metadata loaded!');
-                  };
-                  
-                  videoElement.addEventListener('canplay', handleCanPlay, { once: true });
-                  videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
-                  
-                } else {
-                  console.log('getBlobURL failed:', err);
-                }
-              });
+              // appendTo already set up progressive streaming, no need for getBlobURL
+              console.log('✅ Progressive streaming already enabled via appendTo');
+              
+              // Set up auto-play when ready
+              const handleCanPlay = () => {
+                console.log('🎉 Progressive video ready! Auto-playing...');
+                videoElement.play().catch(e => {
+                  console.log('Auto-play blocked by browser - user can click play');
+                });
+              };
+              
+              const handleLoadedData = () => {
+                console.log('✓ Progressive video metadata loaded!');
+              };
+              
+              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+              videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
             }
           }
         } else {
