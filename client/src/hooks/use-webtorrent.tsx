@@ -71,9 +71,15 @@ export function useWebTorrent() {
       return;
     }
 
-    // Remove existing torrent
+    // Remove existing torrent and clear any existing video sources
     if (currentTorrent.current) {
       client.remove(currentTorrent.current);
+    }
+    
+    // Clear existing video source to prevent conflicts
+    if (videoElement) {
+      videoElement.src = '';
+      videoElement.load();
     }
 
     const torrent = client.add(magnetUri, (torrent: any) => {
@@ -118,11 +124,23 @@ export function useWebTorrent() {
           
           // Use renderTo for progressive streaming (correct method for existing video element)
           console.log('Setting up renderTo for true progressive playback...');
-          videoFile.renderTo(videoElement, {
-            autoplay: false,
-            controls: true
-          });
-          console.log('✓ renderTo initiated - progressive streaming enabled');
+          try {
+            videoFile.renderTo(videoElement, {
+              autoplay: false,
+              controls: true
+            });
+            console.log('✓ renderTo initiated - progressive streaming enabled');
+          } catch (error) {
+            console.log('renderTo failed, trying getBlobURL approach:', error);
+            // Fallback to getBlobURL if renderTo fails
+            videoFile.getBlobURL((err: any, url: string) => {
+              if (!err && url) {
+                console.log('✓ Fallback: getBlobURL created successfully');
+                videoElement.src = url;
+                videoElement.load();
+              }
+            });
+          }
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
