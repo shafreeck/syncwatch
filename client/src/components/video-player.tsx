@@ -91,11 +91,30 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
       setIsPlaying(false);
       onVideoSync("pause", video.currentTime);
     } else {
+      console.log('🎬 Attempting to play video...');
+      console.log('Pre-play video state:', {
+        src: video.src?.substring(0, 60) + '...',
+        readyState: video.readyState,
+        networkState: video.networkState,
+        duration: video.duration,
+        currentTime: video.currentTime,
+        buffered: video.buffered.length,
+        paused: video.paused,
+        muted: video.muted
+      });
+      
       video.play().then(() => {
+        console.log('✅ Play SUCCESS!');
         setIsPlaying(true);
         onVideoSync("play", video.currentTime);
       }).catch(error => {
-        console.error('Play failed:', error);
+        console.error('❌ Play FAILED:', error);
+        console.log('Post-fail video state:', {
+          src: video.src?.substring(0, 60) + '...',
+          readyState: video.readyState,
+          networkState: video.networkState,
+          error: video.error
+        });
       });
     }
   };

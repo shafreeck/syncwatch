@@ -92,14 +92,24 @@ export function useWebTorrent() {
         // Use simple renderTo method - WebTorrent handles streaming automatically
         videoFile.renderTo(videoElement, (err: any) => {
           if (err) {
-            console.error('renderTo failed:', err);
+            console.error('❌ renderTo failed:', err);
           } else {
-            console.log('✓ renderTo success - video ready for progressive playback');
-            console.log('Video element status:', {
-              src: videoElement.src?.substring(0, 100) + '...',
+            console.log('✅ renderTo SUCCESS - video ready for progressive playback');
+            
+            // Determine URL type for debugging
+            const srcType = videoElement.src?.startsWith('blob:') ? 'BLOB_URL' : 
+                           videoElement.src?.startsWith('data:') ? 'DATA_URL' : 'OTHER';
+            
+            console.log('📹 Video element detailed status:', {
+              srcType: srcType,
+              src: videoElement.src?.substring(0, 80) + '...',
               readyState: videoElement.readyState,
+              readyStateText: ['HAVE_NOTHING', 'HAVE_METADATA', 'HAVE_CURRENT_DATA', 'HAVE_FUTURE_DATA', 'HAVE_ENOUGH_DATA'][videoElement.readyState],
               networkState: videoElement.networkState,
-              duration: videoElement.duration
+              duration: videoElement.duration,
+              videoWidth: videoElement.videoWidth,
+              videoHeight: videoElement.videoHeight,
+              canPlay: videoElement.readyState >= 2
             });
           }
         });
