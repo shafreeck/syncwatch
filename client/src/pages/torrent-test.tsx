@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 export default function TorrentTest() {
   const [magnetUrl, setMagnetUrl] = useState('');
   const [status, setStatus] = useState('');
+  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<any>(null);
 
@@ -44,19 +45,41 @@ export default function TorrentTest() {
       if (videoFile && videoRef.current) {
         setStatus(`Setting up video: ${videoFile.name}`);
         
-        // Use the simplest approach from official docs
-        videoFile.renderTo(videoRef.current, (err: any) => {
+        // Use appendTo with maxBlobLength: 0 to force streaming and avoid blob URLs
+        const container = document.createElement('div');
+        videoRef.current.parentNode?.insertBefore(container, videoRef.current);
+        videoRef.current.remove();
+        
+        videoFile.appendTo(container, { 
+          autoplay: false,
+          controls: true,
+          maxBlobLength: 0  // Force skip blob strategy - this is the key!
+        }, (err: any, video: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
           } else {
-            setStatus('Video ready - click play!');
-            console.log('Video src:', videoRef.current?.src);
-            console.log('Video readyState:', videoRef.current?.readyState);
+            setStatus('Video ready for streaming - click play!');
+            console.log('✅ appendTo SUCCESS with streaming strategy');
+            console.log('Video src:', video.src);
+            console.log('Video readyState:', video.readyState);
+            console.log('SRC type:', video.src?.startsWith('blob:') ? 'BLOB_URL (BAD)' : 'STREAMING (GOOD)');
+            
+            // Update ref to new video element (use object assignment to bypass readonly)
+            (videoRef as any).current = video;
+            video.className = 'w-full max-w-2xl';
+            
+            video.addEventListener('loadedmetadata', () => console.log('✅ Metadata loaded'));
+            video.addEventListener('canplay', () => console.log('✅ Can play'));
+            video.addEventListener('error', (e) => console.error('❌ Video error:', e));
           }
         });
       } else {
         setStatus('No video file found in torrent');
       }
+    });
+
+    torrent.on('download', () => {
+      setProgress(torrent.progress * 100);
     });
 
     torrent.on('error', (err: any) => {
@@ -78,7 +101,7 @@ export default function TorrentTest() {
             value={magnetUrl}
             onChange={(e) => setMagnetUrl(e.target.value)}
             placeholder="magnet:?xt=urn:btih:..."
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-md bg-white text-black dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
         </div>
         
@@ -90,9 +113,23 @@ export default function TorrentTest() {
           Load Torrent
         </button>
         
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-gray-300">
           Status: {status}
         </div>
+        
+        {progress > 0 && (
+          <div className="space-y-2">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              Download Progress: {progress.toFixed(1)}%
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
         
         <video
           ref={videoRef}
