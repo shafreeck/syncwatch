@@ -13,12 +13,6 @@ interface VideoPlayerProps {
 }
 
 export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, onDebugLog }: VideoPlayerProps) {
-  // Debug: Log whenever component renders
-  onDebugLog?.(`VideoPlayer RENDER: currentVideo=${currentVideo ? 'YES' : 'NO'}`);
-  if (currentVideo) {
-    onDebugLog?.(`VideoPlayer RENDER: name=${currentVideo.name}, magnetUri=${currentVideo.magnetUri?.substring(0, 30)}...`);
-  }
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -60,20 +54,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, on
 
   useEffect(() => {
     const video = videoRef.current;
-    onDebugLog?.(`VideoPlayer: Checking video element and currentVideo`);
-    
-    if (!video) {
-      onDebugLog?.(`VideoPlayer: No video element ref available`);
-      return;
-    }
-    
-    if (!currentVideo) {
-      onDebugLog?.(`VideoPlayer: No current video to load`);
-      return;
-    }
-    
-    onDebugLog?.(`VideoPlayer: Loading video - ${currentVideo.name}`);
-    onDebugLog?.(`VideoPlayer: magnetUri = ${currentVideo.magnetUri ? currentVideo.magnetUri.substring(0, 50) + '...' : 'undefined'}`);
+    if (!video || !currentVideo) return;
     
     // Clear any existing src first
     video.src = '';
@@ -81,28 +62,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, on
     
     // Check if we have a magnetUri that's a blob URL or file URL
     if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
-      onDebugLog?.(`VideoPlayer: Setting file URL as source`);
       video.src = currentVideo.magnetUri;
       video.load();
-      
-      // Add event listeners for debugging
-      const handleLoadStart = () => onDebugLog?.('Video: loadstart');
-      const handleLoadedData = () => onDebugLog?.('Video: loadeddata');
-      const handleCanPlay = () => onDebugLog?.('Video: canplay');
-      const handleError = (e: any) => onDebugLog?.(`Video error: ${e.target?.error?.message || 'Unknown error'}`);
-      
-      video.addEventListener('loadstart', handleLoadStart, { once: true });
-      video.addEventListener('loadeddata', handleLoadedData, { once: true });
-      video.addEventListener('canplay', handleCanPlay, { once: true });
-      video.addEventListener('error', handleError, { once: true });
-      
     } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
-      onDebugLog?.(`VideoPlayer: Loading torrent`);
       loadTorrent(currentVideo.magnetUri, video);
-    } else {
-      onDebugLog?.(`VideoPlayer: No valid video source found`);
     }
-  }, [currentVideo, loadTorrent, onDebugLog]);
+  }, [currentVideo, loadTorrent]);
 
   const togglePlay = () => {
     const video = videoRef.current;

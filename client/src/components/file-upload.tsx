@@ -54,7 +54,6 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
 
     setIsUploading(true);
     console.log("Starting video upload...");
-    onDebugLog?.(`Starting upload: ${file.name}`);
     
     try {
       await onVideoUpload(file);
@@ -92,13 +91,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
   };
 
   const openFileDialog = () => {
-    onDebugLog?.(`Attempting to open file dialog`);
-    if (fileInputRef.current) {
-      onDebugLog?.(`File input ref found, clicking...`);
-      fileInputRef.current.click();
-    } else {
-      onDebugLog?.(`ERROR: File input ref is null!`);
-    }
+    fileInputRef.current?.click();
   };
 
   const formatFileSize = (bytes: string | undefined) => {
@@ -168,15 +161,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
           type="file"
           accept="video/*"
           className="hidden"
-          onChange={(e) => {
-            onDebugLog?.(`File input onChange triggered`);
-            try {
-              handleFileSelect(e.target.files);
-            } catch (error) {
-              onDebugLog?.(`Error in handleFileSelect: ${error}`);
-              console.error("File select error:", error);
-            }
-          }}
+          onChange={(e) => handleFileSelect(e.target.files)}
           data-testid="input-file-upload"
         />
       </div>

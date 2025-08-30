@@ -198,9 +198,7 @@ export default function Home() {
               videos={videos}
               onDebugLog={addDebugLog}
               onSelectVideo={(video) => {
-                addDebugLog(`Selecting video: ${video.name}`);
                 if (video.magnetUri && room) {
-                  addDebugLog(`Video magnetUri: ${video.magnetUri.substring(0, 50)}...`);
                   console.log("Selecting video locally:", video);
                   
                   sendWSMessage("video_select", {
@@ -209,13 +207,11 @@ export default function Home() {
                     roomId: room.id
                   });
                   
-                  addDebugLog(`Sent video_select message`);
                   toast({
                     title: "Video selected",
                     description: `Now playing: ${video.name}`,
                   });
                 } else {
-                  addDebugLog(`Video not ready - no magnetUri or room`);
                   toast({
                     title: "Video not ready",
                     description: "This video is still processing",
