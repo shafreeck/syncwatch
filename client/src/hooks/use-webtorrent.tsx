@@ -266,8 +266,62 @@ export function useWebTorrent() {
               });
             } else if (videoElement.readyState >= 1 && videoElement.duration > 0) {
               console.log('⏳ Video has metadata but waiting for more data...');
-              console.log('Will check again in 2 seconds...');
-              setTimeout(checkVideoReadiness, 2000);
+              
+              // Check how much has been downloaded
+              if (torrent && torrent.progress > 0.4) {
+                console.log('🏁 40%+ downloaded but readyState still 1. Forcing playback attempt...');
+                
+                // Force readyState to 2 by manually triggering events
+                console.log('🔧 Attempting manual canplay trigger...');
+                
+                try {
+                  // Try direct play with force
+                  videoElement.play().then(() => {
+                    console.log('✅ BREAKTHROUGH: Forced play succeeded despite readyState 1!');
+                  }).catch(e => {
+                    console.log('❌ Forced play failed:', e.message);
+                    
+                    // Last resort: Create a new blob URL using torrent data
+                    console.log('🔄 Last resort: Attempting to create direct blob from torrent...');
+                    
+                    const chunks: any[] = [];
+                    const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
+                    
+                    if (videoFile) {
+                      // Try to create blob from available chunks
+                      const availableChunks = Math.floor(torrent.progress * videoFile.length / (16 * 1024)); // Assume 16KB chunks
+                      
+                      if (availableChunks > 100) { // If we have enough chunks
+                        console.log('💾 Creating blob from available chunks:', availableChunks);
+                        
+                        // Clear current src and create new blob
+                        videoElement.src = '';
+                        videoElement.load();
+                        
+                        // Try getBlobURL as last resort
+                        videoFile.getBlobURL((err: any, url: string) => {
+                          if (!err && url) {
+                            console.log('✅ Last resort getBlobURL succeeded!');
+                            videoElement.src = url;
+                            videoElement.load();
+                            
+                            setTimeout(() => {
+                              videoElement.play().catch((playErr: any) => {
+                                console.log('❌ Even last resort failed:', playErr.message);
+                              });
+                            }, 1000);
+                          }
+                        });
+                      }
+                    }
+                  });
+                } catch (e) {
+                  console.log('❌ Manual trigger failed:', e);
+                }
+              } else {
+                console.log('Will check again in 2 seconds...');
+                setTimeout(checkVideoReadiness, 2000);
+              }
             } else {
               console.log('⚠️ Video not ready yet, will retry...');
               setTimeout(checkVideoReadiness, 3000);
