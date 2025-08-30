@@ -130,6 +130,35 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
           error: video.error,
           src: video.src
         });
+        
+        // If play failed and we have a current video, try to reload the torrent
+        if (currentVideo && currentVideo.magnetUri) {
+          console.log('🔄 Play failed, attempting to reload torrent stream...');
+          
+          // Clear the video
+          video.src = '';
+          video.load();
+          
+          // Reload the torrent with a slight delay
+          setTimeout(() => {
+            console.log('🔄 Reloading torrent for playback...');
+            loadTorrent(currentVideo.magnetUri, video);
+            
+            // Try to play again after torrent loads
+            setTimeout(() => {
+              if (video.readyState >= 2) {
+                console.log('🔄 Retrying play after torrent reload...');
+                video.play().then(() => {
+                  console.log('✓ Retry play SUCCESS!');
+                  setIsPlaying(true);
+                  onVideoSync("play", video.currentTime);
+                }).catch(retryError => {
+                  console.log('❌ Retry play also failed:', retryError.message);
+                });
+              }
+            }, 3000);
+          }, 500);
+        }
       });
     }
   };
