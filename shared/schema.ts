@@ -109,6 +109,14 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       roomId: z.string(),
     }),
   }),
+  z.object({
+    type: z.literal("video_select"),
+    data: z.object({
+      videoId: z.string(),
+      magnetUri: z.string(),
+      roomId: z.string(),
+    }),
+  }),
 ]);
 
 export type WSMessage = z.infer<typeof wsMessageSchema>;

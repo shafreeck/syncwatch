@@ -131,6 +131,15 @@ export function useWebSocket() {
         console.log("Video sync:", message.data);
         break;
 
+      case "video_selected":
+        // Handle video selection
+        console.log("Video selected:", message.data);
+        const selectedVideo = videos.find(v => v.id === message.data.videoId);
+        if (selectedVideo) {
+          setCurrentVideo(selectedVideo);
+        }
+        break;
+
       case "error":
         toast({
           title: "Error",
@@ -201,6 +210,14 @@ export function useWebSocket() {
     };
   }, [connect]);
 
+  const sendWSMessage = useCallback((type: string, data: any) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type, data }));
+    } else {
+      console.error("WebSocket not connected");
+    }
+  }, [socket]);
+
   return {
     isConnected,
     room,
@@ -211,6 +228,7 @@ export function useWebSocket() {
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,
+    sendWSMessage,
     syncVideo,
     uploadVideo,
   };

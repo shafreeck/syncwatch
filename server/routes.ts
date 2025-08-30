@@ -192,6 +192,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
               });
             }
             break;
+
+          case "video_select":
+            if (socket.roomId) {
+              broadcastToRoom(message.data.roomId, {
+                type: "video_selected",
+                data: {
+                  videoId: message.data.videoId,
+                  magnetUri: message.data.magnetUri
+                }
+              });
+            }
+            break;
         }
       } catch (error) {
         console.error("WebSocket message error:", error);
