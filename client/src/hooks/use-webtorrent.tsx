@@ -89,8 +89,8 @@ export function useWebTorrent() {
         // Select the file for download
         videoFile.select();
         
-        // Use simple renderTo method - WebTorrent handles streaming automatically
-        videoFile.renderTo(videoElement, (err: any) => {
+        // Use renderTo with maxBlobLength to force MediaSource strategy for files > 100MB
+        videoFile.renderTo(videoElement, { maxBlobLength: 100 * 1024 * 1024 }, (err: any) => {
           if (err) {
             console.error('❌ renderTo failed:', err);
           } else {
