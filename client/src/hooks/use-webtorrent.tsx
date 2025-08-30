@@ -177,11 +177,12 @@ export function useWebTorrent() {
       setUploadSpeed(upSpeed);
       setPeers(torrent.numPeers);
       
-      // Enable progressive playback when we have enough data
-      if (progress >= 1.5 && progress <= 2) { // Only log once between 1.5% and 2%
-        console.log('🎬 Progressive playback available! Video should be ready to play.');
+      // Check progressive playback availability at key milestones
+      if (progress >= 2 && progress <= 3) { // Check once when reaching 2-3%
+        console.log(`🎬 ${progress.toFixed(1)}% downloaded - Progressive playback should be available!`);
         
-        // Force check video element state
+        // Find video element from the current video player
+        const videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
         if (videoElement) {
           console.log('Video element status:', {
             src: videoElement.src ? videoElement.src.substring(0, 30) + '...' : 'NO SRC',
@@ -204,6 +205,8 @@ export function useWebTorrent() {
               });
             }
           }
+        } else {
+          console.log('⚠️ Video element not found for progressive playback check');
         }
       }
       
