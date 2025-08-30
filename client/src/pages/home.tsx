@@ -42,6 +42,9 @@ export default function Home() {
     if (!roomId || !isConnected) {
       setShowRoomModal(true);
     }
+    
+    // Test console log to verify logs are working
+    console.log("🔄 Home component loaded, roomId:", roomId, "isConnected:", isConnected);
   }, [roomId, isConnected]);
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
