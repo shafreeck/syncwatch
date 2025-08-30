@@ -185,11 +185,17 @@ export function useWebTorrent() {
         const videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
         if (videoElement) {
           console.log('Video element status:', {
-            src: videoElement.src ? videoElement.src.substring(0, 30) + '...' : 'NO SRC',
+            src: videoElement.src ? 'HAS SRC ✓' : 'NO SRC ✗',
             readyState: videoElement.readyState,
             networkState: videoElement.networkState,
-            duration: videoElement.duration
+            duration: isNaN(videoElement.duration) ? 'Loading...' : videoElement.duration
           });
+          
+          // Try to trigger video loading
+          if (videoElement.src && videoElement.readyState === 0) {
+            console.log('🔄 Triggering video load...');
+            videoElement.load();
+          }
           
           // If streamTo didn't work, try backup method immediately
           if (!videoElement.src || videoElement.src === window.location.href) {
@@ -198,9 +204,16 @@ export function useWebTorrent() {
             if (videoFile) {
               videoFile.getBlobURL((err: any, url: string) => {
                 if (!err && url) {
-                  console.log('✓ Emergency blob URL set:', url.substring(0, 30) + '...');
+                  console.log('✅ Emergency blob URL applied - video should be ready!');
                   videoElement.src = url;
                   videoElement.load();
+                  
+                  // Notify user that video is ready
+                  setTimeout(() => {
+                    if (videoElement.readyState >= 2) {
+                      console.log('🎉 Video ready for playback! Click play button.');
+                    }
+                  }, 1000);
                 }
               });
             }
