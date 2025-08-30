@@ -1,9 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import multer from "multer";
-import path from "path";
-import { nanoid } from "nanoid";
 import { storage } from "./storage";
 import { wsMessageSchema, insertRoomSchema, insertUserSchema, type WSMessage } from "@shared/schema";
 
@@ -11,30 +8,6 @@ interface ExtendedWebSocket extends WebSocket {
   userId?: string;
   roomId?: string;
 }
-
-// Configure multer for file uploads
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/videos');
-    },
-    filename: (req, file, cb) => {
-      const uniqueId = nanoid();
-      const ext = path.extname(file.originalname);
-      cb(null, `${uniqueId}${ext}`);
-    }
-  }),
-  limits: {
-    fileSize: 5 * 1024 * 1024 * 1024, // 5GB limit
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('video/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only video files are allowed'));
-    }
-  }
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -89,48 +62,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Video upload endpoint
-  app.post("/api/videos/upload", upload.single('video'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No video file provided" });
-      }
-
-      const { roomId, uploadedBy } = req.body;
-      if (!roomId || !uploadedBy) {
-        return res.status(400).json({ error: "Missing roomId or uploadedBy" });
-      }
-
-      const video = await storage.createVideo({
-        name: req.file.originalname,
-        filePath: req.file.path,
-        mimeType: req.file.mimetype,
-        size: req.file.size.toString(),
-        roomId,
-        uploadedBy,
-      });
-
-      res.json(video);
-    } catch (error) {
-      console.error("Video upload error:", error);
-      res.status(500).json({ error: "Failed to upload video" });
-    }
-  });
-
-  // Serve video files
-  app.get("/api/videos/:id/stream", async (req, res) => {
-    try {
-      const video = await storage.getVideo(req.params.id);
-      if (!video) {
-        return res.status(404).json({ error: "Video not found" });
-      }
-
-      res.sendFile(path.resolve(video.filePath));
-    } catch (error) {
-      console.error("Video streaming error:", error);
-      res.status(500).json({ error: "Failed to stream video" });
-    }
-  });
 
   // WebSocket server for real-time communication
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
@@ -246,9 +177,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             break;
 
           case "video_upload":
-            // This will be handled by the file upload API endpoint
-            // Just acknowledge receipt for now
-            socket.send(JSON.stringify({ type: "upload_ready", data: { roomId: message.data.roomId } }));
+            if (socket.userId && socket.roomId) {
+              const video = await storage.createVideo({
+                name: message.data.name,
+                magnetUri: message.data.magnetUri,
+                infoHash: message.data.infoHash,
+                size: message.data.size,
+                roomId: message.data.roomId,
+                uploadedBy: socket.userId,
+              });
+
+              broadcastToRoom(message.data.roomId, {
+                type: "new_video",
+                data: { video }
+              });
+            }
             break;
 
           case "video_select":

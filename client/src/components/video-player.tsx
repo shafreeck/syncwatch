@@ -59,13 +59,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     video.src = '';
     video.load();
     
-    // Use the streaming API endpoint for local files
-    if (currentVideo.id) {
-      console.log("Loading video from server:", currentVideo.name);
-      video.src = `/api/videos/${currentVideo.id}/stream`;
-      video.load();
+    // Load video via P2P torrent
+    if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
+      console.log("Loading P2P video via torrent:", currentVideo.name);
+      loadTorrent(currentVideo.magnetUri, video);
     } else {
-      console.log("No valid video source found for:", currentVideo.name);
+      console.log("No valid magnet URI found for:", currentVideo.name);
     }
   }, [currentVideo, loadTorrent]);
 

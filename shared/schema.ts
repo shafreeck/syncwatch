@@ -30,10 +30,9 @@ export const messages = pgTable("messages", {
 export const videos = pgTable("videos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  filePath: text("file_path").notNull(), // 本地文件路径
-  mimeType: text("mime_type").notNull(), // 视频MIME类型
+  magnetUri: text("magnet_uri").notNull(), // P2P磁力链接
+  infoHash: text("info_hash").notNull(), // torrent哈希值
   size: varchar("size"), // 文件大小
-  duration: varchar("duration"), // 视频时长
   roomId: varchar("room_id").notNull(),
   uploadedBy: varchar("uploaded_by").notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
@@ -104,8 +103,9 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     type: z.literal("video_upload"),
     data: z.object({
       name: z.string(),
+      magnetUri: z.string(),
+      infoHash: z.string(),
       size: z.string(),
-      mimeType: z.string(),
       roomId: z.string(),
     }),
   }),

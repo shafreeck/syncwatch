@@ -210,34 +210,39 @@ export function useWebSocket() {
       return;
     }
     
-    console.log("Starting video upload process for:", file.name);
+    console.log("Starting P2P video sharing for:", file.name);
     
     try {
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('video', file);
-      formData.append('roomId', room.id);
-      formData.append('uploadedBy', 'current-user'); // TODO: Use actual user ID
+      // Dynamically import WebTorrent for P2P functionality
+      const WebTorrent = (await import('webtorrent')).default;
+      const client = new WebTorrent();
       
-      console.log("Uploading file to server...");
-      const response = await fetch('/api/videos/upload', {
-        method: 'POST',
-        body: formData,
+      console.log("Creating torrent from file...");
+      
+      // Create torrent from the file
+      client.seed(file, (torrent: any) => {
+        console.log("Torrent created:", {
+          magnetURI: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          name: file.name,
+          length: torrent.length
+        });
+        
+        // Send torrent info to room via WebSocket
+        sendMessage("video_upload", {
+          name: file.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: room.id,
+        });
+        
+        console.log("Video is now being seeded and shared via P2P");
       });
       
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-      
-      const video = await response.json();
-      console.log("Video uploaded successfully:", video);
-      
-      // Notify room about new video via WebSocket
-      sendMessage("new_video", { video });
-      
     } catch (error) {
-      console.error("Failed to upload video file:", error);
-      throw error; // Re-throw to trigger toast error in upload component
+      console.error("Failed to create P2P torrent:", error);
+      throw error;
     }
   }, [sendMessage, room]);
 
