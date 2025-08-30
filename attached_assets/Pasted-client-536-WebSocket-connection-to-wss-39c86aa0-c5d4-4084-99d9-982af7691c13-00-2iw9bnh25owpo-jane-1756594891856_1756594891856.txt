@@ -1,0 +1,197 @@
+client:536 WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=mkh34vZAeCyr' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=mkh34vZAeCyr' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-MQ6MFIVI.js?v=d6d9f2e0:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+@radix-ui_react-dialog.js?v=d6d9f2e0:1414 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=d6d9f2e0:1414
+Show 1 more frame
+Show less
+2use-webtorrent.tsx:40 WebTorrent client initialized for progressive streaming
+use-websocket.tsx:54 WebSocket connected
+chunk-MQ6MFIVI.js?v=d6d9f2e0:2383 A soft navigation has been detected: https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/room/46717aa7-c70a-46a8-aab4-51c1f5a33556
+use-webtorrent.tsx:40 WebTorrent client initialized for progressive streaming
+use-websocket.tsx:105 Received WebSocket message: user_joined Object
+use-websocket.tsx:105 Received WebSocket message: room_state Object
+use-websocket.tsx:108 Setting room state: Object
+use-websocket.tsx:119 ✓ Videos state updated: Array(0)
+file-upload.tsx:42 Selected file: Object
+file-upload.tsx:70 Starting video upload...
+use-websocket.tsx:234 Upload attempt - room state: Object
+use-websocket.tsx:245 Starting P2P video sharing for: Sintel.mp4
+use-websocket.tsx:273 Creating torrent from file...
+@radix-ui_react-dialog.js?v=d6d9f2e0:1414 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=d6d9f2e0:1414
+Show 1 more frame
+Show less
+file-upload.tsx:79 Video upload completed successfully
+use-websocket.tsx:277 Torrent created: Object
+use-websocket.tsx:286 📊 Setting up seeding progress tracking...
+file-upload.tsx:76 📈 Seeding progress: 10.0%
+file-upload.tsx:76 📈 Seeding progress: 20.0%
+use-websocket.tsx:336 Video is now being seeded and shared via P2P
+use-websocket.tsx:105 Received WebSocket message: new_video Object
+use-websocket.tsx:135 Received new video: Object
+use-websocket.tsx:138 ✓ Videos list updated, new count: 1
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 20.0%
+use-websocket.tsx:298 📈 Seeding progress: 20.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+home.tsx:199 Selecting video locally: Object
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+use-websocket.tsx:105 Received WebSocket message: video_selected Object
+use-websocket.tsx:154 Video selected message received: Object
+use-websocket.tsx:155 Current videos in state: Array(0)
+use-websocket.tsx:178 Setting current video from message data: Object
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+video-player.tsx:81 Loading video via torrent: Selected Video
+use-webtorrent.tsx:76 Adding new torrent: magnet:?xt=urn:btih:c53da4fa28aa2edc1faa91861cce38527414d874&dn=Sintel.mp4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 100.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+use-webtorrent.tsx:78 Torrent loaded: Sintel.mp4
+use-webtorrent.tsx:87 Setting up video streaming with renderTo...
+use-webtorrent.tsx:104 ✅ renderTo SUCCESS - video ready for progressive playback
+use-webtorrent.tsx:111 📹 Video element detailed status:
+use-webtorrent.tsx:112   🎯 srcType: BLOB_URL
+use-webtorrent.tsx:113   🔗 src: blob:https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.repli...
+use-webtorrent.tsx:114   📊 readyState: 1 HAVE_METADATA
+use-webtorrent.tsx:115   🌐 networkState: 2
+use-webtorrent.tsx:116   ⏱️ duration: 888.064
+use-webtorrent.tsx:117   📐 dimensions: 1024x436
+use-webtorrent.tsx:118   ✅ canPlay (readyState >= 2): false
+file-upload.tsx:76 📈 Seeding progress: 21.0%
+use-websocket.tsx:298 📈 Seeding progress: 21.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 22.0%
+use-websocket.tsx:298 📈 Seeding progress: 22.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 23.0%
+use-websocket.tsx:298 📈 Seeding progress: 23.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 24.0%
+use-websocket.tsx:298 📈 Seeding progress: 24.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 25.0%
+use-websocket.tsx:298 📈 Seeding progress: 25.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 26.0%
+use-websocket.tsx:298 📈 Seeding progress: 26.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 27.0%
+use-websocket.tsx:298 📈 Seeding progress: 27.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 28.0%
+use-websocket.tsx:298 📈 Seeding progress: 28.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 29.0%
+use-websocket.tsx:298 📈 Seeding progress: 29.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 30.0%
+use-websocket.tsx:298 📈 Seeding progress: 30.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 31.0%
+use-websocket.tsx:298 📈 Seeding progress: 31.0%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 32.1%
+use-websocket.tsx:298 📈 Seeding progress: 32.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 33.1%
+use-websocket.tsx:298 📈 Seeding progress: 33.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 34.1%
+use-websocket.tsx:298 📈 Seeding progress: 34.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 35.1%
+use-websocket.tsx:298 📈 Seeding progress: 35.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 36.1%
+use-websocket.tsx:298 📈 Seeding progress: 36.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 37.1%
+use-websocket.tsx:298 📈 Seeding progress: 37.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 38.1%
+use-websocket.tsx:298 📈 Seeding progress: 38.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 39.1%
+use-websocket.tsx:298 📈 Seeding progress: 39.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 40.1%
+use-websocket.tsx:298 📈 Seeding progress: 40.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 41.1%
+use-websocket.tsx:298 📈 Seeding progress: 41.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 42.1%
+use-websocket.tsx:298 📈 Seeding progress: 42.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 43.1%
+use-websocket.tsx:298 📈 Seeding progress: 43.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 44.1%
+use-websocket.tsx:298 📈 Seeding progress: 44.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 45.1%
+use-websocket.tsx:298 📈 Seeding progress: 45.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 46.1%
+use-websocket.tsx:298 📈 Seeding progress: 46.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 47.1%
+use-websocket.tsx:298 📈 Seeding progress: 47.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 48.1%
+use-websocket.tsx:298 📈 Seeding progress: 48.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 49.1%
+use-websocket.tsx:298 📈 Seeding progress: 49.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 50.1%
+use-websocket.tsx:298 📈 Seeding progress: 50.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 51.1%
+use-websocket.tsx:298 📈 Seeding progress: 51.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 52.1%
+use-websocket.tsx:298 📈 Seeding progress: 52.1%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 53.2%
+use-websocket.tsx:298 📈 Seeding progress: 53.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 54.2%
+use-websocket.tsx:298 📈 Seeding progress: 54.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 55.2%
+use-websocket.tsx:298 📈 Seeding progress: 55.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 56.2%
+use-websocket.tsx:298 📈 Seeding progress: 56.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 57.2%
+use-websocket.tsx:298 📈 Seeding progress: 57.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 58.2%
+use-websocket.tsx:298 📈 Seeding progress: 58.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:76 📈 Seeding progress: 59.2%
+use-websocket.tsx:298 📈 Seeding progress: 59.2%
+file-upload.tsx:35 FileUpload rendered with videos: 1 Array(1)
+webtorrent.min.js:16 Uncaught Error: Can only pipe to one destination
+    at ReadableState.pipe (webtorrent.min.js:16:173759)
+    at module.exports.pipe (webtorrent.min.js:16:179641)
+    at webtorrent.min.js:16:216698
+    at Array.forEach (<anonymous>)
+    at MP4Remuxer.seek (webtorrent.min.js:16:216602)
+    at VideoStream._pump (webtorrent.min.js:16:220728)
+    at VideoStream.VideoStream._onWaiting (webtorrent.min.js:16:219710)
+pipe @ webtorrent.min.js:16
+pipe @ webtorrent.min.js:16
+(anonymous) @ webtorrent.min.js:16
+seek @ webtorrent.min.js:16
+_pump @ webtorrent.min.js:16
+VideoStream.VideoStream._onWaiting @ webtorrent.min.js:16
