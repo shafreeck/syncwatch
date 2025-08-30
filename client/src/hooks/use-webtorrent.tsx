@@ -131,33 +131,40 @@ export function useWebTorrent() {
             console.log('✗ renderTo failed:', e);
           }
           
-          // Also test getBlobURL with verbose logging
-          console.log('Testing getBlobURL method...');
-          try {
-            const result = videoFile.getBlobURL((err: any, url: string) => {
-              console.log('=== getBlobURL CALLBACK EXECUTED ===');
-              console.log('Error:', err);
-              console.log('URL:', url ? url.substring(0, 50) + '...' : 'NO URL');
+          // Since renderTo worked, let's check if we can trigger autoplay
+          console.log('Checking if video is ready for autoplay...');
+          
+          // Wait a bit for renderTo to set up the video source
+          setTimeout(() => {
+            console.log('Video readyState:', videoElement.readyState);
+            console.log('Video has src:', !!videoElement.src);
+            console.log('Video duration:', videoElement.duration);
+            
+            if (videoElement.readyState >= 2) { // HAVE_CURRENT_DATA
+              console.log('✓ Video has enough data! Attempting autoplay...');
+              videoElement.play().then(() => {
+                console.log('✓ SUCCESS: Video is now playing!');
+              }).catch(e => {
+                console.log('Autoplay blocked by browser policy - user needs to click play:', e.message);
+              });
+            } else if (videoElement.readyState >= 1) { // HAVE_METADATA
+              console.log('✓ Video metadata loaded, waiting for more data...');
               
-              if (!err && url) {
-                console.log('✓ SUCCESS: Setting video source!');
-                videoElement.src = url;
-                videoElement.load();
-                
-                // Try autoplay
-                setTimeout(() => {
-                  videoElement.play().catch(e => {
-                    console.log('Autoplay blocked, user can click play');
-                  });
-                }, 1000);
-              } else {
-                console.log('✗ FAILED: getBlobURL error or no URL');
-              }
-            });
-            console.log('getBlobURL returned:', result);
-          } catch (e) {
-            console.log('✗ getBlobURL threw error:', e);
-          }
+              // Listen for when we have enough data
+              const handleCanPlay = () => {
+                console.log('✓ Video can now play! Attempting autoplay...');
+                videoElement.play().then(() => {
+                  console.log('✓ SUCCESS: Video is now playing!');
+                }).catch(e => {
+                  console.log('Autoplay blocked - user can click play:', e.message);
+                });
+              };
+              
+              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+            } else {
+              console.log('Video not ready yet, readyState:', videoElement.readyState);
+            }
+          }, 2000);
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
