@@ -185,8 +185,35 @@ export default function Home() {
               onVideoUpload={uploadVideo}
               videos={videos}
               onSelectVideo={(video) => {
-                // TODO: Implement video selection
-                console.log("Select video:", video);
+                if (video.magnetUri) {
+                  // Notify about video selection through WebSocket
+                  if (room) {
+                    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+                    const wsUrl = `${protocol}//${window.location.host}/ws`;
+                    const ws = new WebSocket(wsUrl);
+                    ws.onopen = () => {
+                      ws.send(JSON.stringify({
+                        type: "video_select",
+                        data: {
+                          videoId: video.id,
+                          magnetUri: video.magnetUri,
+                          roomId: room.id
+                        }
+                      }));
+                      ws.close();
+                    };
+                  }
+                  toast({
+                    title: "Video selected",
+                    description: `Now playing: ${video.name}`,
+                  });
+                } else {
+                  toast({
+                    title: "Video not ready",
+                    description: "This video is still processing",
+                    variant: "destructive",
+                  });
+                }
               }}
             />
           </div>
