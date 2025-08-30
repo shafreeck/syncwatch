@@ -33,7 +33,11 @@ export function useWebTorrent() {
           webSeeds: true,
           maxConns: 100,
           downloadLimit: -1,
-          uploadLimit: -1
+          uploadLimit: -1,
+          // Enable worker for streamTo support
+          worker: true,
+          // Alternative: provide worker path if needed
+          // workerPath: 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.worker.min.js'
         });
         setClient(webTorrentClient);
         setIsLoading(false);
@@ -105,13 +109,16 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Skip streamTo due to worker issues in Replit, use appendTo directly
-          console.log('Skipping streamTo, using appendTo for progressive playback...');
+          // Use streamTo for progressive streaming with worker enabled
+          console.log('Setting up streamTo for progressive playback...');
           try {
-            videoFile.appendTo(videoElement);
-            console.log('✓ appendTo initiated - progressive playback enabled');
+            videoFile.streamTo(videoElement, {
+              autoplay: false,
+              controls: false
+            });
+            console.log('✓ streamTo initiated - progressive playback enabled');
           } catch (e) {
-            console.log('appendTo failed, will use backup method in progressive check');
+            console.log('streamTo failed:', e, 'will use backup method in progressive check');
           }
           
           // Monitor if streamTo actually sets the src
