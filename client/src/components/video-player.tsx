@@ -52,8 +52,25 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
   }, []);
 
   useEffect(() => {
-    if (currentVideo && currentVideo.magnetUri) {
-      loadTorrent(currentVideo.magnetUri, videoRef.current);
+    const video = videoRef.current;
+    if (!video || !currentVideo) return;
+    
+    console.log("Loading video:", currentVideo);
+    
+    if (currentVideo.fileUrl) {
+      // Prefer local file URL for immediate playback
+      console.log("Loading local file:", currentVideo.fileUrl);
+      video.src = currentVideo.fileUrl;
+      video.load();
+    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
+      // Try to load as torrent
+      console.log("Loading torrent:", currentVideo.magnetUri);
+      loadTorrent(currentVideo.magnetUri, video);
+    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('blob:')) {
+      // Handle blob URLs
+      console.log("Loading blob URL:", currentVideo.magnetUri);
+      video.src = currentVideo.magnetUri;
+      video.load();
     }
   }, [currentVideo, loadTorrent]);
 

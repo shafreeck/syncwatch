@@ -199,18 +199,63 @@ export function useWebSocket() {
   }, [sendMessage, room]);
 
   const uploadVideo = useCallback(async (file: File) => {
-    // This would normally create a torrent and get magnet URI
-    // For now, we'll create a mock video entry
-    if (room) {
-      const mockMagnetUri = `magnet:?xt=urn:btih:${Math.random().toString(36).substring(7)}`;
+    if (!room) return;
+    
+    try {
+      // Create a local blob URL for immediate playback
+      const fileUrl = URL.createObjectURL(file);
+      console.log("Created file URL for local playback:", fileUrl);
+      
+      // Try to create a real torrent from the file
+      const webTorrentScript = document.querySelector('script[src*="webtorrent"]');
+      if (webTorrentScript && window.WebTorrent) {
+        const tempClient = new window.WebTorrent();
+        
+        tempClient.seed(file, (torrent: any) => {
+          console.log("Real torrent created:", torrent.magnetURI);
+          
+          sendMessage("video_upload", {
+            name: file.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
+            size: file.size.toString(),
+            roomId: room.id,
+            fileUrl: fileUrl, // Include local file URL for immediate playback
+          });
+          
+          // Keep the torrent seeding
+          setTimeout(() => {
+            tempClient.destroy();
+          }, 300000); // Keep seeding for 5 minutes
+        });
+      } else {
+        // WebTorrent not available, use local file only
+        const mockInfoHash = Math.random().toString(36).substring(7);
+        
+        sendMessage("video_upload", {
+          name: file.name,
+          magnetUri: fileUrl, // Use file URL as magnetUri for compatibility
+          infoHash: mockInfoHash,
+          size: file.size.toString(),
+          roomId: room.id,
+          fileUrl: fileUrl,
+        });
+      }
+      
+    } catch (error) {
+      console.error("Failed to process video file:", error);
+      
+      // Create a fallback URL
+      const fileUrl = URL.createObjectURL(file);
       const mockInfoHash = Math.random().toString(36).substring(7);
       
       sendMessage("video_upload", {
         name: file.name,
-        magnetUri: mockMagnetUri,
+        magnetUri: fileUrl,
         infoHash: mockInfoHash,
         size: file.size.toString(),
         roomId: room.id,
+        fileUrl: fileUrl,
       });
     }
   }, [sendMessage, room]);
