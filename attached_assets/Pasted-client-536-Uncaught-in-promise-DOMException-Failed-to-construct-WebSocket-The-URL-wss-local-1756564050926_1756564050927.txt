@@ -1,0 +1,133 @@
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=Xq8xs1QGjbrw' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-MQ6MFIVI.js?v=fd0beae7:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+@radix-ui_react-dialog.js?v=fd0beae7:1412 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=fd0beae7:1412
+Show 1 more frame
+Show less
+use-webtorrent.tsx:42 WebTorrent client initialized for progressive streaming
+use-webtorrent.tsx:50 Worker loading failed (non-critical): Error: Invalid worker registration
+    at WebTorrent.loadWorker (webtorrent.min.js:16:226030)
+    at script.onload (use-webtorrent.tsx:46:28) - will use alternative methods
+use-websocket.tsx:54 WebSocket connected
+chunk-MQ6MFIVI.js?v=fd0beae7:2383 A soft navigation has been detected: https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/room/066f93ad-f803-4c2f-b1e0-394ba73368c6
+use-webtorrent.tsx:42 WebTorrent client initialized for progressive streaming
+use-webtorrent.tsx:50 Worker loading failed (non-critical): Error: Invalid worker registration
+    at WebTorrent.loadWorker (webtorrent.min.js:16:226030)
+    at script.onload (use-webtorrent.tsx:46:28) - will use alternative methods
+use-websocket.tsx:105 Received WebSocket message: user_joined Object
+use-websocket.tsx:105 Received WebSocket message: room_state Object
+use-websocket.tsx:108 Setting room state: Object
+use-websocket.tsx:119 ✓ Videos state updated: Array(0)
+file-upload.tsx:36 Selected file: Object
+file-upload.tsx:60 Starting video upload...
+use-websocket.tsx:229 Upload attempt - room state: Object
+use-websocket.tsx:240 Starting P2P video sharing for: Sintel.mp4
+use-websocket.tsx:268 Creating torrent from file...
+file-upload.tsx:64 Video upload completed successfully
+use-websocket.tsx:272 Torrent created: Object
+use-websocket.tsx:288 Video is now being seeded and shared via P2P
+use-websocket.tsx:105 Received WebSocket message: new_video Object
+use-websocket.tsx:135 Received new video: Object
+use-websocket.tsx:138 ✓ Videos list updated, new count: 1
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+home.tsx:193 Selecting video locally: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+use-websocket.tsx:105 Received WebSocket message: video_selected Object
+use-websocket.tsx:154 Video selected message received: Object
+use-websocket.tsx:155 Current videos in state: Array(0)
+use-websocket.tsx:173 Setting current video from message data: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+video-player.tsx:82 Loading P2P video via torrent: Selected Video
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+use-webtorrent.tsx:93 Torrent loaded for progressive streaming: Sintel.mp4
+use-webtorrent.tsx:104 Selected video file for progressive download: Sintel.mp4
+use-webtorrent.tsx:108 Setting up video streaming... Sintel.mp4 File size: 129241752
+use-webtorrent.tsx:117 File selected for priority download
+use-webtorrent.tsx:120 Setting up appendTo for true progressive playback...
+use-webtorrent.tsx:161 Video setup failed: Error: Invalid video/audio node argument. Argument must be root element that video/audio tag will be appended to.
+    at Object.append (webtorrent.min.js:16:60444)
+    at module.exports.appendTo (webtorrent.min.js:1:5759)
+    at use-webtorrent.tsx:121:21
+    at module.exports.onReady (webtorrent.min.js:16:229080)
+    at Object.onceWrapper (webtorrent.min.js:6:173661)
+    at module.exports.emit (webtorrent.min.js:6:178027)
+    at module.exports._onStore (webtorrent.min.js:1:28741)
+    at onPiecesVerified (webtorrent.min.js:1:26552)
+    at end (webtorrent.min.js:16:72516)
+    at done (webtorrent.min.js:16:72567)
+(anonymous) @ use-webtorrent.tsx:161
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+2use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓4 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓5 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓8 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓11 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓14 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.0% | Speed: ↓18 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓18 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓21 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓24 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓27 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓30 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓34 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓37 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓40 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.1% | Speed: ↓43 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓43 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓46 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓50 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓53 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓56 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓59 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓62 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓66 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.2% | Speed: ↓69 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓69 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓72 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓75 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓79 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓82 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓85 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓88 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓91 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.3% | Speed: ↓95 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓95 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓98 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓101 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓104 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓107 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓111 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓114 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓117 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.4% | Speed: ↓120 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓120 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓123 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓127 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓130 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓133 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓136 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓139 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓143 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.5% | Speed: ↓146 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓146 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓149 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓152 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓159 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓162 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓165 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.6% | Speed: ↓168 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓168 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓175 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓178 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓181 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 Download: 0.7% | Speed: ↓184 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:227 

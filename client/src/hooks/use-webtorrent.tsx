@@ -116,14 +116,17 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use appendTo for immediate progressive streaming
-          console.log('Setting up appendTo for true progressive playback...');
-          videoFile.appendTo(videoElement);
-          console.log('✓ appendTo initiated - progressive streaming enabled');
+          // Use renderTo for progressive streaming (correct method for existing video element)
+          console.log('Setting up renderTo for true progressive playback...');
+          videoFile.renderTo(videoElement, {
+            autoplay: false,
+            controls: true
+          });
+          console.log('✓ renderTo initiated - progressive streaming enabled');
           
           // Monitor if streamTo actually sets the src
-          // appendTo should work immediately for progressive streaming
-          console.log('✓ appendTo should enable immediate progressive playback');
+          // renderTo should work immediately for progressive streaming
+          console.log('✓ renderTo should enable immediate progressive playback');
           
           // Monitor video element state
           const logVideoState = () => {
@@ -198,8 +201,8 @@ export function useWebTorrent() {
             console.log('🔧 Creating progressive video stream...');
             const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
             if (videoFile) {
-              // appendTo already set up progressive streaming, no need for getBlobURL
-              console.log('✅ Progressive streaming already enabled via appendTo');
+              // renderTo already set up progressive streaming
+              console.log('✅ Progressive streaming already enabled via renderTo');
               
               // Set up auto-play when ready
               const handleCanPlay = () => {
