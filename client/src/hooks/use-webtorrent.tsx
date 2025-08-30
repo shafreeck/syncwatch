@@ -86,6 +86,13 @@ export function useWebTorrent() {
       if (videoFile && videoElement) {
         console.log('Setting up video streaming with renderTo...');
         
+        // Clear any existing video src and reset the element to prevent pipe conflicts
+        if (videoElement.src) {
+          console.log('🧹 Clearing existing video src before renderTo');
+          videoElement.src = '';
+          videoElement.load(); // This resets the video element completely
+        }
+        
         // Select the file for download
         videoFile.select();
         
@@ -100,17 +107,15 @@ export function useWebTorrent() {
             const srcType = videoElement.src?.startsWith('blob:') ? 'BLOB_URL' : 
                            videoElement.src?.startsWith('data:') ? 'DATA_URL' : 'OTHER';
             
-            console.log('📹 Video element detailed status:', {
-              srcType: srcType,
-              src: videoElement.src?.substring(0, 80) + '...',
-              readyState: videoElement.readyState,
-              readyStateText: ['HAVE_NOTHING', 'HAVE_METADATA', 'HAVE_CURRENT_DATA', 'HAVE_FUTURE_DATA', 'HAVE_ENOUGH_DATA'][videoElement.readyState],
-              networkState: videoElement.networkState,
-              duration: videoElement.duration,
-              videoWidth: videoElement.videoWidth,
-              videoHeight: videoElement.videoHeight,
-              canPlay: videoElement.readyState >= 2
-            });
+            // Log detailed video status with explicit values
+            console.log('📹 Video element detailed status:');
+            console.log('  🎯 srcType:', srcType);
+            console.log('  🔗 src:', videoElement.src?.substring(0, 80) + '...');
+            console.log('  📊 readyState:', videoElement.readyState, ['HAVE_NOTHING', 'HAVE_METADATA', 'HAVE_CURRENT_DATA', 'HAVE_FUTURE_DATA', 'HAVE_ENOUGH_DATA'][videoElement.readyState]);
+            console.log('  🌐 networkState:', videoElement.networkState);
+            console.log('  ⏱️ duration:', videoElement.duration);
+            console.log('  📐 dimensions:', videoElement.videoWidth + 'x' + videoElement.videoHeight);
+            console.log('  ✅ canPlay (readyState >= 2):', videoElement.readyState >= 2);
           }
         });
       }
