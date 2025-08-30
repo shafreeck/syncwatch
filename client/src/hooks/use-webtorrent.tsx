@@ -186,6 +186,11 @@ export function useWebTorrent() {
                     duration: element.duration,
                     src: element.src?.substring(0, 60) + '...'
                   });
+                  
+                  // Add the test ID to the new video element created by appendTo
+                  element.setAttribute('data-testid', 'video-player');
+                  console.log('🏷️ Added data-testid to appendTo video element');
+                  
                   streamCreated = true;
                   
                   // Set up metadata loaded handler
@@ -519,8 +524,13 @@ export function useWebTorrent() {
       if (progress >= 5 && progress <= 5.1) { // Check once when reaching 5%
         console.log(`🎬 ${progress.toFixed(1)}% downloaded - Progressive playback should be available!`);
         
-        // Find video element from the current video player
-        const videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
+        // Find video element from the current video player (try specific ID first, then any video)
+        let videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
+        if (!videoElement) {
+          // Fallback: find any video element in the container
+          videoElement = document.querySelector('video') as HTMLVideoElement;
+          console.log('📹 Using fallback video element search');
+        }
         if (videoElement) {
           console.log('Video element status:', {
             src: videoElement.src ? 'HAS SRC ✓' : 'NO SRC ✗',
@@ -552,11 +562,16 @@ export function useWebTorrent() {
       // Manual check for testing
       if (progress >= 5 && progress <= 5.5) {
         console.log('🔍 Manual progressive playback check at 5%...');
-        const videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
+        let videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
+        if (!videoElement) {
+          videoElement = document.querySelector('video') as HTMLVideoElement;
+          console.log('📹 Using fallback video element search for manual check');
+        }
         if (videoElement) {
           console.log('✓ Video element found:', {
             src: videoElement.src ? 'HAS SRC' : 'NO SRC',
-            readyState: videoElement.readyState
+            readyState: videoElement.readyState,
+            testId: videoElement.getAttribute('data-testid') || 'none'
           });
         } else {
           console.log('✗ Video element not found');
