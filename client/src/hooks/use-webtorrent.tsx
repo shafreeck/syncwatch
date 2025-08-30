@@ -98,7 +98,8 @@ export function useWebTorrent() {
         // Use renderTo with progressive streaming configuration
         videoFile.renderTo(videoElement, { 
           maxBlobLength: 200 * 1024 * 1024,  // 200MB threshold
-          autoplay: true 
+          autoplay: false,
+          controls: true
         }, (err: any) => {
           if (err) {
             console.error('❌ renderTo failed:', err);
@@ -107,6 +108,14 @@ export function useWebTorrent() {
             
             const isMediaSource = videoElement.src?.includes('mediasource');
             console.log('🎯 Strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
+            
+            // Auto-play when metadata is loaded
+            videoElement.addEventListener('loadedmetadata', () => {
+              console.log('📹 Metadata loaded, starting playback...');
+              videoElement.play().catch(err => {
+                console.log('❌ Autoplay failed (browser policy):', err.message);
+              });
+            });
           }
         });
       }

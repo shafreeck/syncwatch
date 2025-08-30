@@ -55,9 +55,9 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        // Use renderTo with autoplay enabled
+        // Use renderTo without autoplay
         videoFile.renderTo(videoContainerRef.current, {
-          autoplay: true,
+          autoplay: false,
           controls: true,
           maxBlobLength: 200 * 1000 * 1000  // 200MB for progressive streaming
         }, (err: any, videoElement: HTMLVideoElement) => {
@@ -65,7 +65,7 @@ export default function TorrentTest() {
             setStatus(`Error: ${err.message}`);
             console.error('❌ renderTo failed:', err);
           } else {
-            setStatus('🎬 Video streaming automatically!');
+            setStatus('📺 Video ready - will auto-play when loaded');
             console.log('✅ renderTo SUCCESS - auto-playing');
             
             // Apply styling
@@ -78,10 +78,15 @@ export default function TorrentTest() {
             
             videoElement.addEventListener('loadedmetadata', () => {
               console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
+              console.log('🎬 Starting playback automatically...');
+              videoElement.play().catch(err => {
+                console.log('❌ Autoplay failed (browser policy):', err.message);
+                setStatus('📺 Video ready - click to play');
+              });
             });
             
             videoElement.addEventListener('canplay', () => {
-              console.log('✅ Can play - Starting automatic playback');
+              console.log('✅ Can play - ready for playback');
             });
           }
         });
