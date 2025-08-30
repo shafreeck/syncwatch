@@ -244,8 +244,8 @@ export function useWebTorrent() {
             }
           });
           
-          // Check video state after a delay
-          setTimeout(() => {
+          // Check video state and force canplay check
+          const checkVideoReadiness = () => {
             console.log('=== VIDEO STATE CHECK ===');
             console.log('readyState:', videoElement.readyState);
             console.log('networkState:', videoElement.networkState);
@@ -256,16 +256,34 @@ export function useWebTorrent() {
             console.log('error:', videoElement.error);
             console.log('current time:', videoElement.currentTime);
             
-            // Manual play attempt
-            if (videoElement.readyState >= 2) {
-              console.log('🎯 Manual play attempt...');
+            // Force fire canplay event if conditions are met
+            if (videoElement.readyState >= 2 && videoElement.duration > 0) {
+              console.log('🎯 Video has enough data, manually triggering canplay logic...');
               videoElement.play().then(() => {
                 console.log('✅ Manual play SUCCESS!');
               }).catch(e => {
                 console.log('❌ Manual play FAILED:', e.message, e.name);
               });
+            } else if (videoElement.readyState >= 1 && videoElement.duration > 0) {
+              console.log('⏳ Video has metadata but waiting for more data...');
+              console.log('Will check again in 2 seconds...');
+              setTimeout(checkVideoReadiness, 2000);
+            } else {
+              console.log('⚠️ Video not ready yet, will retry...');
+              setTimeout(checkVideoReadiness, 3000);
             }
-          }, 3000);
+          };
+          
+          // Start checking after initial setup
+          setTimeout(checkVideoReadiness, 3000);
+          
+          // Also check periodically during download
+          const progressChecker = setInterval(() => {
+            if (videoElement.readyState >= 2 && !videoElement.error) {
+              console.log('🔄 Periodic check: Video ready for playback!');
+              clearInterval(progressChecker);
+            }
+          }, 5000);
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
