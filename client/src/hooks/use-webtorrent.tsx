@@ -122,49 +122,49 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Wait for more data before creating blob URL (getBlobURL needs sufficient data)
-          console.log('Waiting for more download progress before creating blob URL...');
-          
-          // Set up a one-time check when we have more data
-          const checkForBlobCreation = () => {
-            const currentProgress = (torrent.downloaded / torrent.length) * 100;
-            if (currentProgress >= 5) { // Wait for 5% to ensure enough data
-              console.log('Creating blob URL at', currentProgress.toFixed(1) + '% progress...');
-              videoFile.getBlobURL((err: any, url: string) => {
-                if (!err && url) {
-                  console.log('✓ Blob URL created successfully at', currentProgress.toFixed(1) + '%!');
-                  videoElement.src = url;
-                  videoElement.load();
-                  
-                  // Try autoplay when ready
-                  const handleCanPlay = () => {
-                    console.log('✓ Video ready for playback!');
-                    videoElement.play().catch(e => {
-                      console.log('Autoplay blocked, user can click play');
-                    });
-                  };
-                  
-                  videoElement.addEventListener('canplay', handleCanPlay, { once: true });
-                } else {
-                  console.log('✗ getBlobURL failed even at', currentProgress.toFixed(1) + '%:', err);
-                  // Try again at higher percentage
-                  if (currentProgress < 10) {
-                    setTimeout(() => {
-                      if ((torrent.downloaded / torrent.length) * 100 >= 10) {
-                        checkForBlobCreation();
-                      }
-                    }, 2000);
+          // Create blob URL immediately - let's see what happens
+          console.log('Creating blob URL immediately for testing...');
+          videoFile.getBlobURL((err: any, url: string) => {
+            if (!err && url) {
+              console.log('✓ Blob URL created successfully!');
+              console.log('Setting video source to:', url.substring(0, 50) + '...');
+              videoElement.src = url;
+              videoElement.load();
+              
+              // Try autoplay when ready
+              const handleCanPlay = () => {
+                console.log('✓ Video ready for playback! Attempting autoplay...');
+                videoElement.play().catch(e => {
+                  console.log('Autoplay blocked, user can click play button');
+                });
+              };
+              
+              const handleLoadedData = () => {
+                console.log('✓ Video data loaded successfully!');
+              };
+              
+              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+              videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
+              
+            } else {
+              console.log('✗ getBlobURL failed:', err);
+              console.log('Will try again when more data is available...');
+              
+              // Try again after a delay
+              setTimeout(() => {
+                console.log('Retrying getBlobURL after delay...');
+                videoFile.getBlobURL((err2: any, url2: string) => {
+                  if (!err2 && url2) {
+                    console.log('✓ Retry successful! Blob URL created:', url2.substring(0, 50) + '...');
+                    videoElement.src = url2;
+                    videoElement.load();
+                  } else {
+                    console.log('✗ Retry also failed:', err2);
                   }
-                }
-              });
+                });
+              }, 5000);
             }
-          };
-          
-          // Check immediately if we already have 5%
-          checkForBlobCreation();
-          
-          // Also set up a timer to check again
-          setTimeout(checkForBlobCreation, 3000);
+          });
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
