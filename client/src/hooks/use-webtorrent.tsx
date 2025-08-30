@@ -21,7 +21,16 @@ export function useWebTorrent() {
     script.src = "https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js";
     script.onload = () => {
       if (window.WebTorrent) {
-        const webTorrentClient = new window.WebTorrent();
+        const webTorrentClient = new window.WebTorrent({
+          tracker: {
+            announce: [
+              'wss://tracker.btorrent.xyz',
+              'wss://tracker.openwebtorrent.com'
+            ]
+          },
+          dht: false,
+          webSeeds: false
+        });
         setClient(webTorrentClient);
         setIsLoading(false);
         console.log("WebTorrent client initialized");
@@ -62,8 +71,20 @@ export function useWebTorrent() {
       );
 
       if (videoFile && videoElement) {
-        videoFile.streamTo(videoElement);
-        videoElement.load();
+        try {
+          // Use blob URL instead of streaming for better compatibility
+          videoFile.getBlobURL((err: any, url: string) => {
+            if (err) {
+              console.error('Error creating blob URL:', err);
+              return;
+            }
+            console.log('Setting video source to blob URL:', url);
+            videoElement.src = url;
+            videoElement.load();
+          });
+        } catch (error) {
+          console.error('Error setting up video playback:', error);
+        }
       }
     });
 

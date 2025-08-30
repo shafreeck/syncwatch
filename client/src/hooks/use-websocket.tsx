@@ -232,7 +232,16 @@ export function useWebSocket() {
         throw new Error("WebTorrent not available");
       }
       
-      const client = new (window as any).WebTorrent();
+      const client = new (window as any).WebTorrent({
+        tracker: {
+          announce: [
+            'wss://tracker.btorrent.xyz',
+            'wss://tracker.openwebtorrent.com'
+          ]
+        },
+        dht: false,
+        webSeeds: false
+      });
       
       console.log("Creating torrent from file...");
       
