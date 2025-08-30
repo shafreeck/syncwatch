@@ -1,0 +1,49 @@
+client:536 WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=L-iGARR7SZ6d' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=L-iGARR7SZ6d' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-MQ6MFIVI.js?v=d6d9f2e0:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-MQ6MFIVI.js?v=d6d9f2e0:16670 Uncaught DOMException: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.
+    at insertBefore (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:8446:26)
+    at insertOrAppendPlacementNode (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17432:15)
+    at commitPlacement (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17389:15)
+    at commitReconciliationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17906:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17738:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17737:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17737:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)
+chunk-MQ6MFIVI.js?v=d6d9f2e0:14032 The above error occurred in the <div> component:
+
+    at div
+    at div
+    at div
+    at TorrentTest (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/src/pages/torrent-test.tsx?t=1756595441957:21:37)
+    at Route (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d6d9f2e0:323:16)
+    at Switch (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d6d9f2e0:379:17)
+    at Router
+    at Provider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IRINLCGI.js?v=d6d9f2e0:38:15)
+    at TooltipProvider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d6d9f2e0:2250:5)
+    at QueryClientProvider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d6d9f2e0:2805:3)
+    at div
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-MQ6MFIVI.js?v=d6d9f2e0:14032
+Show 1 more frame
+Show less
+chunk-MQ6MFIVI.js?v=d6d9f2e0:9129 Uncaught DOMException: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.
+    at insertBefore (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:8446:26)
+    at insertOrAppendPlacementNode (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17432:15)
+    at commitPlacement (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17389:15)
+    at commitReconciliationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17906:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17738:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17737:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)
+    at commitMutationEffectsOnFiber (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17737:15)
+    at recursivelyTraverseMutationEffects (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MQ6MFIVI.js?v=d6d9f2e0:17685:15)

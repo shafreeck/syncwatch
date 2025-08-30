@@ -45,32 +45,16 @@ export default function TorrentTest() {
       if (videoFile && videoRef.current) {
         setStatus(`Setting up video: ${videoFile.name}`);
         
-        // Use appendTo with maxBlobLength: 0 to force streaming and avoid blob URLs
-        const container = document.createElement('div');
-        videoRef.current.parentNode?.insertBefore(container, videoRef.current);
-        videoRef.current.remove();
-        
-        videoFile.appendTo(container, { 
-          autoplay: false,
-          controls: true,
-          maxBlobLength: 0  // Force skip blob strategy - this is the key!
-        }, (err: any, video: HTMLVideoElement) => {
+        // Use renderTo with maxBlobLength: 0 option to force streaming
+        videoFile.renderTo(videoRef.current, { maxBlobLength: 0 }, (err: any) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
           } else {
             setStatus('Video ready for streaming - click play!');
-            console.log('✅ appendTo SUCCESS with streaming strategy');
-            console.log('Video src:', video.src);
-            console.log('Video readyState:', video.readyState);
-            console.log('SRC type:', video.src?.startsWith('blob:') ? 'BLOB_URL (BAD)' : 'STREAMING (GOOD)');
-            
-            // Update ref to new video element (use object assignment to bypass readonly)
-            (videoRef as any).current = video;
-            video.className = 'w-full max-w-2xl';
-            
-            video.addEventListener('loadedmetadata', () => console.log('✅ Metadata loaded'));
-            video.addEventListener('canplay', () => console.log('✅ Can play'));
-            video.addEventListener('error', (e) => console.error('❌ Video error:', e));
+            console.log('✅ renderTo SUCCESS with streaming strategy');
+            console.log('Video src:', videoRef.current?.src);
+            console.log('Video readyState:', videoRef.current?.readyState);
+            console.log('SRC type:', videoRef.current?.src?.startsWith('blob:') ? 'BLOB_URL (BAD)' : 'STREAMING (GOOD)');
           }
         });
       } else {
