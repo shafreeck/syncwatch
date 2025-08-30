@@ -105,25 +105,31 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use getBlobURL immediately - this is the most reliable method
-          videoFile.getBlobURL((err: any, url: string) => {
-            if (!err && url) {
-              console.log('✓ Blob URL created successfully:', url.substring(0, 50) + '...');
-              videoElement.src = url;
-              videoElement.load();
-              console.log('✓ Video src set and load() called');
-            } else {
-              console.error('✗ getBlobURL failed:', err);
-              // Fallback: try streamTo
-              console.log('Trying streamTo as fallback...');
-              try {
-                videoFile.streamTo(videoElement);
-                console.log('✓ streamTo called as fallback');
-              } catch (streamError) {
-                console.error('✗ streamTo also failed:', streamError);
-              }
-            }
+          // Use streamTo for progressive streaming - this is the correct method
+          console.log('Setting up streamTo for progressive playback...');
+          videoFile.streamTo(videoElement, {
+            autoplay: false,
+            controls: false
           });
+          console.log('✓ streamTo initiated - should enable progressive playback');
+          
+          // Monitor if streamTo actually sets the src
+          setTimeout(() => {
+            if (!videoElement.src || videoElement.src === window.location.href) {
+              console.log('⚠️ streamTo did not set src, using getBlobURL as backup...');
+              videoFile.getBlobURL((err: any, url: string) => {
+                if (!err && url) {
+                  console.log('✓ Backup blob URL created:', url.substring(0, 50) + '...');
+                  videoElement.src = url;
+                  videoElement.load();
+                } else {
+                  console.error('✗ Backup getBlobURL also failed:', err);
+                }
+              });
+            } else {
+              console.log('✓ streamTo successfully set src:', videoElement.src.substring(0, 50) + '...');
+            }
+          }, 1000); // Check after 1 second
           
           // Monitor video element state
           const logVideoState = () => {
@@ -163,6 +169,8 @@ export function useWebTorrent() {
       }
     });
 
+    let progressivePlaybackEnabled = false;
+    
     torrent.on("download", () => {
       const progress = (torrent.downloaded / torrent.length) * 100;
       setDownloadProgress(progress);
@@ -171,8 +179,21 @@ export function useWebTorrent() {
       setUploadSpeed(upSpeed);
       setPeers(torrent.numPeers);
       
+      // Enable progressive playback when we have enough data
+      if (!progressivePlaybackEnabled && progress >= 2) { // 2% downloaded
+        progressivePlaybackEnabled = true;
+        console.log('🎬 Progressive playback available! Video should be ready to play.');
+        
+        // Check if we have a video element to notify
+        if (videoElement && videoElement.readyState >= 2) {
+          console.log('✓ Video element ready for playback');
+        }
+      }
+      
       // Log progressive download status with more details
-      console.log(`Download: ${progress.toFixed(1)}% | Speed: ↓${downSpeed} KB/s ↑${upSpeed} MB/s | Peers: ${torrent.numPeers}`);
+      if (progress < 100) {
+        console.log(`Download: ${progress.toFixed(1)}% | Speed: ↓${downSpeed} KB/s ↑${upSpeed} MB/s | Peers: ${torrent.numPeers}`);
+      }
     });
 
     torrent.on("upload", () => {
