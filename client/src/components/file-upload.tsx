@@ -16,9 +16,10 @@ interface FileUploadProps {
   onVideoUpload: (file: File) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
+  onDebugLog?: (message: string) => void;
 }
 
-export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: FileUploadProps) {
+export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDebugLog }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +54,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
 
     setIsUploading(true);
     console.log("Starting video upload...");
+    onDebugLog?.(`Starting upload: ${file.name}`);
     
     try {
       await onVideoUpload(file);

@@ -18,6 +18,11 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [username, setUsername] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
+
+  const addDebugLog = (message: string) => {
+    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   // Extract room ID from URL
   const roomId = location.split("/room/")[1];
@@ -45,6 +50,7 @@ export default function Home() {
     
     // Test console log to verify logs are working
     console.log("🔄 Home component loaded, roomId:", roomId, "isConnected:", isConnected);
+    addDebugLog(`Home loaded - Room: ${roomId}, Connected: ${isConnected}`);
   }, [roomId, isConnected]);
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
@@ -188,8 +194,11 @@ export default function Home() {
             <FileUpload
               onVideoUpload={uploadVideo}
               videos={videos}
+              onDebugLog={addDebugLog}
               onSelectVideo={(video) => {
+                addDebugLog(`Selecting video: ${video.name}`);
                 if (video.magnetUri && room) {
+                  addDebugLog(`Video has magnetUri: ${video.magnetUri.substring(0, 50)}...`);
                   console.log("Selecting video locally:", video);
                   
                   sendWSMessage("video_select", {
@@ -198,11 +207,13 @@ export default function Home() {
                     roomId: room.id
                   });
                   
+                  addDebugLog(`Sent video_select message`);
                   toast({
                     title: "Video selected",
                     description: `Now playing: ${video.name}`,
                   });
                 } else {
+                  addDebugLog(`Video not ready - no magnetUri or room`);
                   toast({
                     title: "Video not ready",
                     description: "This video is still processing",
@@ -224,6 +235,16 @@ export default function Home() {
             />
           </div>
         </div>
+
+        {/* Debug Info Panel */}
+        {debugInfo.length > 0 && (
+          <div className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg max-w-md text-xs">
+            <div className="font-bold mb-2">Debug Info:</div>
+            {debugInfo.map((info, index) => (
+              <div key={index} className="mb-1">{info}</div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
