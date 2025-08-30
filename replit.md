@@ -9,6 +9,9 @@ This is a full-stack web application for synchronized video watching and sharing
 - ✅ **Improved file upload flow** - Added proper feedback notifications and error handling
 - ✅ **Enhanced WebSocket communication** - Fixed message routing for video selection and synchronization
 - ✅ **Cleaned up debugging code** - Removed temporary debugging interfaces for production readiness
+- ✅ **Implemented WebTorrent progressive streaming** - Videos now play while downloading using appendTo API
+- ✅ **Added one-click video seeding** - Users can share videos with a single button click
+- ✅ **Added seeding progress visualization** - Real-time progress modal with upload stats and peer count
 
 ## Current Working Features
 
@@ -18,6 +21,8 @@ This is a full-stack web application for synchronized video watching and sharing
 - **Real-time Chat** - Live messaging between room participants
 - **User Management** - Multiple users can join the same room simultaneously
 - **WebSocket Communication** - Real-time updates for all room activities
+- **One-Click Video Seeding** - Simple button to start sharing videos with progress visualization
+- **Progressive Streaming** - Videos play while downloading using WebTorrent appendTo API
 
 # User Preferences
 

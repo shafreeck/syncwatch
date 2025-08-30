@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CloudUpload, FileVideo, Play } from "lucide-react";
+import { CloudUpload, FileVideo, Play, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SeedingProgressModal from "./seeding-progress-modal";
 
 interface Video {
   id: string;
@@ -13,14 +14,19 @@ interface Video {
 }
 
 interface FileUploadProps {
-  onVideoUpload: (file: File) => Promise<void>;
+  onVideoUpload: (file: File, onProgress?: (progress: number) => void) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
+  uploadSpeed?: number;
+  peers?: number;
 }
 
-export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: FileUploadProps) {
+export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploadSpeed = 0, peers = 0 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [seedingProgress, setSeedingProgress] = useState(0);
+  const [currentFileName, setCurrentFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -56,18 +62,36 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
       return;
     }
 
+    // One-click seeding with progress visualization
     setIsUploading(true);
+    setCurrentFileName(file.name);
+    setSeedingProgress(0);
+    setShowProgressModal(true);
     console.log("Starting video upload...");
     
     try {
-      await onVideoUpload(file);
+      // Pass progress callback to track seeding progress
+      await onVideoUpload(file, (progress: number) => {
+        setSeedingProgress(progress);
+        console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
+      });
+      
       console.log("Video upload completed successfully");
+      setSeedingProgress(100);
+      
       toast({
         title: "Video uploaded successfully",
         description: `${file.name} is now available for streaming`,
       });
+      
+      // Keep modal open briefly to show completion
+      setTimeout(() => {
+        setShowProgressModal(false);
+      }, 2000);
+      
     } catch (error) {
       console.error("Video upload failed:", error);
+      setShowProgressModal(false);
       toast({
         title: "Upload failed",
         description: "Failed to upload video. Please try again.",
@@ -96,6 +120,10 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
 
   const openFileDialog = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleOneClickSeed = () => {
+    openFileDialog();
   };
 
   const formatFileSize = (bytes: string | undefined) => {
@@ -131,11 +159,26 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
   };
 
   return (
+    <>
     <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <CloudUpload className="w-5 h-5 text-primary mr-2" />
-        Share Video
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold flex items-center">
+          <CloudUpload className="w-5 h-5 text-primary mr-2" />
+          Share Video
+        </h3>
+        
+        {/* One-Click Seed Button */}
+        <Button
+          onClick={handleOneClickSeed}
+          disabled={isUploading}
+          size="sm"
+          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+          data-testid="button-one-click-seed"
+        >
+          <Share2 className="w-4 h-4 mr-1" />
+          One-Click Share
+        </Button>
+      </div>
       
       {/* Upload Dropzone */}
       <div
@@ -210,5 +253,17 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
         </div>
       )}
     </Card>
+    
+    {/* Seeding Progress Modal */}
+    <SeedingProgressModal
+      isOpen={showProgressModal}
+      onClose={() => setShowProgressModal(false)}
+      fileName={currentFileName}
+      progress={seedingProgress}
+      uploadSpeed={uploadSpeed}
+      peers={peers}
+      isCompleted={seedingProgress >= 100}
+    />
+    </>
   );
 }

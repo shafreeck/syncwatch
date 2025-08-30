@@ -594,16 +594,42 @@ export function useWebTorrent() {
     currentTorrent.current = torrent;
   }, [client]);
 
-  const createTorrent = useCallback((file: File): Promise<string> => {
+  const createTorrent = useCallback((file: File, onProgress?: (progress: number) => void): Promise<string> => {
     return new Promise((resolve, reject) => {
       if (!client) {
         reject(new Error("WebTorrent client not available"));
         return;
       }
 
+      console.log("🚀 Starting torrent creation for:", file.name);
+      
       client.seed(file, (torrent: any) => {
         console.log("Torrent created:", torrent.magnetURI);
         setIsSeeding(true);
+        
+        // Set up progress tracking for seeding
+        if (onProgress) {
+          let lastProgress = 0;
+          const progressInterval = setInterval(() => {
+            const currentProgress = torrent.progress * 100;
+            if (currentProgress > lastProgress + 0.5) { // Update every 0.5%
+              onProgress(currentProgress);
+              lastProgress = currentProgress;
+            }
+            
+            if (currentProgress >= 100) {
+              clearInterval(progressInterval);
+              onProgress(100);
+            }
+          }, 100);
+          
+          // Also track immediate upload activity
+          torrent.on('upload', () => {
+            const currentProgress = Math.min(100, (torrent.uploaded / torrent.length) * 100);
+            onProgress(currentProgress);
+          });
+        }
+        
         resolve(torrent.magnetURI);
       });
     });

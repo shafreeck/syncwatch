@@ -225,7 +225,7 @@ export function useWebSocket() {
     }
   }, [sendMessage, room]);
 
-  const uploadVideo = useCallback(async (file: File) => {
+  const uploadVideo = useCallback(async (file: File, onProgress?: (progress: number) => void) => {
     console.log('Upload attempt - room state:', room);
     if (!room) {
       console.error("No room available for upload - room state:", room);
@@ -275,6 +275,49 @@ export function useWebSocket() {
           name: file.name,
           length: torrent.length
         });
+        
+        // Set up progress tracking for seeding
+        if (onProgress) {
+          console.log("📊 Setting up seeding progress tracking...");
+          let lastProgress = 0;
+          
+          const updateProgress = () => {
+            // Calculate progress based on torrent metadata availability and initial setup
+            const setupProgress = torrent.ready ? 20 : 10; // 20% when torrent is ready
+            const uploadProgress = torrent.uploaded ? Math.min(80, (torrent.uploaded / torrent.length) * 80) : 0;
+            const totalProgress = Math.min(100, setupProgress + uploadProgress);
+            
+            if (totalProgress > lastProgress + 1) { // Update every 1%
+              onProgress(totalProgress);
+              lastProgress = totalProgress;
+              console.log(`📈 Seeding progress: ${totalProgress.toFixed(1)}%`);
+            }
+          };
+          
+          // Initial progress update
+          onProgress(10); // 10% for torrent creation
+          
+          // Track torrent ready state
+          if (torrent.ready) {
+            onProgress(20);
+          } else {
+            torrent.on('ready', () => {
+              onProgress(20);
+              console.log("🎯 Torrent ready for seeding");
+            });
+          }
+          
+          // Track upload progress
+          const progressInterval = setInterval(updateProgress, 500);
+          
+          torrent.on('upload', updateProgress);
+          
+          // Clean up after some time or when fully uploaded
+          setTimeout(() => {
+            clearInterval(progressInterval);
+            onProgress(100);
+          }, 5000); // Mark as complete after 5 seconds
+        }
         
         // Send torrent info to room via WebSocket
         sendWSMessage("video_upload", {

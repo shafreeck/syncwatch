@@ -5,6 +5,7 @@ import ChatSidebar from "@/components/chat-sidebar";
 import RoomModal from "@/components/room-modal";
 import FileUpload from "@/components/file-upload";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useWebTorrent } from "@/hooks/use-webtorrent";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,9 @@ export default function Home() {
     syncVideo,
     uploadVideo,
   } = useWebSocket();
+
+  // Get WebTorrent statistics for progress visualization
+  const { uploadSpeed, peers } = useWebTorrent();
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)
@@ -188,6 +192,8 @@ export default function Home() {
             <FileUpload
               onVideoUpload={uploadVideo}
               videos={videos}
+              uploadSpeed={uploadSpeed}
+              peers={peers}
               onSelectVideo={(video) => {
                 if (video.magnetUri && room) {
                   console.log("Selecting video locally:", video);
