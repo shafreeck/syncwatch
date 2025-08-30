@@ -75,7 +75,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     
     console.log("Loading video via torrent:", currentVideo.name);
     loadTorrent(currentVideo.magnetUri, video);
-  }, [currentVideo, loadTorrent]);
+  }, [currentVideo]); // Remove loadTorrent from dependencies to prevent infinite loops
 
   const togglePlay = () => {
     const video = videoRef.current;

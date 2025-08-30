@@ -60,11 +60,20 @@ export function useWebTorrent() {
       return;
     }
 
-    // Remove existing torrent
-    if (currentTorrent.current) {
-      client.remove(currentTorrent.current);
+    // Clear video element first to prevent pipe conflicts
+    if (videoElement) {
+      videoElement.src = '';
+      videoElement.load();
     }
 
+    // Remove existing torrent to prevent conflicts
+    if (currentTorrent.current) {
+      console.log('Removing existing torrent to prevent pipe conflicts');
+      client.remove(currentTorrent.current);
+      currentTorrent.current = null;
+    }
+
+    console.log('Adding new torrent:', magnetUri);
     const torrent = client.add(magnetUri, (torrent: any) => {
       console.log("Torrent loaded:", torrent.name);
       setIsSeeding(true);
@@ -105,8 +114,8 @@ export function useWebTorrent() {
       currentTorrent.current = torrent;
     });
 
-    client.on('error', (err: any) => {
-      console.error('WebTorrent client error:', err);
+    torrent.on('error', (err: any) => {
+      console.error('WebTorrent torrent error:', err);
     });
   }, [client]);
 
@@ -117,9 +126,11 @@ export function useWebTorrent() {
     }
 
     return new Promise((resolve, reject) => {
-      // Remove existing torrent if any
+      // Remove existing torrent to prevent conflicts
       if (currentTorrent.current) {
+        console.log('Removing existing torrent before seeding new file');
         client.remove(currentTorrent.current);
+        currentTorrent.current = null;
       }
 
       const torrent = client.seed(file, (torrent: any) => {
