@@ -75,6 +75,8 @@ export class MemStorage implements IStorage {
       ...insertUser,
       id,
       joinedAt: new Date(),
+      roomId: insertUser.roomId || null,
+      isHost: insertUser.isHost || false,
     };
     this.users.set(id, user);
     return user;
@@ -126,6 +128,9 @@ export class MemStorage implements IStorage {
       ...insertVideo,
       id,
       uploadedAt: new Date(),
+      size: insertVideo.size || null,
+      magnetUri: insertVideo.magnetUri || null,
+      infoHash: insertVideo.infoHash || null,
     };
     this.videos.set(id, video);
     return video;
