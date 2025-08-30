@@ -13,6 +13,12 @@ interface VideoPlayerProps {
 }
 
 export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, onDebugLog }: VideoPlayerProps) {
+  // Debug: Log whenever component renders
+  onDebugLog?.(`VideoPlayer RENDER: currentVideo=${currentVideo ? 'YES' : 'NO'}`);
+  if (currentVideo) {
+    onDebugLog?.(`VideoPlayer RENDER: name=${currentVideo.name}, magnetUri=${currentVideo.magnetUri?.substring(0, 30)}...`);
+  }
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
