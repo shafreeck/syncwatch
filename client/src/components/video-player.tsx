@@ -40,16 +40,31 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
       setDuration(video.duration || 0);
     };
 
+    const handleCanPlay = () => {
+      console.log('Video ready to play, auto-starting...');
+      // Auto-start playback when video is ready
+      if (!isPlaying && video.readyState >= 2) {
+        video.play().then(() => {
+          setIsPlaying(true);
+          onVideoSync("play", video.currentTime);
+        }).catch(error => {
+          console.log('Auto-play blocked, user needs to click play');
+        });
+      }
+    };
+
     video.addEventListener("timeupdate", updateTime);
     video.addEventListener("durationchange", updateDuration);
     video.addEventListener("loadedmetadata", updateDuration);
+    video.addEventListener("canplay", handleCanPlay);
 
     return () => {
       video.removeEventListener("timeupdate", updateTime);
       video.removeEventListener("durationchange", updateDuration);
       video.removeEventListener("loadedmetadata", updateDuration);
+      video.removeEventListener("canplay", handleCanPlay);
     };
-  }, []);
+  }, [isPlaying, onVideoSync]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -77,9 +92,26 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
       setIsPlaying(false);
       onVideoSync("pause", video.currentTime);
     } else {
-      video.play();
-      setIsPlaying(true);
-      onVideoSync("play", video.currentTime);
+      // Check if video can play
+      if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+        video.play().then(() => {
+          setIsPlaying(true);
+          onVideoSync("play", video.currentTime);
+        }).catch(error => {
+          console.error('Play failed:', error);
+        });
+      } else {
+        console.log('Video not ready, waiting for data...');
+        // Wait for video to be ready
+        const onCanPlay = () => {
+          video.removeEventListener('canplay', onCanPlay);
+          video.play().then(() => {
+            setIsPlaying(true);
+            onVideoSync("play", video.currentTime);
+          });
+        };
+        video.addEventListener('canplay', onCanPlay);
+      }
     }
   };
 

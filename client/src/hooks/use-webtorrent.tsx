@@ -83,27 +83,47 @@ export function useWebTorrent() {
 
       if (videoFile && videoElement) {
         try {
-          // Stream video for progressive playback (watch while downloading)
-          console.log('Starting progressive video streaming...');
-          videoFile.streamTo(videoElement, {
-            autoplay: false,
-            controls: true
+          console.log('Setting up progressive video streaming...');
+          
+          // Create a readable stream for progressive playback
+          const stream = videoFile.createReadStream();
+          const url = URL.createObjectURL(stream);
+          
+          videoElement.src = url;
+          videoElement.preload = 'metadata';
+          
+          // Set up event listeners for progressive playback
+          videoElement.addEventListener('loadstart', () => {
+            console.log('Video loading started');
           });
           
-          // Allow playback to start when enough data is buffered
           videoElement.addEventListener('canplay', () => {
-            console.log('Video ready for progressive playback');
+            console.log('Video can start playing (buffered enough)');
           });
+          
+          videoElement.addEventListener('progress', () => {
+            const buffered = videoElement.buffered;
+            if (buffered.length > 0) {
+              const bufferedEnd = buffered.end(buffered.length - 1);
+              const duration = videoElement.duration;
+              if (duration > 0) {
+                const percent = (bufferedEnd / duration) * 100;
+                console.log(`Video buffered: ${percent.toFixed(1)}%`);
+              }
+            }
+          });
+          
+          videoElement.load();
           
         } catch (error) {
           console.error('Error setting up progressive streaming:', error);
-          // Fallback to blob URL if streaming fails
-          videoFile.getBlobURL((err: any, url: string) => {
-            if (!err) {
-              videoElement.src = url;
-              videoElement.load();
-            }
-          });
+          // Fallback to direct streaming
+          try {
+            videoFile.streamTo(videoElement);
+            videoElement.load();
+          } catch (streamError) {
+            console.error('Streaming fallback failed:', streamError);
+          }
         }
       }
     });
