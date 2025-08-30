@@ -1,0 +1,719 @@
+ WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=A7fZk5f-iEqr' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+ A soft navigation has been detected: https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/room/03a5a1dc-b1d9-44c3-be2d-2b3c70d4c98b
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ 🔍 Manual progressive playback check at 5%...
+ ✓ Video element found: Object
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ Download: 10.0% | Speed: ↓2532 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.0% | Speed: ↓2535 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.0% | Speed: ↓2538 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.0% | Speed: ↓2541 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.0% | Speed: ↓2544 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.1% | Speed: ↓2544 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2548 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2551 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2554 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2557 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2560 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2564 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.1% | Speed: ↓2567 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.1% | Speed: ↓2570 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.2% | Speed: ↓2570 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2573 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2576 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2580 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2583 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2586 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2589 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.2% | Speed: ↓2593 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.2% | Speed: ↓2596 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.3% | Speed: ↓2596 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2599 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2602 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2605 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2609 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2612 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2615 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.3% | Speed: ↓2618 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.3% | Speed: ↓2621 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.4% | Speed: ↓2621 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2625 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2628 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2631 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2634 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2637 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2641 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.4% | Speed: ↓2644 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.4% | Speed: ↓2647 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.5% | Speed: ↓2647 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2650 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2653 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2657 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2660 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2663 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.5% | Speed: ↓2666 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.5% | Speed: ↓2669 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.6% | Speed: ↓2669 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2673 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2676 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2679 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2682 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2685 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2689 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.6% | Speed: ↓2692 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.6% | Speed: ↓2695 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.7% | Speed: ↓2695 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2698 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2701 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2705 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2708 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2711 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2714 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.7% | Speed: ↓2717 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.7% | Speed: ↓2721 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.8% | Speed: ↓2721 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2724 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2727 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2730 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2733 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2737 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2740 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.8% | Speed: ↓2743 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.8% | Speed: ↓2746 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.9% | Speed: ↓2746 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2749 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2753 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2756 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2759 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2762 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2765 KB/s ↑0 MB/s | Peers: 1
+2 Download: 10.9% | Speed: ↓2769 KB/s ↑0 MB/s | Peers: 1
+ Download: 10.9% | Speed: ↓2772 KB/s ↑0 MB/s | Peers: 1
+ Download: 11.0% | Speed: ↓2772 KB/s ↑0 MB/s | Peers: 1
+2 Download: 11.0% | Speed: ↓2775 KB/s ↑0 MB/s | Peers: 1
+2 Download: 11.0% | Speed: ↓2778 KB/s ↑0 MB/s | Peers: 1
+2 Download: 11.0% | Speed: ↓2781 KB/s ↑0 MB/s | Peers: 1
+ Download: 11.0% | Speed: ↓2785 KB/s ↑0 MB/s | Peers: 1
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ Download: 20.0% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.0% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.0% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.0% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.0% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.1% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.1% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.2% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.2% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.2% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.3% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.3% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.4% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.4% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.4% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.5% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.5% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.5% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.6% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.6% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.7% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.7% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.7% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.8% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.8% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 20.9% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+ Download: 20.9% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+ Download: 21.0% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 21.0% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+ Download: 21.0% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ Download: 30.0% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.0% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.0% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.0% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.0% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.0% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.1% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.1% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.1% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.2% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.2% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.2% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.3% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.3% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.3% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.3% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.3% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.4% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.4% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.4% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.5% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.5% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.5% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.6% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.6% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.7% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.7% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.7% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.8% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.8% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.8% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.8% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.9% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 30.9% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+ Download: 30.9% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+ Download: 31.0% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 31.0% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 31.0% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 31.0% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+ Download: 31.0% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ Will check again in 2 seconds...
+ Download: 40.0% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.0% | Speed: ↓3251 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.0% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.0% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.0% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.1% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.1% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.1% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.2% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.2% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.2% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.3% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.3% | Speed: ↓3247 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.3% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.3% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.3% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.4% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.4% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.4% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.5% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.5% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.5% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.5% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.5% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.6% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.6% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.6% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.7% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.7% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.7% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.8% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.8% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.8% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.8% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.8% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.9% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 40.9% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+ Download: 40.9% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+ Download: 41.0% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 41.0% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 41.0% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2 Download: 41.0% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+ Download: 41.0% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+ === VIDEO STATE CHECK ===
+ readyState: 1
+ networkState: 2
+ has src: true
+ duration: 888.064
+ paused: true
+ ended: false
+ error: null
+ current time: 0
+ ⏳ Video has metadata but waiting for more data...
+ 🏁 40%+ downloaded but readyState still 1. Forcing playback attempt...
+ 🔧 Attempting manual canplay trigger...
+ 🧹 Cleaning existing streams before forced play...
+ ✅ Video play event fired!
+webtorrent.min.js:16 Uncaught 
+ ⏳ Video waiting for data
+ Download: 50.0% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.0% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.0% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.0% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.0% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.1% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.1% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.1% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.2% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.2% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.2% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.2% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.2% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+ Download: 50.3% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2 Download: 50.3% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.3% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.3% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.4% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3241 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3244 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.5% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.6% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3177 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3180 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.7% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3183 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3187 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3190 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3193 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3196 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3199 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3203 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.8% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3206 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3209 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3212 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3215 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3219 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3222 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3225 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3228 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 50.9% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3231 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3235 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3238 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3167 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3171 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 51.0% | Speed: ↓3174 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.0% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.0% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.0% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.0% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.0% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3100 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3103 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3106 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.1% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3122 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3126 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3129 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3132 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3135 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.2% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3138 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3142 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3145 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3148 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3151 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3155 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3158 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3161 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.3% | Speed: ↓3164 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3097 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3100 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3103 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3106 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3110 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3113 KB/s ↑0 MB/s | Peers: 1
+2use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3116 KB/s ↑0 MB/s | Peers: 1
+use-webtorrent.tsx:429 Download: 60.4% | Speed: ↓3119 KB/s ↑0 MB/s | Peers: 1
