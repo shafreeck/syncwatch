@@ -59,12 +59,16 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     video.src = '';
     video.load();
     
-    // Check if we have a magnetUri that's a blob URL or file URL
+    // Check if we have a magnetUri that's a blob URL or file URL  
     if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
+      console.log("Loading local video file:", currentVideo.name);
       video.src = currentVideo.magnetUri;
       video.load();
     } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
+      console.log("Loading P2P video via torrent:", currentVideo.name);
       loadTorrent(currentVideo.magnetUri, video);
+    } else {
+      console.log("No valid video source found for:", currentVideo.name);
     }
   }, [currentVideo, loadTorrent]);
 

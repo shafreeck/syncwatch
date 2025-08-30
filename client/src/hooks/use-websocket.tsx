@@ -213,35 +213,79 @@ export function useWebSocket() {
     console.log("Starting video upload process for:", file.name);
     
     try {
-      // Create a local blob URL for immediate playback
-      const fileUrl = URL.createObjectURL(file);
-      console.log("Created file URL for local playback:", fileUrl);
+      // Show initial toast
+      toast({
+        title: "Creating P2P video share",
+        description: "Generating magnet link for peer-to-peer sharing...",
+      });
       
-      // Use simple approach - just upload with blob URL
+      // Load WebTorrent dynamically if not available
+      if (!window.WebTorrent) {
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js";
+        await new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      
+      if (window.WebTorrent) {
+        // Create WebTorrent client
+        const client = new window.WebTorrent();
+        
+        // Create torrent from file
+        console.log("Creating torrent from file...");
+        const torrent = await new Promise((resolve, reject) => {
+          client.seed(file, (torrent: any) => {
+            console.log("Torrent created with magnet URI:", torrent.magnetURI);
+            resolve(torrent);
+          });
+          
+          // Add timeout
+          setTimeout(() => {
+            reject(new Error("Torrent creation timeout"));
+          }, 30000);
+        });
+        
+        // Send the real magnet URI
+        sendMessage("video_upload", {
+          name: file.name,
+          magnetUri: (torrent as any).magnetURI,
+          infoHash: (torrent as any).infoHash,
+          size: file.size.toString(),
+          roomId: room.id,
+        });
+        
+        console.log("P2P video upload completed successfully");
+        
+      } else {
+        throw new Error("WebTorrent not available");
+      }
+      
+    } catch (error) {
+      console.error("Failed to create P2P video share:", error);
+      
+      // Fallback to local blob URL if P2P fails
+      console.log("Falling back to local playback only...");
+      const fileUrl = URL.createObjectURL(file);
       const mockInfoHash = Math.random().toString(36).substring(7);
       
-      console.log("Sending video upload message...");
       sendMessage("video_upload", {
         name: file.name,
-        magnetUri: fileUrl, // Use file URL as magnetUri for compatibility
+        magnetUri: fileUrl,
         infoHash: mockInfoHash,
         size: file.size.toString(),
         roomId: room.id,
       });
       
-      console.log("Video upload message sent successfully");
-      
-      // Add a toast to confirm upload started
       toast({
-        title: "Uploading video",
-        description: "Video is being processed...",
+        title: "Local video only",
+        description: "P2P sharing failed, video available for local playback only",
+        variant: "destructive",
       });
-      
-    } catch (error) {
-      console.error("Failed to process video file:", error);
-      throw error; // Re-throw to trigger toast error in upload component
     }
-  }, [sendMessage, room]);
+  }, [sendMessage, room, toast]);
 
   useEffect(() => {
     connect();
