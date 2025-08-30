@@ -137,7 +137,19 @@ export function useWebTorrent() {
               console.log('🧹 Video element cleared, starting appendTo...');
               
               // Use WebTorrent's official appendTo method for streaming
-              videoFile.appendTo(videoElement, {
+              // According to docs, appendTo should receive a container, not an existing video element
+              const videoContainer = videoElement.parentElement;
+              if (!videoContainer) {
+                throw new Error('Video element has no parent container');
+              }
+              
+              console.log('📦 Found video container:', videoContainer);
+              
+              // Remove existing video element to avoid conflicts
+              videoElement.remove();
+              
+              // Let appendTo create a new video element
+              videoFile.appendTo(videoContainer, {
                 autoplay: false,  // We'll handle play manually
                 muted: true,
                 controls: true
@@ -145,9 +157,20 @@ export function useWebTorrent() {
                 if (err) {
                   console.log('❌ appendTo error:', err);
                   
-                  // If appendTo fails, try renderTo as fallback
+                  // If appendTo fails, recreate video element and try renderTo as fallback
                   console.log('🔄 Trying renderTo fallback...');
-                  videoFile.renderTo(videoElement, (renderErr: any) => {
+                  
+                  // Recreate video element since we removed it
+                  const newVideoElement = document.createElement('video');
+                  newVideoElement.setAttribute('data-testid', 'video-player');
+                  newVideoElement.controls = true;
+                  newVideoElement.style.width = '100%';
+                  newVideoElement.style.height = 'auto';
+                  videoContainer.appendChild(newVideoElement);
+                  
+                  console.log('🔧 Recreated video element for renderTo fallback');
+                  
+                  videoFile.renderTo(newVideoElement, (renderErr: any) => {
                     if (renderErr) {
                       console.log('❌ renderTo fallback also failed:', renderErr);
                     } else {
@@ -188,13 +211,34 @@ export function useWebTorrent() {
                   }
                 }
               });
-            } catch (e) {
+            } catch (e: any) {
               console.log('❌ appendTo failed with exception:', e);
+              console.log('❌ Exception details:', {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack?.substring(0, 200)
+              });
               console.log('🔄 Falling back to renderTo...');
               
-              // Final fallback to renderTo
+              // Final fallback to renderTo - recreate video element if it was removed
               try {
-                videoFile.renderTo(videoElement, (err: any) => {
+                const videoContainer = document.querySelector('[data-testid="video-player"]')?.parentElement;
+                if (!videoContainer) {
+                  console.log('❌ Cannot find video container for final fallback');
+                  return;
+                }
+                
+                // Create new video element for final fallback
+                const finalVideoElement = document.createElement('video');
+                finalVideoElement.setAttribute('data-testid', 'video-player');
+                finalVideoElement.controls = true;
+                finalVideoElement.style.width = '100%';
+                finalVideoElement.style.height = 'auto';
+                videoContainer.appendChild(finalVideoElement);
+                
+                console.log('🔧 Created final video element for renderTo');
+                
+                videoFile.renderTo(finalVideoElement, (err: any) => {
                   if (err) {
                     console.log('❌ Final renderTo fallback failed:', err);
                   } else {
