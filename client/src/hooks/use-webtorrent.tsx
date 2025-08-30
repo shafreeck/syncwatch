@@ -94,47 +94,71 @@ export function useWebTorrent() {
       }
 
       if (videoFile && videoElement) {
-        console.log('Setting up video streaming...', videoFile.name);
+        console.log('Setting up video streaming...', videoFile.name, 'File size:', videoFile.length);
         
-        // Use the most compatible streaming method
+        // Clear any existing src first
+        videoElement.src = '';
+        videoElement.load();
+        
         try {
-          // First, select the file for prioritized download
+          // Select the file for prioritized download
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use streamTo which is the most reliable for progressive playback
-          videoFile.streamTo(videoElement, {
-            autoplay: false,
-            controls: false
-          });
-          console.log('Video streamTo initiated - progressive playback should work');
-          
-          // Monitor the actual video element
-          videoElement.addEventListener('loadstart', () => {
-            console.log('Video element: loading started');
-          });
-          
-          videoElement.addEventListener('loadedmetadata', () => {
-            console.log('Video element: metadata loaded, duration:', videoElement.duration);
-          });
-          
-          videoElement.addEventListener('canplay', () => {
-            console.log('Video element: can play - buffered enough data');
-          });
-          
-          videoElement.addEventListener('progress', () => {
-            if (videoElement.buffered.length > 0) {
-              const bufferedEnd = videoElement.buffered.end(videoElement.buffered.length - 1);
-              const duration = videoElement.duration || 0;
-              if (duration > 0) {
-                const bufferedPercent = (bufferedEnd / duration) * 100;
-                console.log(`Video buffered: ${bufferedPercent.toFixed(1)}% (${bufferedEnd.toFixed(1)}s of ${duration.toFixed(1)}s)`);
+          // Use getBlobURL immediately - this is the most reliable method
+          videoFile.getBlobURL((err: any, url: string) => {
+            if (!err && url) {
+              console.log('✓ Blob URL created successfully:', url.substring(0, 50) + '...');
+              videoElement.src = url;
+              videoElement.load();
+              console.log('✓ Video src set and load() called');
+            } else {
+              console.error('✗ getBlobURL failed:', err);
+              // Fallback: try streamTo
+              console.log('Trying streamTo as fallback...');
+              try {
+                videoFile.streamTo(videoElement);
+                console.log('✓ streamTo called as fallback');
+              } catch (streamError) {
+                console.error('✗ streamTo also failed:', streamError);
               }
             }
           });
           
+          // Monitor video element state
+          const logVideoState = () => {
+            console.log('Video state:', {
+              src: videoElement.src.substring(0, 50),
+              readyState: videoElement.readyState,
+              networkState: videoElement.networkState,
+              duration: videoElement.duration,
+              currentTime: videoElement.currentTime,
+              buffered: videoElement.buffered.length
+            });
+          };
+          
+          videoElement.addEventListener('loadstart', () => {
+            console.log('Video: loadstart');
+            logVideoState();
+          });
+          
+          videoElement.addEventListener('loadedmetadata', () => {
+            console.log('Video: metadata loaded, duration:', videoElement.duration);
+            logVideoState();
+          });
+          
+          videoElement.addEventListener('canplay', () => {
+            console.log('Video: can play!');
+            logVideoState();
+          });
+          
+          videoElement.addEventListener('error', (e) => {
+            console.error('Video error:', e, videoElement.error);
+            logVideoState();
+          });
+          
         } catch (error) {
-          console.error('streamTo failed:', error);
+          console.error('Video setup failed:', error);
         }
       }
     });

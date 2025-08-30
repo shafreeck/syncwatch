@@ -93,29 +93,42 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
       return;
     }
 
-    console.log('Toggle play - current state:', {
+    const videoState = {
       isPlaying,
       readyState: video.readyState,
-      src: video.src,
-      networkState: video.networkState
-    });
+      src: video.src?.substring(0, 50) + '...',
+      networkState: video.networkState,
+      duration: video.duration,
+      currentTime: video.currentTime,
+      buffered: video.buffered.length,
+      error: video.error
+    };
+    console.log('Toggle play - video state:', videoState);
 
     if (isPlaying) {
       video.pause();
       setIsPlaying(false);
       onVideoSync("pause", video.currentTime);
     } else {
-      // Try to play regardless of ready state
+      console.log('Attempting to play video...');
+      
+      // Force load if no src
+      if (!video.src || video.readyState === 0) {
+        console.log('Video not loaded, trying to reload...');
+        video.load();
+      }
+      
       video.play().then(() => {
-        console.log('Video started playing successfully');
+        console.log('✓ Video playing successfully');
         setIsPlaying(true);
         onVideoSync("play", video.currentTime);
       }).catch(error => {
-        console.error('Play failed:', error);
-        console.log('Video info:', {
+        console.error('✗ Play failed:', error.name, error.message);
+        console.log('Video debug info:', {
           readyState: video.readyState,
           networkState: video.networkState,
-          error: video.error
+          error: video.error,
+          src: video.src
         });
       });
     }
