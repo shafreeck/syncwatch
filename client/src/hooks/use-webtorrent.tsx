@@ -201,33 +201,46 @@ export function useWebTorrent() {
             console.log('🔧 Creating progressive video stream...');
             const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
             if (videoFile) {
-              // Use renderTo for immediate progressive playback
+              // Use appendTo for true progressive streaming
+              console.log('✅ Using appendTo for progressive streaming...');
               try {
-                console.log('✅ Using renderTo for progressive streaming...');
-                videoFile.renderTo(videoElement, {
-                  autoplay: false,
-                  controls: false
-                });
+                // appendTo is designed for progressive playback
+                videoFile.appendTo(videoElement);
+                console.log('✓ appendTo applied - should stream progressively');
                 
-                // Set up auto-play when ready
+                // Set up auto-play when enough data is available
                 const handleCanPlay = () => {
-                  console.log('🎉 Video ready! Attempting auto-play...');
+                  console.log('🎉 Progressive video ready! Auto-playing...');
                   videoElement.play().catch(e => {
-                    console.log('Auto-play blocked by browser - user needs to click play');
+                    console.log('Auto-play blocked by browser');
                   });
                 };
                 
+                const handleLoadedData = () => {
+                  console.log('✓ Video data loaded progressively!');
+                };
+                
                 videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+                videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
                 
               } catch (error) {
-                console.log('renderTo failed, using getBlobURL method');
-                videoFile.getBlobURL((err: any, url: string) => {
-                  if (!err && url) {
-                    console.log('✅ Blob URL created as fallback');
-                    videoElement.src = url;
-                    videoElement.load();
-                  }
-                });
+                console.log('appendTo failed, falling back to renderTo');
+                try {
+                  videoFile.renderTo(videoElement, { autoplay: false, controls: false });
+                  const handleCanPlay = () => {
+                    console.log('🎉 RenderTo video ready! Auto-playing...');
+                    videoElement.play().catch(e => console.log('Auto-play blocked'));
+                  };
+                  videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+                } catch (error2) {
+                  console.log('Both appendTo and renderTo failed, using getBlobURL');
+                  videoFile.getBlobURL((err: any, url: string) => {
+                    if (!err && url) {
+                      videoElement.src = url;
+                      videoElement.load();
+                    }
+                  });
+                }
               }
             }
           }
