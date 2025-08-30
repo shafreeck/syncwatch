@@ -210,9 +210,23 @@ export function useWebTorrent() {
         }
       }
       
-      // Log progressive download status with more details
-      if (progress < 100) {
+      // Log progressive download status less frequently
+      if (progress < 100 && Math.floor(progress) % 10 === 0) {
         console.log(`Download: ${progress.toFixed(1)}% | Speed: ↓${downSpeed} KB/s ↑${upSpeed} MB/s | Peers: ${torrent.numPeers}`);
+      }
+      
+      // Manual check for testing
+      if (progress >= 5 && progress <= 5.5) {
+        console.log('🔍 Manual progressive playback check at 5%...');
+        const videoElement = document.querySelector('video[data-testid="video-player"]') as HTMLVideoElement;
+        if (videoElement) {
+          console.log('✓ Video element found:', {
+            src: videoElement.src ? 'HAS SRC' : 'NO SRC',
+            readyState: videoElement.readyState
+          });
+        } else {
+          console.log('✗ Video element not found');
+        }
       }
     });
 
