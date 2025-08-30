@@ -109,12 +109,14 @@ export function useWebSocket() {
           room: message.data.room,
           users: message.data.users?.length,
           messages: message.data.messages?.length,
-          videos: message.data.videos?.length
+          videos: message.data.videos?.length,
+          videosData: message.data.videos
         });
         setRoom(message.data.room);
         setUsers(message.data.users || []);
         setMessages(message.data.messages || []);
         setVideos(message.data.videos || []);
+        console.log('✓ Videos state updated:', message.data.videos);
         break;
 
       case "user_joined":
@@ -131,7 +133,11 @@ export function useWebSocket() {
 
       case "new_video":
         console.log("Received new video:", message.data.video);
-        setVideos(prev => [message.data.video, ...prev]);
+        setVideos(prev => {
+          const newList = [message.data.video, ...prev];
+          console.log('✓ Videos list updated, new count:', newList.length);
+          return newList;
+        });
         toast({
           title: "Video uploaded",
           description: `${message.data.video.name} is ready for streaming`,

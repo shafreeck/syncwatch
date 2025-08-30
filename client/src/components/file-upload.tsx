@@ -24,7 +24,10 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
-  console.log('FileUpload rendered with videos:', videos?.length || 0, videos);
+  // Reduce logging frequency
+  if (videos?.length !== 0) {
+    console.log('FileUpload rendered with videos:', videos?.length || 0, videos);
+  }
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
