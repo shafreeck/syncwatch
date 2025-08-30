@@ -1,0 +1,84 @@
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=5T0proAxC2us' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-MQ6MFIVI.js?v=fd0beae7:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+webtorrent.min.js:16 Uncaught Error: Invalid worker registration
+    at WebTorrent.loadWorker (webtorrent.min.js:16:226030)
+    at script.onload (use-webtorrent.tsx:40:26)
+@radix-ui_react-dialog.js?v=fd0beae7:1412 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=fd0beae7:1412
+Show 1 more frame
+Show less
+use-websocket.tsx:54 WebSocket connected
+chunk-MQ6MFIVI.js?v=fd0beae7:2383 A soft navigation has been detected: https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/room/66f39074-9830-4ea6-806d-6e27353793bc
+webtorrent.min.js:16 Uncaught Error: Invalid worker registration
+    at WebTorrent.loadWorker (webtorrent.min.js:16:226030)
+    at script.onload (use-webtorrent.tsx:40:26)
+use-websocket.tsx:105 Received WebSocket message: user_joined Object
+use-websocket.tsx:105 Received WebSocket message: room_state Object
+use-websocket.tsx:108 Setting room state: Object
+use-websocket.tsx:119 ✓ Videos state updated: Array(0)
+file-upload.tsx:36 Selected file: Object
+file-upload.tsx:60 Starting video upload...
+use-websocket.tsx:229 Upload attempt - room state: Object
+use-websocket.tsx:240 Starting P2P video sharing for: Sintel.mp4
+use-websocket.tsx:268 Creating torrent from file...
+file-upload.tsx:64 Video upload completed successfully
+use-websocket.tsx:272 Torrent created: Object
+use-websocket.tsx:288 Video is now being seeded and shared via P2P
+use-websocket.tsx:105 Received WebSocket message: new_video Object
+use-websocket.tsx:135 Received new video: Object
+use-websocket.tsx:138 ✓ Videos list updated, new count: 1
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+home.tsx:193 Selecting video locally: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+use-websocket.tsx:105 Received WebSocket message: video_selected Object
+use-websocket.tsx:154 Video selected message received: Object
+use-websocket.tsx:155 Current videos in state: Array(0)
+use-websocket.tsx:173 Setting current video from message data: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+video-player.tsx:82 Loading P2P video via torrent: Selected Video
+use-webtorrent.tsx:64 WebTorrent client not available
+(anonymous) @ use-webtorrent.tsx:64
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+video-player.tsx:106 Toggle play - video state: Object
+video-player.tsx:113 Attempting to play video...
+video-player.tsx:117 Video not loaded, trying to reload...
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+video-player.tsx:126 ✗ Play failed: NotSupportedError Failed to load because no supported source was found.
+(anonymous) @ video-player.tsx:126
+video-player.tsx:127 Video debug info: Object
+video-player.tsx:106 Toggle play - video state: Object
+video-player.tsx:113 Attempting to play video...
+video-player.tsx:117 Video not loaded, trying to reload...
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+video-player.tsx:126 ✗ Play failed: NotSupportedError Failed to load because no supported source was found.
+(anonymous) @ video-player.tsx:126
+video-player.tsx:127 Video debug info: Object
+home.tsx:193 Selecting video locally: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+use-websocket.tsx:105 Received WebSocket message: video_selected Object
+use-websocket.tsx:154 Video selected message received: Object
+use-websocket.tsx:155 Current videos in state: Array(0)
+use-websocket.tsx:173 Setting current video from message data: Object
+file-upload.tsx:29 FileUpload rendered with videos: 1 Array(1)
+video-player.tsx:82 Loading P2P video via torrent: Selected Video
+use-webtorrent.tsx:64 WebTorrent client not available
+(anonymous) @ use-webtorrent.tsx:64
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+video-player.tsx:106 Toggle play - video state: Object
+video-player.tsx:113 Attempting to play video...
+video-player.tsx:117 Video not loaded, trying to reload...
+video-player.tsx:52 Video error: MediaError
+handleError @ video-player.tsx:52
+video-player.tsx:126 ✗ Play failed: NotSupportedError Failed to load because no supported source was found.
+(anonymous) @ video-player.tsx:126
+video-player.tsx:127 Video debug info: Object

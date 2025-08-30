@@ -36,13 +36,19 @@ export function useWebTorrent() {
           uploadLimit: -1,
           // Worker will be loaded separately with loadWorker()
         });
-        // Load worker for streamTo support
-        webTorrentClient.loadWorker(() => {
-          console.log('WebTorrent worker loaded successfully');
-          setClient(webTorrentClient);
-          setIsLoading(false);
-          console.log("WebTorrent client initialized for progressive streaming with worker support");
-        });
+        // Initialize client first, then try to load worker
+        setClient(webTorrentClient);
+        setIsLoading(false);
+        console.log("WebTorrent client initialized for progressive streaming");
+        
+        // Try to load worker for streamTo support (optional)
+        try {
+          webTorrentClient.loadWorker(() => {
+            console.log('WebTorrent worker loaded successfully - streamTo available');
+          });
+        } catch (e) {
+          console.log('Worker loading failed (non-critical):', e, '- will use alternative methods');
+        }
       }
     };
     script.onerror = () => {
@@ -110,8 +116,8 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use streamTo for progressive streaming with worker enabled
-          console.log('Setting up streamTo for progressive playback...');
+          // Try streamTo first, fallback to appendTo if worker not available
+          console.log('Setting up progressive playback...');
           try {
             videoFile.streamTo(videoElement, {
               autoplay: false,
@@ -119,7 +125,13 @@ export function useWebTorrent() {
             });
             console.log('✓ streamTo initiated - progressive playback enabled');
           } catch (e) {
-            console.log('streamTo failed:', e, 'will use backup method in progressive check');
+            console.log('streamTo not available, using appendTo:', e);
+            try {
+              videoFile.appendTo(videoElement);
+              console.log('✓ appendTo initiated - progressive playback enabled');
+            } catch (e2) {
+              console.log('appendTo also failed, will use backup method in progressive check');
+            }
           }
           
           // Monitor if streamTo actually sets the src
