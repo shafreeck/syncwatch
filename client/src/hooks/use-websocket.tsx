@@ -125,6 +125,10 @@ export function useWebSocket() {
       case "new_video":
         console.log("Received new video:", message.data.video);
         setVideos(prev => [message.data.video, ...prev]);
+        toast({
+          title: "Video uploaded",
+          description: `${message.data.video.name} is ready for streaming`,
+        });
         break;
 
       case "video_sync":
@@ -226,6 +230,12 @@ export function useWebSocket() {
       });
       
       console.log("Video upload message sent successfully");
+      
+      // Add a toast to confirm upload started
+      toast({
+        title: "Uploading video",
+        description: "Video is being processed...",
+      });
       
     } catch (error) {
       console.error("Failed to process video file:", error);
