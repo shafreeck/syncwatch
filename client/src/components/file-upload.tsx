@@ -92,7 +92,13 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
   };
 
   const openFileDialog = () => {
-    fileInputRef.current?.click();
+    onDebugLog?.(`Attempting to open file dialog`);
+    if (fileInputRef.current) {
+      onDebugLog?.(`File input ref found, clicking...`);
+      fileInputRef.current.click();
+    } else {
+      onDebugLog?.(`ERROR: File input ref is null!`);
+    }
   };
 
   const formatFileSize = (bytes: string | undefined) => {
@@ -162,7 +168,10 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeb
           type="file"
           accept="video/*"
           className="hidden"
-          onChange={(e) => handleFileSelect(e.target.files)}
+          onChange={(e) => {
+            onDebugLog?.(`File input onChange triggered`);
+            handleFileSelect(e.target.files);
+          }}
           data-testid="input-file-upload"
         />
       </div>

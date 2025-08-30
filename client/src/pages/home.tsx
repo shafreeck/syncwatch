@@ -21,7 +21,8 @@ export default function Home() {
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
   const addDebugLog = (message: string) => {
-    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
+    const timestamp = new Date().toLocaleTimeString();
+    setDebugInfo(prev => [...prev.slice(-9), `${timestamp}: ${message}`]);
   };
 
   // Extract room ID from URL
@@ -239,10 +240,18 @@ export default function Home() {
 
         {/* Debug Info Panel */}
         {debugInfo.length > 0 && (
-          <div className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg max-w-md text-xs">
-            <div className="font-bold mb-2">Debug Info:</div>
-            {debugInfo.map((info, index) => (
-              <div key={index} className="mb-1">{info}</div>
+          <div className="fixed top-4 left-4 bg-black/90 text-white p-4 rounded-lg max-w-sm text-xs z-50 max-h-64 overflow-y-auto">
+            <div className="font-bold mb-2 flex justify-between items-center">
+              Debug Info:
+              <button 
+                onClick={() => setDebugInfo([])} 
+                className="text-white hover:text-gray-300 ml-2"
+              >
+                ✕
+              </button>
+            </div>
+            {debugInfo.slice(-10).map((info, index) => (
+              <div key={index} className="mb-1 break-words">{info}</div>
             ))}
           </div>
         )}
