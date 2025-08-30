@@ -55,68 +55,36 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        const handleVideoReady = (err: any, videoElement: HTMLVideoElement) => {
+        // Use renderTo with autoplay enabled
+        videoFile.renderTo(videoContainerRef.current, {
+          autoplay: true,
+          controls: true,
+          maxBlobLength: 200 * 1000 * 1000  // 200MB for progressive streaming
+        }, (err: any, videoElement: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
-            console.error('❌ Video setup failed:', err);
+            console.error('❌ renderTo failed:', err);
           } else {
-            setStatus('Video ready for streaming - click play!');
-            console.log('✅ Video setup SUCCESS');
-            console.log('Video src:', videoElement.src);
-            console.log('Video readyState:', videoElement.readyState);
-            console.log('SRC type analysis:', {
-              isBlob: videoElement.src?.startsWith('blob:'),
-              isMediaSource: videoElement.src?.startsWith('blob:') && videoElement.src.includes('mediasource'),
-              fullSrc: videoElement.src
-            });
+            setStatus('🎬 Video streaming automatically!');
+            console.log('✅ renderTo SUCCESS - auto-playing');
             
-            // Apply styling to the created video element
+            // Apply styling
             videoElement.className = 'w-full max-w-2xl';
             
+            // Log streaming strategy
+            const isMediaSource = videoElement.src?.includes('mediasource');
+            console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
+            console.log('📊 Duration:', videoElement.duration || 'Loading...');
+            
             videoElement.addEventListener('loadedmetadata', () => {
-              console.log('✅ Metadata loaded - duration:', videoElement.duration);
+              console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
             });
+            
             videoElement.addEventListener('canplay', () => {
-              console.log('✅ Can play - readyState:', videoElement.readyState);
-            });
-            videoElement.addEventListener('canplaythrough', () => {
-              console.log('✅ Can play through - enough data for smooth playback');
-            });
-            videoElement.addEventListener('error', (e) => {
-              console.error('❌ Video error:', e);
-              console.error('Video error details:', videoElement.error);
+              console.log('✅ Can play - Starting automatic playback');
             });
           }
-        };
-        
-        // Try streamTo method first for better streaming
-        try {
-          console.log('🔄 Trying streamTo method...');
-          videoFile.streamTo(videoContainerRef.current, {
-            autoplay: false,
-            controls: true
-          }, (err: any, videoElement: HTMLVideoElement) => {
-            if (err) {
-              console.log('❌ streamTo failed, falling back to appendTo');
-              // Fallback to appendTo if streamTo fails
-              videoFile.appendTo(videoContainerRef.current, {
-                autoplay: false, 
-                controls: true,
-                maxBlobLength: 200 * 1000 * 1000  // 200MB threshold
-              }, handleVideoReady);
-            } else {
-              console.log('✅ streamTo SUCCESS');
-              handleVideoReady(null, videoElement);
-            }
-          });
-        } catch (e) {
-          console.log('❌ streamTo not available, using appendTo');
-          videoFile.appendTo(videoContainerRef.current, {
-            autoplay: false,
-            controls: true,
-            maxBlobLength: 200 * 1000 * 1000  // 200MB threshold
-          }, handleVideoReady);
-        }
+        });
       } else {
         setStatus('No video file found in torrent');
       }

@@ -84,38 +84,29 @@ export function useWebTorrent() {
       );
 
       if (videoFile && videoElement) {
-        console.log('Setting up video streaming with renderTo...');
+        console.log('Setting up progressive video streaming...');
         
-        // Clear any existing video src and reset the element to prevent pipe conflicts
+        // Clear existing video src
         if (videoElement.src) {
-          console.log('🧹 Clearing existing video src before renderTo');
           videoElement.src = '';
-          videoElement.load(); // This resets the video element completely
+          videoElement.load();
         }
         
         // Select the file for download
         videoFile.select();
         
-        // Use renderTo with maxBlobLength to force MediaSource strategy for files > 100MB
-        videoFile.renderTo(videoElement, { maxBlobLength: 100 * 1024 * 1024 }, (err: any) => {
+        // Use renderTo with progressive streaming configuration
+        videoFile.renderTo(videoElement, { 
+          maxBlobLength: 200 * 1024 * 1024,  // 200MB threshold
+          autoplay: true 
+        }, (err: any) => {
           if (err) {
             console.error('❌ renderTo failed:', err);
           } else {
-            console.log('✅ renderTo SUCCESS - video ready for progressive playback');
+            console.log('✅ Progressive streaming setup complete');
             
-            // Determine URL type for debugging
-            const srcType = videoElement.src?.startsWith('blob:') ? 'BLOB_URL' : 
-                           videoElement.src?.startsWith('data:') ? 'DATA_URL' : 'OTHER';
-            
-            // Log detailed video status with explicit values
-            console.log('📹 Video element detailed status:');
-            console.log('  🎯 srcType:', srcType);
-            console.log('  🔗 src:', videoElement.src?.substring(0, 80) + '...');
-            console.log('  📊 readyState:', videoElement.readyState, ['HAVE_NOTHING', 'HAVE_METADATA', 'HAVE_CURRENT_DATA', 'HAVE_FUTURE_DATA', 'HAVE_ENOUGH_DATA'][videoElement.readyState]);
-            console.log('  🌐 networkState:', videoElement.networkState);
-            console.log('  ⏱️ duration:', videoElement.duration);
-            console.log('  📐 dimensions:', videoElement.videoWidth + 'x' + videoElement.videoHeight);
-            console.log('  ✅ canPlay (readyState >= 2):', videoElement.readyState >= 2);
+            const isMediaSource = videoElement.src?.includes('mediasource');
+            console.log('🎯 Strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
           }
         });
       }
