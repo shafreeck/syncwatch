@@ -268,61 +268,73 @@ export function useWebTorrent() {
               console.log('⏳ Video has metadata but waiting for more data...');
               
               // Check how much has been downloaded
-              if (torrent && torrent.progress > 0.4) {
-                console.log('🏁 40%+ downloaded but readyState still 1. Forcing playback attempt...');
+              if (torrent && torrent.progress > 0.3) {
+                console.log('🏁 30%+ downloaded. Trying Blob URL approach for compatibility...');
                 
-                // Force readyState to 2 by manually triggering events
-                console.log('🔧 Attempting manual canplay trigger...');
+                const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
                 
-                try {
-                  // First, stop any existing streams to prevent pipe conflicts
-                  console.log('🧹 Cleaning existing streams before forced play...');
+                if (videoFile) {
+                  console.log('💾 Attempting getBlobURL for better browser compatibility...');
                   
-                  // Stop current video and clear source temporarily
-                  const currentSrc = videoElement.src;
-                  videoElement.pause();
-                  
-                  // Try direct play with force
-                  videoElement.play().then(() => {
-                    console.log('✅ BREAKTHROUGH: Forced play succeeded despite readyState 1!');
-                  }).catch(e => {
-                    console.log('❌ Forced play failed:', e.message);
+                  try {
+                    // Clear current src first to avoid conflicts
+                    videoElement.src = '';
+                    videoElement.load();
                     
-                    // Last resort: Create a completely new stream to avoid pipe conflicts
-                    console.log('🔄 Last resort: Creating fresh stream connection...');
-                    
-                    const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
-                    
-                    if (videoFile) {
-                      // Clear the video element completely
-                      videoElement.src = '';
-                      videoElement.load();
-                      
-                      // Create a completely new renderTo connection after a short delay
-                      setTimeout(() => {
-                        console.log('🔄 Attempting fresh renderTo connection...');
-                        try {
-                          videoFile.renderTo(videoElement, {
-                            autoplay: true,
-                            controls: true
-                          }, (err: any) => {
-                            if (err) {
-                              console.log('❌ Fresh renderTo failed:', err.message);
-                            } else {
-                              console.log('✅ Fresh renderTo succeeded! Attempting autoplay...');
-                            }
-                          });
-                        } catch (renderErr) {
-                          console.log('❌ Fresh renderTo exception:', renderErr);
+                    // Use getBlobURL instead of renderTo for better compatibility
+                    videoFile.getBlobURL((err: any, url: string) => {
+                      if (!err && url) {
+                        console.log('✅ getBlobURL SUCCESS! Got blob URL:', url.substring(0, 60) + '...');
+                        
+                        // Set the blob URL as video source
+                        videoElement.src = url;
+                        videoElement.load();
+                        
+                        console.log('📹 Video source updated to blob URL');
+                        
+                        // Wait for metadata and attempt play
+                        const onMetadataLoaded = () => {
+                          console.log('✅ Blob video metadata loaded successfully!');
+                          console.log('Video ready state:', videoElement.readyState);
+                          console.log('Video duration:', videoElement.duration);
+                          
+                          videoElement.removeEventListener('loadedmetadata', onMetadataLoaded);
+                          
+                          // Try to play after a short delay
+                          setTimeout(() => {
+                            console.log('🎬 Attempting to play blob video...');
+                            videoElement.play().then(() => {
+                              console.log('🎉 MAJOR SUCCESS! Blob URL video is now playing!');
+                            }).catch(playErr => {
+                              console.log('❌ Blob video play failed:', playErr.message);
+                              console.log('Final video state:', {
+                                readyState: videoElement.readyState,
+                                networkState: videoElement.networkState,
+                                duration: videoElement.duration,
+                                error: videoElement.error,
+                                src: videoElement.src.substring(0, 50)
+                              });
+                            });
+                          }, 800);
+                        };
+                        
+                        // Add event listener for metadata
+                        videoElement.addEventListener('loadedmetadata', onMetadataLoaded);
+                        
+                        // Also try immediate play in case metadata is already loaded
+                        if (videoElement.readyState >= 1) {
+                          onMetadataLoaded();
                         }
-                      }, 1000);
-                    }
-                  });
-                } catch (e) {
-                  console.log('❌ Manual trigger failed:', e);
-                  
-                  // Even if direct play fails, we've made progress - the mechanism works!
-                  console.log('🎯 Progress made: Strong play mechanism activated at 40%+ download');
+                        
+                      } else {
+                        console.log('❌ getBlobURL failed:', err?.message || 'Unknown error');
+                        console.log('🔄 getBlobURL not working, keeping renderTo as fallback');
+                      }
+                    });
+                  } catch (blobErr) {
+                    console.log('❌ getBlobURL exception:', blobErr);
+                    console.log('🔄 Exception occurred, keeping renderTo as fallback');
+                  }
                 }
               } else {
                 console.log('Will check again in 2 seconds...');
