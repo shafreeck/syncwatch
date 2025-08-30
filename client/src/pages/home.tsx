@@ -38,12 +38,14 @@ export default function Home() {
   } = useWebSocket();
 
   useEffect(() => {
-    // Show room modal if no room ID in URL or not connected
-    if (!roomId || !isConnected) {
+    // Show room modal only if no room ID in URL (not based on connection status)
+    if (!roomId) {
       setShowRoomModal(true);
+    } else {
+      setShowRoomModal(false);
     }
     
-  }, [roomId, isConnected]);
+  }, [roomId]);
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
     try {
