@@ -71,94 +71,26 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !currentVideo) return;
+    if (!video || !currentVideo || !currentVideo.magnetUri) return;
     
-    // Clear any existing src first
-    video.src = '';
-    video.load();
-    
-    // Load video via P2P torrent
-    if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
-      console.log("Loading P2P video via torrent:", currentVideo.name);
-      loadTorrent(currentVideo.magnetUri, video);
-    } else {
-      console.log("No valid magnet URI found for:", currentVideo.name);
-    }
+    console.log("Loading video via torrent:", currentVideo.name);
+    loadTorrent(currentVideo.magnetUri, video);
   }, [currentVideo, loadTorrent]);
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video) {
-      console.log('No video element found');
-      return;
-    }
-
-    const videoState = {
-      isPlaying,
-      readyState: video.readyState,
-      src: video.src?.substring(0, 50) + '...',
-      networkState: video.networkState,
-      duration: video.duration,
-      currentTime: video.currentTime,
-      buffered: video.buffered.length,
-      error: video.error
-    };
-    console.log('Toggle play - video state:', videoState);
+    if (!video) return;
 
     if (isPlaying) {
       video.pause();
       setIsPlaying(false);
       onVideoSync("pause", video.currentTime);
     } else {
-      console.log('Attempting to play video...');
-      
-      // Force load if no src
-      if (!video.src || video.readyState === 0) {
-        console.log('Video not loaded, trying to reload...');
-        video.load();
-      }
-      
       video.play().then(() => {
-        console.log('✓ Video playing successfully');
         setIsPlaying(true);
         onVideoSync("play", video.currentTime);
       }).catch(error => {
-        console.error('✗ Play failed:', error.name, error.message);
-        console.log('Video debug info:', {
-          readyState: video.readyState,
-          networkState: video.networkState,
-          error: video.error,
-          src: video.src
-        });
-        
-        // If play failed and we have a current video, try to reload the torrent
-        if (currentVideo && currentVideo.magnetUri) {
-          console.log('🔄 Play failed, attempting to reload torrent stream...');
-          
-          // Clear the video
-          video.src = '';
-          video.load();
-          
-          // Reload the torrent with a slight delay
-          setTimeout(() => {
-            console.log('🔄 Reloading torrent for playback...');
-            loadTorrent(currentVideo.magnetUri, video);
-            
-            // Try to play again after torrent loads
-            setTimeout(() => {
-              if (video.readyState >= 2) {
-                console.log('🔄 Retrying play after torrent reload...');
-                video.play().then(() => {
-                  console.log('✓ Retry play SUCCESS!');
-                  setIsPlaying(true);
-                  onVideoSync("play", video.currentTime);
-                }).catch(retryError => {
-                  console.log('❌ Retry play also failed:', retryError.message);
-                });
-              }
-            }, 3000);
-          }, 500);
-        }
+        console.error('Play failed:', error);
       });
     }
   };
