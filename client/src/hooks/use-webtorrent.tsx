@@ -122,39 +122,49 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use the most reliable method: getBlobURL with immediate setup
-          console.log('Creating blob URL for reliable video playback...');
-          videoFile.getBlobURL((err: any, url: string) => {
-            if (!err && url) {
-              console.log('✓ Blob URL created:', url.substring(0, 50) + '...');
-              console.log('Setting video src and loading...');
-              videoElement.src = url;
-              videoElement.load();
-              
-              // Add event listeners to debug what's happening
-              videoElement.addEventListener('loadstart', () => {
-                console.log('✓ Video loadstart event fired');
+          // Wait for more data before creating blob URL (getBlobURL needs sufficient data)
+          console.log('Waiting for more download progress before creating blob URL...');
+          
+          // Set up a one-time check when we have more data
+          const checkForBlobCreation = () => {
+            const currentProgress = (torrent.downloaded / torrent.length) * 100;
+            if (currentProgress >= 5) { // Wait for 5% to ensure enough data
+              console.log('Creating blob URL at', currentProgress.toFixed(1) + '% progress...');
+              videoFile.getBlobURL((err: any, url: string) => {
+                if (!err && url) {
+                  console.log('✓ Blob URL created successfully at', currentProgress.toFixed(1) + '%!');
+                  videoElement.src = url;
+                  videoElement.load();
+                  
+                  // Try autoplay when ready
+                  const handleCanPlay = () => {
+                    console.log('✓ Video ready for playback!');
+                    videoElement.play().catch(e => {
+                      console.log('Autoplay blocked, user can click play');
+                    });
+                  };
+                  
+                  videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+                } else {
+                  console.log('✗ getBlobURL failed even at', currentProgress.toFixed(1) + '%:', err);
+                  // Try again at higher percentage
+                  if (currentProgress < 10) {
+                    setTimeout(() => {
+                      if ((torrent.downloaded / torrent.length) * 100 >= 10) {
+                        checkForBlobCreation();
+                      }
+                    }, 2000);
+                  }
+                }
               });
-              
-              videoElement.addEventListener('loadedmetadata', () => {
-                console.log('✓ Video metadata loaded, duration:', videoElement.duration);
-              });
-              
-              videoElement.addEventListener('canplay', () => {
-                console.log('✓ Video can play, attempting autoplay...');
-                videoElement.play().catch(e => {
-                  console.log('Autoplay blocked, user needs to click play');
-                });
-              });
-              
-              videoElement.addEventListener('error', (e) => {
-                console.log('✗ Video error event:', e, 'Error code:', videoElement.error?.code);
-              });
-              
-            } else {
-              console.log('✗ getBlobURL failed:', err);
             }
-          });
+          };
+          
+          // Check immediately if we already have 5%
+          checkForBlobCreation();
+          
+          // Also set up a timer to check again
+          setTimeout(checkForBlobCreation, 3000);
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
@@ -206,8 +216,8 @@ export function useWebTorrent() {
       setUploadSpeed(upSpeed);
       setPeers(torrent.numPeers);
       
-      // Check progressive playback availability at key milestones
-      if (progress >= 2 && progress <= 2.1) { // Check only once when reaching 2%
+      // Check progressive playback availability with better timing
+      if (progress >= 5 && progress <= 5.1) { // Check once when reaching 5%
         console.log(`🎬 ${progress.toFixed(1)}% downloaded - Progressive playback should be available!`);
         
         // Find video element from the current video player
