@@ -1,5 +1,8 @@
 import { type Room, type User, type Message, type Video, type InsertRoom, type InsertUser, type InsertMessage, type InsertVideo } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { rooms, users, messages, videos } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Room operations
@@ -147,4 +150,98 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getUsersByRoom(roomId: string): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.roomId, roomId));
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async createRoom(insertRoom: InsertRoom): Promise<Room> {
+    const [room] = await db
+      .insert(rooms)
+      .values(insertRoom)
+      .returning();
+    return room;
+  }
+
+  async getRoom(id: string): Promise<Room | undefined> {
+    const [room] = await db.select().from(rooms).where(eq(rooms.id, id));
+    return room || undefined;
+  }
+
+  async updateRoom(id: string, updates: Partial<Room>): Promise<Room | undefined> {
+    const [room] = await db
+      .update(rooms)
+      .set(updates)
+      .where(eq(rooms.id, id))
+      .returning();
+    return room || undefined;
+  }
+
+  async deleteRoom(id: string): Promise<boolean> {
+    const result = await db.delete(rooms).where(eq(rooms.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const [message] = await db
+      .insert(messages)
+      .values(insertMessage)
+      .returning();
+    return message;
+  }
+
+  async getMessagesByRoom(roomId: string): Promise<Message[]> {
+    return await db.select().from(messages).where(eq(messages.roomId, roomId));
+  }
+
+  async createVideo(insertVideo: InsertVideo): Promise<Video> {
+    const [video] = await db
+      .insert(videos)
+      .values(insertVideo)
+      .returning();
+    return video;
+  }
+
+  async getVideosByRoom(roomId: string): Promise<Video[]> {
+    return await db.select().from(videos).where(eq(videos.roomId, roomId));
+  }
+
+  async getVideo(id: string): Promise<Video | undefined> {
+    const [video] = await db.select().from(videos).where(eq(videos.id, id));
+    return video || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();
