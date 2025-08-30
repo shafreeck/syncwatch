@@ -182,6 +182,14 @@ export function useWebSocket() {
     }
   }, [socket]);
 
+  const sendWSMessage = useCallback((type: string, data: any) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type, data }));
+    } else {
+      console.error("WebSocket not connected");
+    }
+  }, [socket]);
+
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     sendMessage("join_room", { roomId, username });
   }, [sendMessage]);
@@ -213,9 +221,18 @@ export function useWebSocket() {
     console.log("Starting P2P video sharing for:", file.name);
     
     try {
-      // Dynamically import WebTorrent for P2P functionality
-      const WebTorrent = (await import('webtorrent')).default;
-      const client = new WebTorrent();
+      // Wait for WebTorrent to be available
+      let attempts = 0;
+      while (attempts < 10 && !(window as any).WebTorrent) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        attempts++;
+      }
+      
+      if (!(window as any).WebTorrent) {
+        throw new Error("WebTorrent not available");
+      }
+      
+      const client = new (window as any).WebTorrent();
       
       console.log("Creating torrent from file...");
       
@@ -229,7 +246,7 @@ export function useWebSocket() {
         });
         
         // Send torrent info to room via WebSocket
-        sendMessage("video_upload", {
+        sendWSMessage("video_upload", {
           name: file.name,
           magnetUri: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -244,7 +261,7 @@ export function useWebSocket() {
       console.error("Failed to create P2P torrent:", error);
       throw error;
     }
-  }, [sendMessage, room]);
+  }, [sendWSMessage, room]);
 
   useEffect(() => {
     connect();
@@ -255,14 +272,6 @@ export function useWebSocket() {
       }
     };
   }, [connect]);
-
-  const sendWSMessage = useCallback((type: string, data: any) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ type, data }));
-    } else {
-      console.error("WebSocket not connected");
-    }
-  }, [socket]);
 
   return {
     isConnected,
