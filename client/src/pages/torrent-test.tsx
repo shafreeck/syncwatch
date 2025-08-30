@@ -8,6 +8,12 @@ export default function TorrentTest() {
   const clientRef = useRef<any>(null);
 
   useEffect(() => {
+    // Check MediaSource API support first
+    console.log('🔍 Browser capability check:');
+    console.log('MediaSource supported:', 'MediaSource' in window);
+    console.log('WebRTC supported:', 'RTCPeerConnection' in window);
+    console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
+    
     // Load WebTorrent dynamically
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js';
@@ -48,22 +54,20 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        // Use appendTo like Instant.io does - this is the key!
-        videoFile.appendTo(videoContainerRef.current, {
-          autoplay: false,
-          controls: true,
-          maxBlobLength: 2 * 1000 * 1000 * 1000  // 2GB like Instant.io
-        }, (err: any, videoElement: HTMLVideoElement) => {
+        const handleVideoReady = (err: any, videoElement: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
-            console.error('❌ appendTo failed:', err);
+            console.error('❌ Video setup failed:', err);
           } else {
             setStatus('Video ready for streaming - click play!');
-            console.log('✅ appendTo SUCCESS with Instant.io strategy');
+            console.log('✅ Video setup SUCCESS');
             console.log('Video src:', videoElement.src);
             console.log('Video readyState:', videoElement.readyState);
-            console.log('SRC type:', videoElement.src?.startsWith('blob:') ? 'BLOB_URL' : 'STREAMING/OTHER');
-            console.log('Video element:', videoElement);
+            console.log('SRC type analysis:', {
+              isBlob: videoElement.src?.startsWith('blob:'),
+              isMediaSource: videoElement.src?.startsWith('blob:') && videoElement.src.includes('mediasource'),
+              fullSrc: videoElement.src
+            });
             
             // Apply styling to the created video element
             videoElement.className = 'w-full max-w-2xl';
@@ -74,12 +78,44 @@ export default function TorrentTest() {
             videoElement.addEventListener('canplay', () => {
               console.log('✅ Can play - readyState:', videoElement.readyState);
             });
+            videoElement.addEventListener('canplaythrough', () => {
+              console.log('✅ Can play through - enough data for smooth playback');
+            });
             videoElement.addEventListener('error', (e) => {
               console.error('❌ Video error:', e);
               console.error('Video error details:', videoElement.error);
             });
           }
-        });
+        };
+        
+        // Try streamTo method first for better streaming
+        try {
+          console.log('🔄 Trying streamTo method...');
+          videoFile.streamTo(videoContainerRef.current, {
+            autoplay: false,
+            controls: true
+          }, (err: any, videoElement: HTMLVideoElement) => {
+            if (err) {
+              console.log('❌ streamTo failed, falling back to appendTo');
+              // Fallback to appendTo if streamTo fails
+              videoFile.appendTo(videoContainerRef.current, {
+                autoplay: false, 
+                controls: true,
+                maxBlobLength: 200 * 1000 * 1000  // 200MB threshold
+              }, handleVideoReady);
+            } else {
+              console.log('✅ streamTo SUCCESS');
+              handleVideoReady(null, videoElement);
+            }
+          });
+        } catch (e) {
+          console.log('❌ streamTo not available, using appendTo');
+          videoFile.appendTo(videoContainerRef.current, {
+            autoplay: false,
+            controls: true,
+            maxBlobLength: 200 * 1000 * 1000  // 200MB threshold
+          }, handleVideoReady);
+        }
       } else {
         setStatus('No video file found in torrent');
       }
