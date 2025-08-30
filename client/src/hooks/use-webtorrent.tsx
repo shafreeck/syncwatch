@@ -122,14 +122,43 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Test: Try simple renderTo without options first
+          // Try renderTo method for progressive streaming
           console.log('Testing renderTo method...');
-          try {
-            videoFile.renderTo(videoElement);
-            console.log('✓ renderTo called successfully');
-          } catch (e) {
-            console.log('✗ renderTo failed:', e);
-          }
+          let streamCreated = false;
+          
+          const createVideoStream = () => {
+            console.log('Creating new video stream...');
+            try {
+              // Clear existing source to avoid conflicts
+              videoElement.src = '';
+              videoElement.load();
+              
+              videoFile.renderTo(videoElement, (err: any) => {
+                if (err) {
+                  console.log('❌ renderTo error:', err);
+                  
+                  // If renderTo fails, try getBlobURL as fallback
+                  console.log('Trying getBlobURL fallback...');
+                  videoFile.getBlobURL((blobErr: any, url: string) => {
+                    if (!blobErr && url) {
+                      console.log('✓ Fallback: getBlobURL success');
+                      videoElement.src = url;
+                      videoElement.load();
+                    } else {
+                      console.log('❌ Both methods failed');
+                    }
+                  });
+                } else {
+                  console.log('✓ renderTo called successfully');
+                  streamCreated = true;
+                }
+              });
+            } catch (e) {
+              console.log('✗ renderTo failed:', e);
+            }
+          };
+          
+          createVideoStream();
           
           // Add comprehensive video event listeners to debug the issue
           console.log('Setting up video event listeners for debugging...');
@@ -162,6 +191,28 @@ export function useWebTorrent() {
           
           videoElement.addEventListener('play', () => {
             console.log('✅ Video play event fired!');
+            
+            // Listen for the pipe error in console and handle it
+            const originalConsoleError = console.error;
+            console.error = (...args) => {
+              const message = args.join(' ');
+              if (message.includes('Can only pipe to one destination')) {
+                console.log('🔧 Detected pipe error, recreating stream...');
+                // Recreate the stream
+                setTimeout(() => {
+                  createVideoStream();
+                  // Try to resume playback
+                  setTimeout(() => {
+                    if (videoElement.paused) {
+                      videoElement.play().catch(e => {
+                        console.log('Retry play failed:', e.message);
+                      });
+                    }
+                  }, 1000);
+                }, 100);
+              }
+              originalConsoleError.apply(console, args);
+            };
           });
           
           videoElement.addEventListener('playing', () => {
@@ -183,6 +234,14 @@ export function useWebTorrent() {
           
           videoElement.addEventListener('waiting', () => {
             console.log('⏳ Video waiting for data');
+            
+            // If we're waiting and no stream is created, try to recreate
+            if (!streamCreated) {
+              console.log('🔄 Video waiting but no stream, recreating...');
+              setTimeout(() => {
+                createVideoStream();
+              }, 1000);
+            }
           });
           
           // Check video state after a delay
