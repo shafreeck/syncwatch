@@ -123,6 +123,7 @@ export function useWebSocket() {
         break;
 
       case "new_video":
+        console.log("Received new video:", message.data.video);
         setVideos(prev => [message.data.video, ...prev]);
         break;
 
@@ -133,11 +134,12 @@ export function useWebSocket() {
 
       case "video_selected":
         // Handle video selection
-        console.log("Video selected:", message.data);
+        console.log("Video selected message received:", message.data);
+        console.log("Current videos in state:", videos);
         const selectedVideo = videos.find(v => v.id === message.data.videoId);
         if (selectedVideo) {
           setCurrentVideo(selectedVideo);
-          console.log("Setting current video:", selectedVideo);
+          console.log("Setting current video from videos list:", selectedVideo);
         } else {
           // If video not found in current videos list, create it from message data
           const videoFromMessage = {
@@ -151,7 +153,7 @@ export function useWebSocket() {
             uploadedAt: new Date()
           };
           setCurrentVideo(videoFromMessage);
-          console.log("Setting current video from message:", videoFromMessage);
+          console.log("Setting current video from message data:", videoFromMessage);
         }
         break;
 

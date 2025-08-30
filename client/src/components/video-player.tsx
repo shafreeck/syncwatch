@@ -53,24 +53,36 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !currentVideo) return;
+    console.log("VideoPlayer useEffect triggered:", { hasVideo: !!video, currentVideo });
     
-    console.log("Loading video:", currentVideo);
+    if (!video) {
+      console.log("No video element ref available");
+      return;
+    }
     
-    if (currentVideo.fileUrl) {
-      // Prefer local file URL for immediate playback
-      console.log("Loading local file:", currentVideo.fileUrl);
-      video.src = currentVideo.fileUrl;
-      video.load();
-    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
-      // Try to load as torrent
-      console.log("Loading torrent:", currentVideo.magnetUri);
-      loadTorrent(currentVideo.magnetUri, video);
-    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('blob:')) {
-      // Handle blob URLs
-      console.log("Loading blob URL:", currentVideo.magnetUri);
+    if (!currentVideo) {
+      console.log("No current video to load");
+      return;
+    }
+    
+    console.log("Loading video with data:", currentVideo);
+    
+    // Check if we have a direct magnetUri that's a blob URL
+    if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('blob:')) {
+      console.log("Setting video src to blob URL:", currentVideo.magnetUri);
       video.src = currentVideo.magnetUri;
       video.load();
+      
+      video.addEventListener('loadstart', () => console.log('Video loadstart event'));
+      video.addEventListener('loadeddata', () => console.log('Video loadeddata event'));
+      video.addEventListener('canplay', () => console.log('Video canplay event'));
+      video.addEventListener('error', (e) => console.error('Video error event:', e));
+      
+    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
+      console.log("Loading torrent:", currentVideo.magnetUri);
+      loadTorrent(currentVideo.magnetUri, video);
+    } else {
+      console.log("No valid video source found in:", currentVideo);
     }
   }, [currentVideo, loadTorrent]);
 

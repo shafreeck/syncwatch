@@ -28,6 +28,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
     if (!files || files.length === 0) return;
 
     const file = files[0];
+    console.log("Selected file:", { name: file.name, type: file.type, size: file.size });
     
     // Validate file type
     if (!file.type.startsWith("video/")) {
@@ -51,14 +52,17 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo }: Fil
     }
 
     setIsUploading(true);
+    console.log("Starting video upload...");
     
     try {
       await onVideoUpload(file);
+      console.log("Video upload completed successfully");
       toast({
         title: "Video uploaded successfully",
         description: `${file.name} is now available for streaming`,
       });
     } catch (error) {
+      console.error("Video upload failed:", error);
       toast({
         title: "Upload failed",
         description: "Failed to upload video. Please try again.",
