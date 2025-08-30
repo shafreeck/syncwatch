@@ -199,7 +199,7 @@ export default function Home() {
               onSelectVideo={(video) => {
                 addDebugLog(`Selecting video: ${video.name}`);
                 if (video.magnetUri && room) {
-                  addDebugLog(`Video has magnetUri: ${video.magnetUri.substring(0, 50)}...`);
+                  addDebugLog(`Video magnetUri: ${video.magnetUri.substring(0, 50)}...`);
                   console.log("Selecting video locally:", video);
                   
                   sendWSMessage("video_select", {

@@ -67,6 +67,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, on
     }
     
     onDebugLog?.(`VideoPlayer: Loading video - ${currentVideo.name}`);
+    onDebugLog?.(`VideoPlayer: magnetUri = ${currentVideo.magnetUri ? currentVideo.magnetUri.substring(0, 50) + '...' : 'undefined'}`);
     
     // Clear any existing src first
     video.src = '';
