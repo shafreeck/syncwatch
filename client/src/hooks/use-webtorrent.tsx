@@ -25,12 +25,13 @@ export function useWebTorrent() {
           tracker: {
             announce: [
               'wss://tracker.btorrent.xyz',
-              'wss://tracker.openwebtorrent.com'
+              'wss://tracker.openwebtorrent.com',
+              'wss://tracker.webtorrent.dev'
             ]
           },
-          dht: false,
-          webSeeds: false,
-          maxConns: 55,
+          dht: true,
+          webSeeds: true,
+          maxConns: 100,
           downloadLimit: -1,
           uploadLimit: -1
         });
@@ -95,22 +96,30 @@ export function useWebTorrent() {
       if (videoFile && videoElement) {
         console.log('Setting up video streaming...', videoFile.name);
         
-        // Use appendTo for progressive streaming
+        // Use the most compatible streaming method
         try {
-          videoFile.appendTo(videoElement);
-          console.log('Video appendTo completed - should start streaming');
+          // First, select the file for prioritized download
+          videoFile.select();
+          console.log('File selected for priority download');
           
-          // Add event listeners for monitoring
+          // Use streamTo which is the most reliable for progressive playback
+          videoFile.streamTo(videoElement, {
+            autoplay: false,
+            controls: false
+          });
+          console.log('Video streamTo initiated - progressive playback should work');
+          
+          // Monitor the actual video element
           videoElement.addEventListener('loadstart', () => {
-            console.log('Video loading started');
+            console.log('Video element: loading started');
+          });
+          
+          videoElement.addEventListener('loadedmetadata', () => {
+            console.log('Video element: metadata loaded, duration:', videoElement.duration);
           });
           
           videoElement.addEventListener('canplay', () => {
-            console.log('Video can play - enough data buffered');
-          });
-          
-          videoElement.addEventListener('loadeddata', () => {
-            console.log('Video first frame loaded');
+            console.log('Video element: can play - buffered enough data');
           });
           
           videoElement.addEventListener('progress', () => {
@@ -119,30 +128,13 @@ export function useWebTorrent() {
               const duration = videoElement.duration || 0;
               if (duration > 0) {
                 const bufferedPercent = (bufferedEnd / duration) * 100;
-                console.log(`Video buffered: ${bufferedPercent.toFixed(1)}%`);
+                console.log(`Video buffered: ${bufferedPercent.toFixed(1)}% (${bufferedEnd.toFixed(1)}s of ${duration.toFixed(1)}s)`);
               }
             }
           });
           
         } catch (error) {
-          console.error('appendTo failed:', error);
-          // Final fallback - try creating blob URL when enough data is available
-          const tryBlobUrl = () => {
-            videoFile.getBlobURL((err: any, url: string) => {
-              if (!err && url) {
-                console.log('Using blob URL as fallback:', url);
-                videoElement.src = url;
-                videoElement.load();
-              }
-            });
-          };
-          
-          // Try blob URL after some download progress
-          torrent.on('download', () => {
-            if (torrent.progress > 0.05) { // 5% downloaded
-              tryBlobUrl();
-            }
-          });
+          console.error('streamTo failed:', error);
         }
       }
     });
@@ -150,13 +142,13 @@ export function useWebTorrent() {
     torrent.on("download", () => {
       const progress = (torrent.downloaded / torrent.length) * 100;
       setDownloadProgress(progress);
-      setUploadSpeed(Math.round(torrent.uploadSpeed / 1024 / 1024 * 10) / 10);
+      const downSpeed = Math.round(torrent.downloadSpeed / 1024);
+      const upSpeed = Math.round(torrent.uploadSpeed / 1024 / 1024 * 10) / 10;
+      setUploadSpeed(upSpeed);
       setPeers(torrent.numPeers);
       
-      // Log progressive download status
-      if (progress > 0 && progress < 100) {
-        console.log(`Progressive download: ${progress.toFixed(1)}% - ${Math.round(torrent.downloadSpeed / 1024)} KB/s`);
-      }
+      // Log progressive download status with more details
+      console.log(`Download: ${progress.toFixed(1)}% | Speed: ↓${downSpeed} KB/s ↑${upSpeed} MB/s | Peers: ${torrent.numPeers}`);
     });
 
     torrent.on("upload", () => {

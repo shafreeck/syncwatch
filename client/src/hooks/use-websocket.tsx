@@ -249,11 +249,14 @@ export function useWebSocket() {
         tracker: {
           announce: [
             'wss://tracker.btorrent.xyz',
-            'wss://tracker.openwebtorrent.com'
+            'wss://tracker.openwebtorrent.com',
+            'wss://tracker.webtorrent.dev',
+            'wss://tracker.files.fm:7073/announce'
           ]
         },
-        dht: false,
-        webSeeds: false
+        dht: true,
+        webSeeds: true,
+        maxConns: 100
       });
       
       console.log("Creating torrent from file...");
