@@ -169,8 +169,6 @@ export function useWebTorrent() {
       }
     });
 
-    let progressivePlaybackEnabled = false;
-    
     torrent.on("download", () => {
       const progress = (torrent.downloaded / torrent.length) * 100;
       setDownloadProgress(progress);
@@ -180,8 +178,7 @@ export function useWebTorrent() {
       setPeers(torrent.numPeers);
       
       // Enable progressive playback when we have enough data
-      if (!progressivePlaybackEnabled && progress >= 1.5) { // 1.5% downloaded
-        progressivePlaybackEnabled = true;
+      if (progress >= 1.5 && progress <= 2) { // Only log once between 1.5% and 2%
         console.log('🎬 Progressive playback available! Video should be ready to play.');
         
         // Force check video element state
