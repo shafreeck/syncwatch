@@ -122,25 +122,39 @@ export function useWebTorrent() {
           videoFile.select();
           console.log('File selected for priority download');
           
-          // Use renderTo for progressive streaming (correct method for existing video element)
-          console.log('Setting up renderTo for true progressive playback...');
-          try {
-            videoFile.renderTo(videoElement, {
-              autoplay: false,
-              controls: true
-            });
-            console.log('✓ renderTo initiated - progressive streaming enabled');
-          } catch (error) {
-            console.log('renderTo failed, trying getBlobURL approach:', error);
-            // Fallback to getBlobURL if renderTo fails
-            videoFile.getBlobURL((err: any, url: string) => {
-              if (!err && url) {
-                console.log('✓ Fallback: getBlobURL created successfully');
-                videoElement.src = url;
-                videoElement.load();
-              }
-            });
-          }
+          // Use the most reliable method: getBlobURL with immediate setup
+          console.log('Creating blob URL for reliable video playback...');
+          videoFile.getBlobURL((err: any, url: string) => {
+            if (!err && url) {
+              console.log('✓ Blob URL created:', url.substring(0, 50) + '...');
+              console.log('Setting video src and loading...');
+              videoElement.src = url;
+              videoElement.load();
+              
+              // Add event listeners to debug what's happening
+              videoElement.addEventListener('loadstart', () => {
+                console.log('✓ Video loadstart event fired');
+              });
+              
+              videoElement.addEventListener('loadedmetadata', () => {
+                console.log('✓ Video metadata loaded, duration:', videoElement.duration);
+              });
+              
+              videoElement.addEventListener('canplay', () => {
+                console.log('✓ Video can play, attempting autoplay...');
+                videoElement.play().catch(e => {
+                  console.log('Autoplay blocked, user needs to click play');
+                });
+              });
+              
+              videoElement.addEventListener('error', (e) => {
+                console.log('✗ Video error event:', e, 'Error code:', videoElement.error?.code);
+              });
+              
+            } else {
+              console.log('✗ getBlobURL failed:', err);
+            }
+          });
           
           // Monitor if streamTo actually sets the src
           // renderTo should work immediately for progressive streaming
@@ -206,36 +220,14 @@ export function useWebTorrent() {
             duration: isNaN(videoElement.duration) ? 'Loading...' : videoElement.duration
           });
           
-          // Check if video is ready or needs loading
-          if (videoElement.readyState >= 2) {
-            console.log('✓ Video already has enough data!');
-          } else if (videoElement.src && videoElement.readyState === 0) {
-            console.log('🔄 Triggering video load...');
-            videoElement.load();
-          }
-          
-          // If streamTo didn't work, create a progressive blob URL
+          // If no video source set yet, wait a bit more for the main setup to complete
           if (!videoElement.src || videoElement.src === window.location.href) {
-            console.log('🔧 Creating progressive video stream...');
-            const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
-            if (videoFile) {
-              // renderTo already set up progressive streaming
-              console.log('✅ Progressive streaming already enabled via renderTo');
-              
-              // Set up auto-play when ready
-              const handleCanPlay = () => {
-                console.log('🎉 Progressive video ready! Auto-playing...');
-                videoElement.play().catch(e => {
-                  console.log('Auto-play blocked by browser - user can click play');
-                });
-              };
-              
-              const handleLoadedData = () => {
-                console.log('✓ Progressive video metadata loaded!');
-              };
-              
-              videoElement.addEventListener('canplay', handleCanPlay, { once: true });
-              videoElement.addEventListener('loadeddata', handleLoadedData, { once: true });
+            console.log('⚠️ Video source not set yet at 2%, main renderTo/getBlobURL should handle this');
+          } else {
+            console.log('✓ Video source already set:', videoElement.src.substring(0, 50) + '...');
+            if (videoElement.readyState === 0) {
+              console.log('🔄 Triggering video load...');
+              videoElement.load();
             }
           }
         } else {
