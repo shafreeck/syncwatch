@@ -60,12 +60,6 @@ export function useWebTorrent() {
       return;
     }
 
-    // Clear video element first to prevent pipe conflicts
-    if (videoElement) {
-      videoElement.src = '';
-      videoElement.load();
-    }
-
     // Remove existing torrent to prevent conflicts
     if (currentTorrent.current) {
       console.log('Removing existing torrent to prevent pipe conflicts');
@@ -95,6 +89,12 @@ export function useWebTorrent() {
             console.error('renderTo failed:', err);
           } else {
             console.log('✓ renderTo success - video ready for progressive playback');
+            console.log('Video element status:', {
+              src: videoElement.src?.substring(0, 100) + '...',
+              readyState: videoElement.readyState,
+              networkState: videoElement.networkState,
+              duration: videoElement.duration
+            });
           }
         });
       }

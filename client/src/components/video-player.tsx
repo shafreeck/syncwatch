@@ -49,7 +49,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     };
     
     const handleError = (e: any) => {
-      console.error('Video error:', e.target.error);
+      // Only log errors that aren't related to empty src during torrent loading
+      if (e.target.error && e.target.error.code !== 4) {
+        console.error('Video error:', e.target.error);
+      } else if (e.target.error && e.target.error.code === 4) {
+        console.log('Temporary empty src during torrent loading - this is expected');
+      }
     };
 
     video.addEventListener("timeupdate", updateTime);
