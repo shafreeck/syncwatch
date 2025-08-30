@@ -82,48 +82,39 @@ export function useWebTorrent() {
       }
 
       if (videoFile && videoElement) {
+        console.log('Setting up video streaming...', videoFile.name);
+        
+        // Use renderTo for immediate streaming while downloading
         try {
-          console.log('Setting up progressive video streaming...');
-          
-          // Create a readable stream for progressive playback
-          const stream = videoFile.createReadStream();
-          const url = URL.createObjectURL(stream);
-          
-          videoElement.src = url;
-          videoElement.preload = 'metadata';
-          
-          // Set up event listeners for progressive playback
-          videoElement.addEventListener('loadstart', () => {
-            console.log('Video loading started');
+          videoFile.renderTo(videoElement, {
+            autoplay: false,
+            controls: false,
+            muted: false
           });
           
-          videoElement.addEventListener('canplay', () => {
-            console.log('Video can start playing (buffered enough)');
-          });
+          console.log('Video render started - can play while downloading');
           
-          videoElement.addEventListener('progress', () => {
-            const buffered = videoElement.buffered;
-            if (buffered.length > 0) {
-              const bufferedEnd = buffered.end(buffered.length - 1);
-              const duration = videoElement.duration;
+          // Monitor buffering progress
+          const checkBuffer = () => {
+            if (videoElement.buffered.length > 0) {
+              const bufferedEnd = videoElement.buffered.end(videoElement.buffered.length - 1);
+              const duration = videoElement.duration || 0;
               if (duration > 0) {
-                const percent = (bufferedEnd / duration) * 100;
-                console.log(`Video buffered: ${percent.toFixed(1)}%`);
+                const bufferedPercent = (bufferedEnd / duration) * 100;
+                console.log(`Video buffered: ${bufferedPercent.toFixed(1)}%`);
               }
             }
+          };
+          
+          videoElement.addEventListener('progress', checkBuffer);
+          videoElement.addEventListener('loadeddata', () => {
+            console.log('Video data loaded - ready for playback');
           });
           
-          videoElement.load();
-          
         } catch (error) {
-          console.error('Error setting up progressive streaming:', error);
-          // Fallback to direct streaming
-          try {
-            videoFile.streamTo(videoElement);
-            videoElement.load();
-          } catch (streamError) {
-            console.error('Streaming fallback failed:', streamError);
-          }
+          console.error('renderTo failed, trying streamTo:', error);
+          // Fallback to streamTo
+          videoFile.streamTo(videoElement);
         }
       }
     });

@@ -41,28 +41,31 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     };
 
     const handleCanPlay = () => {
-      console.log('Video ready to play, auto-starting...');
-      // Auto-start playback when video is ready
-      if (!isPlaying && video.readyState >= 2) {
-        video.play().then(() => {
-          setIsPlaying(true);
-          onVideoSync("play", video.currentTime);
-        }).catch(error => {
-          console.log('Auto-play blocked, user needs to click play');
-        });
-      }
+      console.log('Video ready to play - readyState:', video.readyState);
+    };
+    
+    const handleLoadedData = () => {
+      console.log('Video data loaded - can start playback');
+    };
+    
+    const handleError = (e: any) => {
+      console.error('Video error:', e.target.error);
     };
 
     video.addEventListener("timeupdate", updateTime);
     video.addEventListener("durationchange", updateDuration);
     video.addEventListener("loadedmetadata", updateDuration);
     video.addEventListener("canplay", handleCanPlay);
+    video.addEventListener("loadeddata", handleLoadedData);
+    video.addEventListener("error", handleError);
 
     return () => {
       video.removeEventListener("timeupdate", updateTime);
       video.removeEventListener("durationchange", updateDuration);
       video.removeEventListener("loadedmetadata", updateDuration);
       video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener("loadeddata", handleLoadedData);
+      video.removeEventListener("error", handleError);
     };
   }, [isPlaying, onVideoSync]);
 
@@ -85,33 +88,36 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      console.log('No video element found');
+      return;
+    }
+
+    console.log('Toggle play - current state:', {
+      isPlaying,
+      readyState: video.readyState,
+      src: video.src,
+      networkState: video.networkState
+    });
 
     if (isPlaying) {
       video.pause();
       setIsPlaying(false);
       onVideoSync("pause", video.currentTime);
     } else {
-      // Check if video can play
-      if (video.readyState >= 2) { // HAVE_CURRENT_DATA
-        video.play().then(() => {
-          setIsPlaying(true);
-          onVideoSync("play", video.currentTime);
-        }).catch(error => {
-          console.error('Play failed:', error);
+      // Try to play regardless of ready state
+      video.play().then(() => {
+        console.log('Video started playing successfully');
+        setIsPlaying(true);
+        onVideoSync("play", video.currentTime);
+      }).catch(error => {
+        console.error('Play failed:', error);
+        console.log('Video info:', {
+          readyState: video.readyState,
+          networkState: video.networkState,
+          error: video.error
         });
-      } else {
-        console.log('Video not ready, waiting for data...');
-        // Wait for video to be ready
-        const onCanPlay = () => {
-          video.removeEventListener('canplay', onCanPlay);
-          video.play().then(() => {
-            setIsPlaying(true);
-            onVideoSync("play", video.currentTime);
-          });
-        };
-        video.addEventListener('canplay', onCanPlay);
-      }
+      });
     }
   };
 
