@@ -1,6 +1,23 @@
 # Overview
 
-This is a full-stack web application for synchronized video watching and sharing using WebTorrent technology. The app allows users to create or join rooms where they can watch videos together in real-time, with synchronized playback controls and live chat functionality. The application uses a modern React frontend with a Node.js/Express backend and PostgreSQL database for persistence.
+This is a full-stack web application for synchronized video watching and sharing. The app allows users to create or join rooms where they can upload and watch videos together in real-time, with synchronized playback controls and live chat functionality. The application uses a modern React frontend with a Node.js/Express backend and in-memory storage for development.
+
+## Recent Changes (August 30, 2025)
+
+- ✅ **Fixed video playback functionality** - Videos now upload and play correctly using blob URLs
+- ✅ **Resolved system freezing issues** - Simplified file upload process to prevent crashes
+- ✅ **Improved file upload flow** - Added proper feedback notifications and error handling
+- ✅ **Enhanced WebSocket communication** - Fixed message routing for video selection and synchronization
+- ✅ **Cleaned up debugging code** - Removed temporary debugging interfaces for production readiness
+
+## Current Working Features
+
+- **Room Creation and Joining** - Users can create new rooms or join existing ones
+- **Video File Upload** - Support for MP4, WebM, AVI video files up to 2GB
+- **Video Playback** - Uploaded videos display in available list and play correctly when selected
+- **Real-time Chat** - Live messaging between room participants
+- **User Management** - Multiple users can join the same room simultaneously
+- **WebSocket Communication** - Real-time updates for all room activities
 
 # User Preferences
 

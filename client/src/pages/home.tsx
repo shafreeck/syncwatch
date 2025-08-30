@@ -18,12 +18,6 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [username, setUsername] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);
-
-  const addDebugLog = (message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setDebugInfo(prev => [...prev.slice(-9), `${timestamp}: ${message}`]);
-  };
 
   // Extract room ID from URL
   const roomId = location.split("/room/")[1];
@@ -49,9 +43,6 @@ export default function Home() {
       setShowRoomModal(true);
     }
     
-    // Test console log to verify logs are working
-    console.log("🔄 Home component loaded, roomId:", roomId, "isConnected:", isConnected);
-    addDebugLog(`Home loaded - Room: ${roomId}, Connected: ${isConnected}`);
   }, [roomId, isConnected]);
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
@@ -190,13 +181,11 @@ export default function Home() {
               currentVideo={currentVideo}
               onVideoSync={syncVideo}
               isConnected={isConnected}
-              onDebugLog={addDebugLog}
             />
             
             <FileUpload
               onVideoUpload={uploadVideo}
               videos={videos}
-              onDebugLog={addDebugLog}
               onSelectVideo={(video) => {
                 if (video.magnetUri && room) {
                   console.log("Selecting video locally:", video);
@@ -234,23 +223,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Debug Info Panel */}
-        {debugInfo.length > 0 && (
-          <div className="fixed top-4 left-4 bg-black/90 text-white p-4 rounded-lg max-w-sm text-xs z-50 max-h-64 overflow-y-auto">
-            <div className="font-bold mb-2 flex justify-between items-center">
-              Debug Info:
-              <button 
-                onClick={() => setDebugInfo([])} 
-                className="text-white hover:text-gray-300 ml-2"
-              >
-                ✕
-              </button>
-            </div>
-            {debugInfo.slice(-10).map((info, index) => (
-              <div key={index} className="mb-1 break-words">{info}</div>
-            ))}
-          </div>
-        )}
       </main>
     </div>
   );

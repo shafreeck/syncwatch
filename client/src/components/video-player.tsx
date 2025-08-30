@@ -9,10 +9,9 @@ interface VideoPlayerProps {
   currentVideo?: any;
   onVideoSync: (action: string, currentTime: number) => void;
   isConnected: boolean;
-  onDebugLog?: (message: string) => void;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, onDebugLog }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
