@@ -213,34 +213,30 @@ export function useWebSocket() {
     console.log("Starting video upload process for:", file.name);
     
     try {
-      // Convert file to base64 for storage
-      const reader = new FileReader();
-      const fileDataPromise = new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('video', file);
+      formData.append('roomId', room.id);
+      formData.append('uploadedBy', 'current-user'); // TODO: Use actual user ID
+      
+      console.log("Uploading file to server...");
+      const response = await fetch('/api/videos/upload', {
+        method: 'POST',
+        body: formData,
       });
       
-      const fileData = await fileDataPromise;
-      console.log("File converted to base64, size:", fileData.length);
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
       
-      const mockInfoHash = Math.random().toString(36).substring(7);
+      const video = await response.json();
+      console.log("Video uploaded successfully:", video);
       
-      console.log("Sending video upload message...");
-      sendMessage("video_upload", {
-        name: file.name,
-        magnetUri: null, // Will create blob URL from stored data
-        infoHash: mockInfoHash,
-        size: file.size.toString(),
-        fileData: fileData,
-        mimeType: file.type,
-        roomId: room.id,
-      });
-      
-      console.log("Video upload message sent successfully");
+      // Notify room about new video via WebSocket
+      sendMessage("new_video", { video });
       
     } catch (error) {
-      console.error("Failed to process video file:", error);
+      console.error("Failed to upload video file:", error);
       throw error; // Re-throw to trigger toast error in upload component
     }
   }, [sendMessage, room]);

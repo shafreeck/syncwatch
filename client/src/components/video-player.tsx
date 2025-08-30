@@ -59,18 +59,11 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
     video.src = '';
     video.load();
     
-    // Priority: fileData (base64) > magnetUri (blob/file URL) > magnet link
-    if (currentVideo.fileData) {
-      console.log("Loading video from stored file data:", currentVideo.name);
-      video.src = currentVideo.fileData;
+    // Use the streaming API endpoint for local files
+    if (currentVideo.id) {
+      console.log("Loading video from server:", currentVideo.name);
+      video.src = `/api/videos/${currentVideo.id}/stream`;
       video.load();
-    } else if (currentVideo.magnetUri && (currentVideo.magnetUri.startsWith('blob:') || currentVideo.magnetUri.startsWith('data:'))) {
-      console.log("Loading local video file:", currentVideo.name);
-      video.src = currentVideo.magnetUri;
-      video.load();
-    } else if (currentVideo.magnetUri && currentVideo.magnetUri.startsWith('magnet:')) {
-      console.log("Loading P2P video via torrent:", currentVideo.name);
-      loadTorrent(currentVideo.magnetUri, video);
     } else {
       console.log("No valid video source found for:", currentVideo.name);
     }
