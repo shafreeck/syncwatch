@@ -101,7 +101,7 @@ export function useWebSocket() {
     }
   }, [toast]);
 
-  const handleMessage = (message: any) => {
+  const handleMessage = useCallback((message: any) => {
     console.log('Received WebSocket message:', message.type, message.data);
     switch (message.type) {
       case "room_state":
@@ -155,8 +155,13 @@ export function useWebSocket() {
         console.log("Current videos in state:", videos);
         const selectedVideo = videos.find(v => v.id === message.data.videoId);
         if (selectedVideo) {
-          setCurrentVideo(selectedVideo);
-          console.log("Setting current video from videos list:", selectedVideo);
+          // Only set currentVideo if it's different to prevent duplicate torrent loading
+          if (!currentVideo || currentVideo.id !== selectedVideo.id) {
+            setCurrentVideo(selectedVideo);
+            console.log("Setting current video from videos list:", selectedVideo);
+          } else {
+            console.log("Video already selected, skipping duplicate load:", selectedVideo.name);
+          }
         } else {
           // If video not found in current videos list, create it from message data
           const videoFromMessage = {
@@ -185,7 +190,7 @@ export function useWebSocket() {
       default:
         console.log("Unknown message type:", message.type);
     }
-  };
+  }, [currentVideo, videos, room, toast]);
 
   const sendMessage = useCallback((type: string, data: any) => {
     if (socket && socket.readyState === WebSocket.OPEN) {

@@ -60,6 +60,12 @@ export function useWebTorrent() {
       return;
     }
 
+    // Check if we're already loading this same torrent
+    if (currentTorrent.current && currentTorrent.current.magnetURI === magnetUri) {
+      console.log('Same torrent already loaded, skipping duplicate load:', magnetUri);
+      return;
+    }
+
     // Remove existing torrent to prevent conflicts
     if (currentTorrent.current) {
       console.log('Removing existing torrent to prevent pipe conflicts');
