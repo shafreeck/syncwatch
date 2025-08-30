@@ -107,20 +107,8 @@ export function useWebTorrent() {
           
           // Use streamTo for progressive streaming - this is the correct method
           console.log('Setting up streamTo for progressive playback...');
-          videoFile.streamTo(videoElement, {
-            autoplay: true, // Enable autoplay for progressive streaming
-            controls: false,
-            muted: true    // Muted autoplay is more likely to work
-          });
-          console.log('✓ streamTo initiated with autoplay - should enable progressive playback');
-          
-          // Also try appendTo as additional method
-          try {
-            videoFile.appendTo(videoElement);
-            console.log('✓ appendTo also applied for better compatibility');
-          } catch (e) {
-            console.log('appendTo not available, using streamTo only');
-          }
+          videoFile.streamTo(videoElement);
+          console.log('✓ streamTo initiated - progressive playback enabled');
           
           // Monitor if streamTo actually sets the src
           setTimeout(() => {
@@ -187,7 +175,7 @@ export function useWebTorrent() {
       setPeers(torrent.numPeers);
       
       // Check progressive playback availability at key milestones
-      if (progress >= 2 && progress <= 3) { // Check once when reaching 2-3%
+      if (progress >= 2 && progress <= 2.1) { // Check only once when reaching 2%
         console.log(`🎬 ${progress.toFixed(1)}% downloaded - Progressive playback should be available!`);
         
         // Find video element from the current video player
@@ -200,8 +188,10 @@ export function useWebTorrent() {
             duration: isNaN(videoElement.duration) ? 'Loading...' : videoElement.duration
           });
           
-          // Try to trigger video loading
-          if (videoElement.src && videoElement.readyState === 0) {
+          // Check if video is ready or needs loading
+          if (videoElement.readyState >= 2) {
+            console.log('✓ Video already has enough data!');
+          } else if (videoElement.src && videoElement.readyState === 0) {
             console.log('🔄 Triggering video load...');
             videoElement.load();
           }
@@ -211,37 +201,29 @@ export function useWebTorrent() {
             console.log('🔧 Creating progressive video stream...');
             const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
             if (videoFile) {
+              // Use renderTo for immediate progressive playback
               try {
-                // Create a progressive readable stream
-                const stream = videoFile.createReadStream();
-                const response = new Response(stream);
-                const blob = response.blob();
-                
-                blob.then(blobData => {
-                  const url = URL.createObjectURL(blobData);
-                  console.log('✅ Progressive stream URL created!');
-                  videoElement.src = url;
-                  videoElement.load();
-                  
-                  // Try to play immediately when enough data is buffered
-                  const tryPlay = () => {
-                    if (videoElement.readyState >= 2) {
-                      console.log('🎉 Auto-starting progressive playback!');
-                      videoElement.play().catch(e => {
-                        console.log('Auto-play prevented by browser, user needs to click play');
-                      });
-                    }
-                  };
-                  
-                  videoElement.addEventListener('canplay', tryPlay, { once: true });
-                  setTimeout(tryPlay, 2000); // Also try after 2 seconds
+                console.log('✅ Using renderTo for progressive streaming...');
+                videoFile.renderTo(videoElement, {
+                  autoplay: false,
+                  controls: false
                 });
                 
+                // Set up auto-play when ready
+                const handleCanPlay = () => {
+                  console.log('🎉 Video ready! Attempting auto-play...');
+                  videoElement.play().catch(e => {
+                    console.log('Auto-play blocked by browser - user needs to click play');
+                  });
+                };
+                
+                videoElement.addEventListener('canplay', handleCanPlay, { once: true });
+                
               } catch (error) {
-                console.log('Progressive stream failed, falling back to getBlobURL');
-                // Fallback to original method
+                console.log('renderTo failed, using getBlobURL method');
                 videoFile.getBlobURL((err: any, url: string) => {
                   if (!err && url) {
+                    console.log('✅ Blob URL created as fallback');
                     videoElement.src = url;
                     videoElement.load();
                   }
