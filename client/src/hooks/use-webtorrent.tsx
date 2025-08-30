@@ -268,96 +268,86 @@ export function useWebTorrent() {
               console.log('⏳ Video has metadata but waiting for more data...');
               
               // Check how much has been downloaded
-              if (torrent && torrent.progress > 0.25) {
-                console.log('🏁 25%+ downloaded. Trying direct buffer streaming...');
+              if (torrent && torrent.progress > 0.05) {
+                console.log('🏁 5%+ downloaded. Using proper WebTorrent appendTo method...');
                 
                 const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
                 
                 if (videoFile) {
-                  console.log('💾 Attempting direct buffer streaming approach...');
+                  console.log('🎬 Using official WebTorrent appendTo method for streaming...');
                   
                   try {
-                    console.log('🔧 Checking if videoFile has getBuffer method...');
+                    // Clear the current video element completely
+                    videoElement.pause();
+                    videoElement.src = '';
+                    videoElement.load();
                     
-                    // Try to get partial buffer directly
-                    if (typeof videoFile.getBuffer === 'function') {
-                      console.log('✅ getBuffer method available, requesting partial data...');
+                    console.log('🧹 Video element cleared, starting appendTo...');
+                    
+                    // Use the proper WebTorrent appendTo method
+                    // This creates a streaming connection that works immediately
+                    videoFile.appendTo(videoElement, {
+                      autoplay: false,  // We'll handle play manually
+                      muted: true,
+                      controls: true
+                    }, (err: any, element: HTMLVideoElement) => {
+                      if (err) {
+                        console.log('❌ appendTo failed:', err.message);
+                        return;
+                      }
                       
-                      // Request partial buffer (first 25% should be enough for video headers)
-                      videoFile.getBuffer((err: any, buffer: ArrayBuffer) => {
-                        console.log('🔍 getBuffer callback fired');
-                        console.log('Error:', err);
-                        console.log('Buffer:', buffer);
-                        console.log('Buffer type:', typeof buffer);
-                        console.log('Buffer size:', buffer ? buffer.byteLength : 'undefined/null');
-                        
-                        if (!err && buffer && buffer.byteLength > 0) {
-                          console.log('✅ Got buffer! Size:', buffer.byteLength, 'bytes');
-                          
-                          // Create blob from buffer
-                          const blob = new Blob([buffer], { type: 'video/mp4' });
-                          const blobUrl = URL.createObjectURL(blob);
-                          
-                          console.log('🎬 Created blob URL from buffer:', blobUrl.substring(0, 60) + '...');
-                          
-                          // Clear and set new source
-                          videoElement.src = '';
-                          videoElement.load();
-                          videoElement.src = blobUrl;
-                          videoElement.load();
-                          
-                          console.log('📹 Video source set to buffer-based blob URL');
-                          
-                          // Attempt to play
-                          setTimeout(() => {
-                            videoElement.play().then(() => {
-                              console.log('🎉 AMAZING SUCCESS! Buffer-based video playing!');
-                            }).catch(playErr => {
-                              console.log('❌ Buffer video play failed:', playErr.message);
-                            });
-                          }, 1000);
-                          
-                        } else {
-                          console.log('❌ getBuffer failed or returned empty:', err?.message || 'No buffer');
-                        }
+                      console.log('✅ appendTo SUCCESS! Video file attached to element');
+                      console.log('📹 Video element ready:', {
+                        readyState: element.readyState,
+                        networkState: element.networkState,
+                        duration: element.duration,
+                        src: element.src?.substring(0, 60) + '...'
                       });
-                    } else {
-                      console.log('❌ getBuffer method not available on videoFile');
-                      console.log('Available methods:', Object.getOwnPropertyNames(videoFile.__proto__));
                       
-                      // Fallback: try to force stream connection
-                      console.log('🔄 Fallback: forcing new renderTo connection...');
-                      
-                      // Clear completely and try fresh renderTo
-                      videoElement.pause();
-                      videoElement.src = '';
-                      videoElement.load();
-                      
-                      setTimeout(() => {
-                        console.log('🎬 Attempting fresh renderTo after cleanup...');
-                        try {
-                          videoFile.renderTo(videoElement, {}, (err: any) => {
-                            if (err) {
-                              console.log('❌ Fresh renderTo failed:', err.message);
-                            } else {
-                              console.log('✅ Fresh renderTo connection established');
-                              
-                              // Force play attempt
-                              setTimeout(() => {
-                                videoElement.play().then(() => {
-                                  console.log('🎉 Fresh renderTo SUCCESS!');
-                                }).catch(e => console.log('❌ Fresh renderTo play failed:', e.message));
-                              }, 1500);
-                            }
+                      // Wait for loadedmetadata event
+                      const onMetadataLoaded = () => {
+                        console.log('🎯 Video metadata loaded via appendTo!');
+                        console.log('Video specs:', {
+                          duration: element.duration,
+                          videoWidth: element.videoWidth,
+                          videoHeight: element.videoHeight,
+                          readyState: element.readyState
+                        });
+                        
+                        element.removeEventListener('loadedmetadata', onMetadataLoaded);
+                        
+                        // Try to play the streaming video
+                        setTimeout(() => {
+                          console.log('▶️ Attempting to play streaming video...');
+                          element.play().then(() => {
+                            console.log('🎉 MASSIVE SUCCESS! Streaming video is playing via appendTo!');
+                            console.log('🚀 This is the correct WebTorrent streaming implementation!');
+                          }).catch(playErr => {
+                            console.log('❌ appendTo video play failed:', playErr.message);
+                            
+                            // Try click-to-play as fallback
+                            console.log('🖱️ Setting up click-to-play fallback...');
+                            element.addEventListener('click', () => {
+                              element.play().then(() => {
+                                console.log('✅ Click-to-play SUCCESS!');
+                              }).catch(e => console.log('❌ Click-to-play failed:', e));
+                            });
                           });
-                        } catch (freshErr) {
-                          console.log('❌ Fresh renderTo exception:', freshErr);
-                        }
-                      }, 500);
-                    }
+                        }, 500);
+                      };
+                      
+                      // Listen for metadata loaded
+                      element.addEventListener('loadedmetadata', onMetadataLoaded);
+                      
+                      // If metadata already available, call immediately
+                      if (element.readyState >= 1) {
+                        console.log('🏃‍♂️ Metadata already available, triggering immediately');
+                        onMetadataLoaded();
+                      }
+                    });
                     
-                  } catch (bufferErr) {
-                    console.log('❌ Buffer streaming exception:', bufferErr);
+                  } catch (appendErr) {
+                    console.log('❌ appendTo exception:', appendErr);
                   }
                 }
               } else {
