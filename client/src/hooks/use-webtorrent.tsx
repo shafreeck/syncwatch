@@ -180,13 +180,33 @@ export function useWebTorrent() {
       setPeers(torrent.numPeers);
       
       // Enable progressive playback when we have enough data
-      if (!progressivePlaybackEnabled && progress >= 2) { // 2% downloaded
+      if (!progressivePlaybackEnabled && progress >= 1.5) { // 1.5% downloaded
         progressivePlaybackEnabled = true;
         console.log('🎬 Progressive playback available! Video should be ready to play.');
         
-        // Check if we have a video element to notify
-        if (videoElement && videoElement.readyState >= 2) {
-          console.log('✓ Video element ready for playback');
+        // Force check video element state
+        if (videoElement) {
+          console.log('Video element status:', {
+            src: videoElement.src ? videoElement.src.substring(0, 30) + '...' : 'NO SRC',
+            readyState: videoElement.readyState,
+            networkState: videoElement.networkState,
+            duration: videoElement.duration
+          });
+          
+          // If streamTo didn't work, try backup method immediately
+          if (!videoElement.src || videoElement.src === window.location.href) {
+            console.log('🔧 Applying backup video source...');
+            const videoFile = torrent.files.find((f: any) => f.name.match(/\.(mp4|webm|ogg|avi|mov)$/i));
+            if (videoFile) {
+              videoFile.getBlobURL((err: any, url: string) => {
+                if (!err && url) {
+                  console.log('✓ Emergency blob URL set:', url.substring(0, 30) + '...');
+                  videoElement.src = url;
+                  videoElement.load();
+                }
+              });
+            }
+          }
         }
       }
       
