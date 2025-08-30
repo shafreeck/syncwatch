@@ -34,14 +34,15 @@ export function useWebTorrent() {
           maxConns: 100,
           downloadLimit: -1,
           uploadLimit: -1,
-          // Enable worker for streamTo support
-          worker: true,
-          // Alternative: provide worker path if needed
-          // workerPath: 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.worker.min.js'
+          // Worker will be loaded separately with loadWorker()
         });
-        setClient(webTorrentClient);
-        setIsLoading(false);
-        console.log("WebTorrent client initialized for progressive streaming");
+        // Load worker for streamTo support
+        webTorrentClient.loadWorker(() => {
+          console.log('WebTorrent worker loaded successfully');
+          setClient(webTorrentClient);
+          setIsLoading(false);
+          console.log("WebTorrent client initialized for progressive streaming with worker support");
+        });
       }
     };
     script.onerror = () => {
