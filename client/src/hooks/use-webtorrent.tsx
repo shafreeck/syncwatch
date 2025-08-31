@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import WebTorrent from 'webtorrent/dist/webtorrent.min.js';
+import WebTorrent from 'webtorrent';
 
 export function useWebTorrent() {
   const [client, setClient] = useState<any>(null);
