@@ -19,9 +19,24 @@ export default function TorrentTest() {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@2.8.4/webtorrent.min.js';
     script.onload = () => {
+      console.log('📦 WebTorrent script loaded');
+      console.log('🔍 Available WebTorrent:', typeof window.WebTorrent);
+      console.log('🔍 Global scope check:', Object.keys(window).filter(key => key.toLowerCase().includes('torrent')));
+      
       // @ts-ignore
-      clientRef.current = new WebTorrent();
-      setStatus('WebTorrent client ready');
+      if (window.WebTorrent) {
+        clientRef.current = new window.WebTorrent();
+        setStatus('WebTorrent client ready');
+        console.log('✅ WebTorrent client created:', !!clientRef.current);
+      } else {
+        console.error('❌ WebTorrent not found on window object');
+        setStatus('Failed to load WebTorrent');
+      }
+    };
+    
+    script.onerror = () => {
+      console.error('❌ Failed to load WebTorrent script');
+      setStatus('Failed to load WebTorrent script');
     };
     document.head.appendChild(script);
 
