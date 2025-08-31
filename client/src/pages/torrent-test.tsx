@@ -13,11 +13,11 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent v2.8.3');
+    console.log('🎯 Using WebTorrent @latest with pipe protection');
     
     // Load WebTorrent latest version
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@2.8.3/webtorrent.min.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js';
     
     console.log('🌐 Loading WebTorrent script from:', script.src);
     
@@ -84,7 +84,14 @@ export default function TorrentTest() {
         videoElement.className = 'w-full max-w-2xl';
         videoContainerRef.current.appendChild(videoElement);
         
-        // Use renderTo with the video element
+        // Select the file to prioritize it
+        videoFile.select();
+        
+        // Clear any existing torrents to prevent pipe conflicts
+        const existingTorrents = clientRef.current.torrents.filter((t: any) => t !== torrent);
+        existingTorrents.forEach((t: any) => clientRef.current.remove(t));
+        
+        // Use renderTo with pipe conflict prevention
         videoFile.renderTo(videoElement, {
           autoplay: false,
           maxBlobLength: 200 * 1000 * 1000  // 200MB for progressive streaming

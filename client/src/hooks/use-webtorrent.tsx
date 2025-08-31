@@ -18,7 +18,7 @@ export function useWebTorrent() {
   useEffect(() => {
     // Load WebTorrent dynamically
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/webtorrent@2.8.3/webtorrent.min.js";
+    script.src = "https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js";
     script.onload = () => {
       if (window.WebTorrent) {
         const webTorrentClient = new window.WebTorrent({
