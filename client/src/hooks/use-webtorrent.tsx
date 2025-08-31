@@ -109,35 +109,11 @@ export function useWebTorrent() {
             const isMediaSource = videoElement.src?.includes('mediasource');
             console.log('🎯 Strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             
-            // Smart buffering: auto-play when sufficient data is buffered
-            let hasStartedPlaying = false;
-            
-            const checkBufferAndPlay = () => {
-              if (hasStartedPlaying) return;
-              
-              const buffered = videoElement.buffered;
-              if (buffered.length > 0) {
-                const bufferedEnd = buffered.end(buffered.length - 1);
-                const bufferedAhead = bufferedEnd - videoElement.currentTime;
-                
-                // Start playing when we have 8 seconds buffered or enough for smooth playback
-                const minBuffer = Math.min(8, videoElement.duration * 0.03);
-                if (bufferedAhead >= minBuffer && videoElement.readyState >= 3) {
-                  console.log('🎬 P2P buffer ready, auto-playing...');
-                  hasStartedPlaying = true;
-                  videoElement.play().catch(err => {
-                    console.log('❌ Autoplay blocked:', err.message);
-                  });
-                }
-              }
-            };
-            
-            videoElement.addEventListener('loadedmetadata', () => {
-              console.log('📹 Metadata loaded');
+            // Simple: start playing when data is ready
+            videoElement.addEventListener('canplay', () => {
+              console.log('📹 Can play - starting video');
+              videoElement.play();
             });
-            
-            videoElement.addEventListener('progress', checkBufferAndPlay);
-            videoElement.addEventListener('canplay', checkBufferAndPlay);
           }
         });
       }

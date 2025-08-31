@@ -78,70 +78,12 @@ export default function TorrentTest() {
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
             
-            // Smart auto-play based on strategy type
-            let hasStartedPlaying = false;
-            
-            const tryAutoPlay = () => {
-              if (hasStartedPlaying) return;
-              
-              console.log('🚀 Attempting auto-play...');
-              hasStartedPlaying = true;
-              setStatus('🎬 Auto-playing');
-              
-              videoElement.play().then(() => {
-                console.log('✅ Auto-play SUCCESS!');
-                setStatus('🎬 Playing automatically');
-              }).catch(err => {
-                console.log('❌ Autoplay failed (browser blocked):', err.name, err.message);
-                setStatus('📺 Ready - click to play (autoplay blocked)');
-                hasStartedPlaying = false;
-                
-                // Try to make the video more clickable
-                videoElement.style.cursor = 'pointer';
-                videoElement.title = 'Click to play - autoplay was blocked by browser';
-              });
-            };
-            
-            // For Blob URL: wait for canplay event (when enough data is loaded)
-            // For MediaSource: would use buffer monitoring (but we're getting Blob URL)
-            if (isMediaSource) {
-              console.log('📊 Using MediaSource strategy - monitoring buffer');
-              // Buffer monitoring for MediaSource (future use)
-              const checkBuffer = () => {
-                const buffered = videoElement.buffered;
-                if (buffered.length > 0) {
-                  const bufferedAhead = buffered.end(0) - videoElement.currentTime;
-                  if (bufferedAhead >= 3 && videoElement.readyState >= 3) {
-                    tryAutoPlay();
-                  }
-                }
-              };
-              videoElement.addEventListener('progress', checkBuffer);
-            } else {
-              console.log('📁 Using Blob URL strategy - waiting for canplay');
-              
-              // Strategy 1: Try immediately on canplay
-              videoElement.addEventListener('canplay', () => {
-                console.log('✅ Can play - sufficient data loaded');
-                setTimeout(tryAutoPlay, 100);
-              });
-              
-              // Strategy 2: Try on any user interaction (mouse movement, click anywhere)
-              const enableAutoplayOnInteraction = () => {
-                console.log('👆 User interaction detected - enabling autoplay');
-                document.removeEventListener('click', enableAutoplayOnInteraction);
-                document.removeEventListener('keydown', enableAutoplayOnInteraction);
-                document.removeEventListener('touchstart', enableAutoplayOnInteraction);
-                
-                if (videoElement.readyState >= 3) {
-                  tryAutoPlay();
-                }
-              };
-              
-              document.addEventListener('click', enableAutoplayOnInteraction);
-              document.addEventListener('keydown', enableAutoplayOnInteraction);
-              document.addEventListener('touchstart', enableAutoplayOnInteraction);
-            }
+            // Simple: when enough data is loaded, start playing
+            videoElement.addEventListener('canplay', () => {
+              console.log('✅ Can play - starting playback');
+              setStatus('🎬 Playing');
+              videoElement.play();
+            });
             
             videoElement.addEventListener('loadedmetadata', () => {
               console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
