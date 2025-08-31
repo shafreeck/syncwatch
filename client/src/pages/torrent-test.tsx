@@ -13,11 +13,11 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent v1.8.25 (stable, no pipe errors)');
+    console.log('🎯 Using WebTorrent @latest with appendTo (like instant.io)');
     
     // Load WebTorrent latest version
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@1.8.25/webtorrent.min.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js';
     
     console.log('🌐 Loading WebTorrent script from:', script.src);
     
@@ -78,30 +78,21 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        // Create a video element manually
-        const videoElement = document.createElement('video');
-        videoElement.controls = true;
-        videoElement.className = 'w-full max-w-2xl';
-        videoContainerRef.current.appendChild(videoElement);
-        
-        // Select the file to prioritize it
-        videoFile.select();
-        
-        // Clear any existing torrents to prevent pipe conflicts
-        const existingTorrents = clientRef.current.torrents.filter((t: any) => t !== torrent);
-        existingTorrents.forEach((t: any) => clientRef.current.remove(t));
-        
-        // Use renderTo with pipe conflict prevention
-        videoFile.renderTo(videoElement, {
+        // Use appendTo like instant.io - let WebTorrent create and manage the video element
+        videoFile.appendTo(videoContainerRef.current, {
           autoplay: false,
-          maxBlobLength: 200 * 1000 * 1000  // 200MB for progressive streaming
-        }, (err: any) => {
+          controls: true,
+          maxBlobLength: 200 * 1000 * 1000  // 200MB like instant.io
+        }, (err: any, videoElement: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
-            console.error('❌ renderTo failed:', err);
+            console.error('❌ appendTo failed:', err);
           } else {
             setStatus('📺 Video ready - will auto-play when loaded');
-            console.log('✅ renderTo SUCCESS');
+            console.log('✅ appendTo SUCCESS (instant.io style)');
+            
+            // Apply styling to the WebTorrent-created video element
+            videoElement.className = 'w-full max-w-2xl';
             
             // Log streaming strategy
             const isMediaSource = videoElement.src?.includes('mediasource');
