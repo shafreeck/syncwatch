@@ -238,6 +238,14 @@ export default function Home() {
               videos={videos}
               uploadSpeed={uploadSpeed}
               peers={peers}
+              onDeleteVideo={(video) => {
+                if (!room) return;
+                sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
+                toast({
+                  title: "Requesting delete",
+                  description: `${video.name}`,
+                });
+              }}
               onSelectVideo={(video) => {
                 if (video.magnetUri && room) {
                   console.log("Selecting video locally:", video);

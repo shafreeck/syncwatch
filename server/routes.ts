@@ -252,19 +252,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           case "video_upload":
             if (socket.userId && socket.roomId) {
-              const video = await storage.createVideo({
-                name: message.data.name,
-                magnetUri: message.data.magnetUri,
-                infoHash: message.data.infoHash,
-                size: message.data.size,
-                roomId: message.data.roomId,
-                uploadedBy: socket.userId,
-              });
+              // Deduplicate by (roomId, infoHash)
+              const roomId = message.data.roomId;
+              const infoHash = message.data.infoHash;
+              const existing = (await storage.getVideosByRoom(roomId)).find(v => v.infoHash === infoHash);
 
-              broadcastToRoom(message.data.roomId, {
-                type: "new_video",
-                data: { video }
-              });
+              let video;
+              if (existing) {
+                video = existing;
+                // Optionally, we could update name/magnet if changed; keep first seen stable for now
+                // Do not broadcast a new item to avoid duplicates on clients
+              } else {
+                video = await storage.createVideo({
+                  name: message.data.name,
+                  magnetUri: message.data.magnetUri,
+                  infoHash: message.data.infoHash,
+                  size: message.data.size,
+                  roomId: roomId,
+                  uploadedBy: socket.userId,
+                });
+
+                broadcastToRoom(roomId, {
+                  type: "new_video",
+                  data: { video }
+                });
+              }
             }
             break;
 
@@ -284,6 +296,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   magnetUri: message.data.magnetUri
                 }
               });
+            }
+            break;
+
+          case "video_delete":
+            if (socket.roomId) {
+              try {
+                const { videoId, roomId } = message.data || {};
+                const video = await storage.getVideo(videoId);
+                if (!video || video.roomId !== roomId) {
+                  socket.send(JSON.stringify({ type: "error", message: "Video not found" }));
+                  break;
+                }
+                // Allow any participant in the room to delete for now.
+                // (We can tighten to host/uploader once host is reliably tracked.)
+                const ok = await storage.deleteVideo(videoId);
+                if (ok) {
+                  broadcastToRoom(roomId, {
+                    type: "video_deleted",
+                    data: { videoId }
+                  });
+                } else {
+                  socket.send(JSON.stringify({ type: "error", message: "Failed to delete video" }));
+                }
+              } catch (e) {
+                socket.send(JSON.stringify({ type: "error", message: "Failed to delete video" }));
+              }
             }
             break;
         }

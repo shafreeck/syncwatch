@@ -26,6 +26,7 @@ export interface IStorage {
   createVideo(video: InsertVideo): Promise<Video>;
   getVideosByRoom(roomId: string): Promise<Video[]>;
   getVideo(id: string): Promise<Video | undefined>;
+  deleteVideo(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -148,6 +149,10 @@ export class MemStorage implements IStorage {
   async getVideo(id: string): Promise<Video | undefined> {
     return this.videos.get(id);
   }
+
+  async deleteVideo(id: string): Promise<boolean> {
+    return this.videos.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -247,6 +252,14 @@ export class DatabaseStorage implements IStorage {
   async getVideo(id: string): Promise<Video | undefined> {
     const [video] = await db.select().from(videos).where(eq(videos.id, id));
     return video || undefined;
+  }
+
+  async deleteVideo(id: string): Promise<boolean> {
+    const result = await db
+      .delete(videos)
+      .where(eq(videos.id, id))
+      .returning({ id: videos.id });
+    return result.length > 0;
   }
 }
 

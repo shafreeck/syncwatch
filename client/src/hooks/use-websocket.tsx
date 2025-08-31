@@ -143,13 +143,32 @@ export function useWebSocket() {
       case "new_video":
         console.log("Received new video:", message.data.video);
         setVideos(prev => {
-          const newList = [message.data.video, ...prev];
+          const v = message.data.video as any;
+          // Deduplicate by infoHash (fallback to id)
+          const existsIdx = prev.findIndex(x => (x as any).infoHash && v.infoHash ? (x as any).infoHash === v.infoHash : x.id === v.id);
+          let newList: any[];
+          if (existsIdx >= 0) {
+            newList = [...prev];
+            newList[existsIdx] = { ...prev[existsIdx], ...v };
+          } else {
+            newList = [v, ...prev];
+          }
           console.log('✓ Videos list updated, new count:', newList.length);
-          return newList;
+          return newList as any;
         });
         toast({
-          title: "Video uploaded",
-          description: `${message.data.video.name} is ready for streaming`,
+          title: "Video added",
+          description: "Seeding started. Click Select to start streaming.",
+        });
+        break;
+
+      case "video_deleted":
+        setVideos(prev => prev.filter(v => v.id !== message.data.videoId));
+        // If the current playing video is deleted, clear it
+        setCurrentVideo(prev => (prev && prev.id === message.data.videoId ? null : prev));
+        toast({
+          title: "Video deleted",
+          description: "The video has been removed from the room",
         });
         break;
 
@@ -274,6 +293,8 @@ export function useWebSocket() {
       await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
       console.log("Creating torrent from file...");
+      // Give immediate feedback that we started preparing
+      try { onProgress?.(1); } catch {}
       
       // Create torrent from the file
       client.seed(file, (torrent: any) => {
@@ -286,45 +307,18 @@ export function useWebSocket() {
         
         // Set up progress tracking for seeding
         if (onProgress) {
-          console.log("📊 Setting up seeding progress tracking...");
-          let lastProgress = 0;
-          
-          const updateProgress = () => {
-            // Calculate progress based on torrent metadata availability and initial setup
-            const setupProgress = torrent.ready ? 20 : 10; // 20% when torrent is ready
-            const uploadProgress = torrent.uploaded ? Math.min(80, (torrent.uploaded / torrent.length) * 80) : 0;
-            const totalProgress = Math.min(100, setupProgress + uploadProgress);
-            
-            if (totalProgress > lastProgress + 1) { // Update every 1%
-              onProgress(totalProgress);
-              lastProgress = totalProgress;
-              console.log(`📈 Seeding progress: ${totalProgress.toFixed(1)}%`);
-            }
-          };
-          
-          // Initial progress update
-          onProgress(10); // 10% for torrent creation
-          
-          // Track torrent ready state
-          if (torrent.ready) {
-            onProgress(20);
-          } else {
-            torrent.on('ready', () => {
-              onProgress(20);
-              console.log("🎯 Torrent ready for seeding");
-            });
-          }
-          
-          // Track upload progress
-          const progressInterval = setInterval(updateProgress, 500);
-          
-          torrent.on('upload', updateProgress);
-          
-          // Clean up after some time or when fully uploaded
-          setTimeout(() => {
-            clearInterval(progressInterval);
+          console.log("📊 Tracking seeding readiness...");
+          // Show quick feedback for preparation
+          onProgress(10);
+          const markReady = () => {
             onProgress(100);
-          }, 5000); // Mark as complete after 5 seconds
+            console.log("🎯 Torrent ready for seeding (progress 100%)");
+          };
+          if (torrent.ready) {
+            markReady();
+          } else {
+            torrent.on('ready', markReady);
+          }
         }
         
         // Send torrent info to room via WebSocket

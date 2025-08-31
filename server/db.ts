@@ -58,6 +58,41 @@ function ensureSchema(db: Database.Database) {
       uploaded_at INTEGER
     )
   `).run();
+
+  // Clean up any historical duplicates (keep the newest) before adding the unique index
+  try {
+    const dups = db.prepare(`
+      SELECT room_id, info_hash, COUNT(*) AS cnt
+      FROM videos
+      GROUP BY room_id, info_hash
+      HAVING cnt > 1
+    `).all() as Array<{ room_id: string; info_hash: string; cnt: number }>;
+
+    for (const d of dups) {
+      const rows = db.prepare(`
+        SELECT id FROM videos
+        WHERE room_id = ? AND info_hash = ?
+        ORDER BY uploaded_at DESC, rowid DESC
+      `).all(d.room_id, d.info_hash) as Array<{ id: string }>;
+      // keep the newest, delete others
+      for (const r of rows.slice(1)) {
+        db.prepare(`DELETE FROM videos WHERE id = ?`).run(r.id);
+      }
+    }
+  } catch (e) {
+    console.warn('Failed cleaning duplicate videos before creating unique index:', e);
+  }
+
+  // Ensure we don't store duplicate entries of the same content in the same room
+  try {
+    db.prepare(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_room_hash
+      ON videos(room_id, info_hash)
+    `).run();
+  } catch (e) {
+    // If creating the index still fails (e.g., due to a racing write), continue without crashing
+    console.warn('Failed creating unique index idx_videos_room_hash:', e);
+  }
 }
 
 ensureSchema(sqlite);

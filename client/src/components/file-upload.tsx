@@ -1,7 +1,18 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CloudUpload, FileVideo, Play, Share2 } from "lucide-react";
+import { CloudUpload, FileVideo, Play, Share2, Trash2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import SeedingProgressModal from "./seeding-progress-modal";
 
@@ -17,11 +28,12 @@ interface FileUploadProps {
   onVideoUpload: (file: File, onProgress?: (progress: number) => void) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
+  onDeleteVideo?: (video: Video) => void;
   uploadSpeed?: number;
   peers?: number;
 }
 
-export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploadSpeed = 0, peers = 0 }: FileUploadProps) {
+export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeleteVideo, uploadSpeed = 0, peers = 0 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -75,20 +87,16 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploa
         setSeedingProgress(progress);
         console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
       });
-      
-      console.log("Video upload completed successfully");
-      setSeedingProgress(100);
-      
-      toast({
-        title: "Video uploaded successfully",
-        description: `${file.name} is now available for streaming`,
-      });
-      
-      // Keep modal open briefly to show completion
-      setTimeout(() => {
-        setShowProgressModal(false);
-      }, 2000);
-      
+
+      console.log("Video upload initialized (seeding continues in background)");
+      // Do not auto-close: keep the modal until user closes/minimizes
+      if (seedingProgress >= 100) {
+        toast({
+          title: "Video ready",
+          description: `${file.name} is now ready for streaming`,
+        });
+      }
+
     } catch (error) {
       console.error("Video upload failed:", error);
       setShowProgressModal(false);
@@ -98,7 +106,8 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploa
         variant: "destructive",
       });
     } finally {
-      setIsUploading(false);
+      // Keep uploading state if progress not completed yet so inline list can show progress
+      setIsUploading(prev => (seedingProgress >= 100 ? false : prev));
     }
   };
 
@@ -193,15 +202,15 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploa
         onClick={openFileDialog}
         data-testid="dropzone-file-upload"
       >
-        <div className="space-y-2">
-          <FileVideo className="w-12 h-12 text-muted-foreground mx-auto" />
-          <p className="text-foreground">
-            {isUploading ? "Uploading..." : "Drop video files here or click to browse"}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Supports MP4, WebM, AVI • Max 2GB
-          </p>
-        </div>
+          <div className="space-y-2">
+            <FileVideo className="w-12 h-12 text-muted-foreground mx-auto" />
+            <p className="text-foreground">
+            {isUploading ? "Preparing / Seeding..." : "Drop video files here or click to browse"}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Supports MP4, WebM, AVI • Max 2GB
+            </p>
+          </div>
         
         <input
           ref={fileInputRef}
@@ -223,7 +232,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploa
             {videos.map((video) => (
               <div
                 key={video.id}
-                className="flex items-center justify-between p-2 hover:bg-secondary rounded-lg cursor-pointer transition-colors"
+                className="group flex items-center justify-between p-2 hover:bg-secondary rounded-lg transition-colors"
                 data-testid={`video-item-${video.id}`}
               >
                 <div className="flex items-center space-x-3">
@@ -235,18 +244,78 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, uploa
                     <p className="text-xs text-muted-foreground">
                       {formatFileSize(video.size)} • {formatUploadTime(video.uploadedAt)}
                     </p>
+                    {/* Inline seeding progress for the current uploading file */}
+                    {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
+                      <div className="mt-1">
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                          <span>Seeding progress</span>
+                          <span className="font-mono">{seedingProgress.toFixed(1)}%</span>
+                        </div>
+                        <div className="h-1.5 w-48 bg-secondary rounded overflow-hidden">
+                          <div
+                            className="h-full bg-primary transition-all"
+                            style={{ width: `${Math.min(100, Math.max(0, seedingProgress))}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onSelectVideo(video)}
-                  data-testid={`button-select-video-${video.id}`}
-                >
-                  <Play className="w-3 h-3 mr-1" />
-                  Select
-                </Button>
+                <div className="flex items-center gap-2">
+                  {onDeleteVideo && (
+                    <TooltipProvider delayDuration={200}>
+                      <Dialog>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="opacity-60 group-hover:opacity-100 hover:bg-red-50/5 hover:text-red-500"
+                                data-testid={`button-delete-video-${video.id}`}
+                                aria-label="Delete video"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Delete this video?</DialogTitle>
+                            <DialogDescription>
+                              "{video.name}" will be removed for everyone in this room.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <DialogClose asChild>
+                              <Button
+                                className="bg-red-600 hover:bg-red-700"
+                                onClick={() => onDeleteVideo(video)}
+                              >
+                                Delete
+                              </Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </TooltipProvider>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onSelectVideo(video)}
+                    data-testid={`button-select-video-${video.id}`}
+                  >
+                    <Play className="w-3 h-3 mr-1" />
+                    Select
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

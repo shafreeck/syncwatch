@@ -37,7 +37,11 @@ export default function SeedingProgressModal({
   };
 
   const getStatusMessage = () => {
-    if (isCompleted) return "✅ Video ready for streaming!";
+    if (progress >= 100) {
+      return peers > 0
+        ? "✅ Ready. Seeding to peers..."
+        : "✅ Ready. Waiting for peers...";
+    }
     if (progress > 80) return "🔥 Almost ready...";
     if (progress > 50) return "📡 Building peer connections...";
     if (progress > 10) return "⚡ Creating torrent...";
