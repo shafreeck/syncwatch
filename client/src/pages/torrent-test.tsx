@@ -88,10 +88,17 @@ export default function TorrentTest() {
               hasStartedPlaying = true;
               setStatus('🎬 Auto-playing');
               
-              videoElement.play().catch(err => {
-                console.log('❌ Autoplay failed:', err.message);
-                setStatus('📺 Ready - click to play');
-                hasStartedPlaying = false; // Reset so user can try again
+              videoElement.play().then(() => {
+                console.log('✅ Auto-play SUCCESS!');
+                setStatus('🎬 Playing automatically');
+              }).catch(err => {
+                console.log('❌ Autoplay failed (browser blocked):', err.name, err.message);
+                setStatus('📺 Ready - click to play (autoplay blocked)');
+                hasStartedPlaying = false;
+                
+                // Try to make the video more clickable
+                videoElement.style.cursor = 'pointer';
+                videoElement.title = 'Click to play - autoplay was blocked by browser';
               });
             };
             
@@ -112,11 +119,28 @@ export default function TorrentTest() {
               videoElement.addEventListener('progress', checkBuffer);
             } else {
               console.log('📁 Using Blob URL strategy - waiting for canplay');
-              // For Blob URL, wait for sufficient loading
+              
+              // Strategy 1: Try immediately on canplay
               videoElement.addEventListener('canplay', () => {
                 console.log('✅ Can play - sufficient data loaded');
-                setTimeout(tryAutoPlay, 500); // Small delay to ensure stability
+                setTimeout(tryAutoPlay, 100);
               });
+              
+              // Strategy 2: Try on any user interaction (mouse movement, click anywhere)
+              const enableAutoplayOnInteraction = () => {
+                console.log('👆 User interaction detected - enabling autoplay');
+                document.removeEventListener('click', enableAutoplayOnInteraction);
+                document.removeEventListener('keydown', enableAutoplayOnInteraction);
+                document.removeEventListener('touchstart', enableAutoplayOnInteraction);
+                
+                if (videoElement.readyState >= 3) {
+                  tryAutoPlay();
+                }
+              };
+              
+              document.addEventListener('click', enableAutoplayOnInteraction);
+              document.addEventListener('keydown', enableAutoplayOnInteraction);
+              document.addEventListener('touchstart', enableAutoplayOnInteraction);
             }
             
             videoElement.addEventListener('loadedmetadata', () => {
