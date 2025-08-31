@@ -78,12 +78,20 @@ export default function TorrentTest() {
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
             
-            videoElement.addEventListener('loadedmetadata', () => {
-              console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
-              console.log('🎬 Starting playback immediately');
+            // Check if metadata is already loaded or wait for it
+            if (videoElement.duration && videoElement.duration > 0) {
+              console.log('✅ Metadata already available - starting playback now');
               setStatus('🎬 Playing');
               videoElement.play();
-            });
+            } else {
+              console.log('⏳ Waiting for metadata...');
+              videoElement.addEventListener('loadedmetadata', () => {
+                console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
+                console.log('🎬 Starting playback');
+                setStatus('🎬 Playing');
+                videoElement.play();
+              });
+            }
           }
         });
       } else {
