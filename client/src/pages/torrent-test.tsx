@@ -1,58 +1,52 @@
 import { useState, useRef, useEffect } from 'react';
+import WebTorrent from 'webtorrent';
 
 export default function TorrentTest() {
-  const [magnetUrl, setMagnetUrl] = useState('');
-  const [status, setStatus] = useState('');
+  const [magnetUrl, setMagnetUrl] = useState('magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com');
+  const [status, setStatus] = useState('Initializing...');
   const [progress, setProgress] = useState(0);
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  const clientRef = useRef<any>(null);
+  const clientRef = useRef<WebTorrent.Instance | null>(null);
 
   useEffect(() => {
-    // Check MediaSource API support first
+    // Browser capability checks
     console.log('🔍 Browser capability check:');
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent v1.9.7 (exact instant.io version)');
+    console.log('🎯 Using local WebTorrent v1.9.7 (bundled, like instant.io)');
     
-    // Load WebTorrent latest version
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@1.9.7/webtorrent.min.js';
-    
-    console.log('🌐 Loading WebTorrent script from:', script.src);
-    
-    script.onload = () => {
-      console.log('📦 WebTorrent script loaded successfully');
-      console.log('🔍 Available WebTorrent:', typeof window.WebTorrent);
-      console.log('🔍 Global scope check:', Object.keys(window).filter(key => key.toLowerCase().includes('torrent')));
-      
-      // @ts-ignore
-      if (window.WebTorrent) {
-        try {
-          clientRef.current = new window.WebTorrent();
-          setStatus('WebTorrent client ready');
-          console.log('✅ WebTorrent client created successfully');
-        } catch (error) {
-          console.error('❌ Error creating WebTorrent client:', error);
-          setStatus('Error creating WebTorrent client');
+    try {
+      // Create WebTorrent client exactly like instant.io
+      clientRef.current = new WebTorrent({
+        tracker: {
+          rtcConfig: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' }
+            ]
+          }
         }
-      } else {
-        console.error('❌ WebTorrent not found on window object');
-        setStatus('WebTorrent not available');
-      }
-    };
-    
-    script.onerror = (error) => {
-      console.error('❌ Failed to load WebTorrent script:', error);
-      setStatus('Failed to load WebTorrent script');
-    };
-    document.head.appendChild(script);
+      });
+      
+      console.log('✅ WebTorrent client created successfully (local bundle)');
+      setStatus('✅ Ready to load torrents');
+      
+      // Add error handlers
+      clientRef.current.on('error', (err: string | Error) => {
+        const message = typeof err === 'string' ? err : err.message;
+        console.error('❌ WebTorrent client error:', err);
+        setStatus(`❌ Client error: ${message}`);
+      });
+      
+    } catch (error) {
+      console.error('❌ Failed to create WebTorrent client:', error);
+      setStatus('❌ Failed to initialize WebTorrent');
+    }
 
     return () => {
       if (clientRef.current) {
         clientRef.current.destroy();
       }
-      document.head.removeChild(script);
     };
   }, []);
 
@@ -64,11 +58,11 @@ export default function TorrentTest() {
 
     setStatus('Loading torrent...');
     
-    const torrent = clientRef.current.add(magnetUrl, (torrent: any) => {
+    const torrent = clientRef.current.add(magnetUrl, (torrent: WebTorrent.Torrent) => {
       setStatus(`Torrent loaded: ${torrent.name}`);
       
       // Find the video file
-      const videoFile = torrent.files.find((file: any) => 
+      const videoFile = torrent.files.find((file: WebTorrent.TorrentFile) => 
         file.name.match(/\.(mp4|webm|avi|mov|mkv)$/i)
       );
       
@@ -81,11 +75,11 @@ export default function TorrentTest() {
         // Use appendTo exactly like instant.io
         videoFile.appendTo(videoContainerRef.current, {
           maxBlobLength: 2 * 1000 * 1000 * 1000  // 2 GB exactly like instant.io
-        }, (err: any, videoElement: HTMLVideoElement) => {
+        }, (err: Error | undefined, videoElement?: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
             console.error('❌ appendTo failed:', err);
-          } else {
+          } else if (videoElement) {
             setStatus('📺 Video ready (instant.io exact config)');
             console.log('✅ appendTo SUCCESS - exact instant.io config');
             
@@ -109,14 +103,16 @@ export default function TorrentTest() {
       setProgress(torrent.progress * 100);
     });
 
-    torrent.on('error', (err: any) => {
-      setStatus(`Torrent error: ${err.message}`);
+    torrent.on('error', (err: string | Error) => {
+      const message = typeof err === 'string' ? err : err.message;
+      setStatus(`Torrent error: ${message}`);
+      console.error('❌ Torrent error:', err);
     });
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">WebTorrent Simple Test</h1>
+      <h1 className="text-3xl font-bold mb-6">WebTorrent Test (Local Bundle)</h1>
       
       <div className="space-y-4">
         <div>
@@ -128,51 +124,26 @@ export default function TorrentTest() {
             value={magnetUrl}
             onChange={(e) => setMagnetUrl(e.target.value)}
             placeholder="magnet:?xt=urn:btih:..."
-            className="w-full p-2 border border-gray-300 rounded-md bg-white text-black dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
         
         <button
           onClick={loadTorrent}
           disabled={!magnetUrl || !clientRef.current}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
         >
           Load Torrent
         </button>
         
-        <div className="text-sm text-gray-600 dark:text-gray-300">
-          Status: {status}
+        <div className="p-4 bg-gray-100 rounded">
+          <p><strong>Status:</strong> {status}</p>
+          <p><strong>Progress:</strong> {progress.toFixed(1)}%</p>
         </div>
         
-        {progress > 0 && (
-          <div className="space-y-2">
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-              Download Progress: {progress.toFixed(1)}%
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
-        
-        <div
-          ref={videoContainerRef}
-          className="w-full max-w-2xl min-h-[200px] border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800 flex items-center justify-center"
-        >
-          <div className="text-gray-500 dark:text-gray-400">
-            Video will appear here after loading torrent
-          </div>
+        <div ref={videoContainerRef} className="mt-4">
+          {/* Video will be appended here */}
         </div>
-      </div>
-      
-      <div className="mt-8 p-4 bg-gray-100 rounded-md">
-        <h3 className="font-medium mb-2">Test with this magnet URL:</h3>
-        <code className="text-xs break-all">
-          magnet:?xt=urn:btih:c53da4fa28aa2edc1faa91861cce38527414d874&dn=Sintel.mp4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com
-        </code>
       </div>
     </div>
   );

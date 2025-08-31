@@ -1,56 +1,46 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-
-declare global {
-  interface Window {
-    WebTorrent: any;
-  }
-}
+import WebTorrent from "webtorrent";
 
 export function useWebTorrent() {
-  const [client, setClient] = useState<any>(null);
+  const [client, setClient] = useState<WebTorrent.Instance | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [uploadSpeed, setUploadSpeed] = useState(0);
   const [peers, setPeers] = useState(0);
   const [isSeeding, setIsSeeding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const currentTorrent = useRef<any>(null);
+  const currentTorrent = useRef<WebTorrent.Torrent | null>(null);
 
   useEffect(() => {
-    // Load WebTorrent dynamically
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/webtorrent@1.9.7/webtorrent.min.js";
-    script.onload = () => {
-      if (window.WebTorrent) {
-        const webTorrentClient = new window.WebTorrent({
-          tracker: {
-            announce: [
-              'wss://tracker.btorrent.xyz',
-              'wss://tracker.openwebtorrent.com',
-              'wss://tracker.webtorrent.dev'
-            ]
-          },
-          dht: true,
-          webSeeds: true,
-          maxConns: 100,
-          downloadLimit: -1,
-          uploadLimit: -1,
-        });
-        setClient(webTorrentClient);
-        setIsLoading(false);
-        console.log("WebTorrent client initialized for progressive streaming");
-      }
-    };
-    script.onerror = () => {
-      console.error("Failed to load WebTorrent");
+    try {
+      // Create WebTorrent client using local bundle
+      const webTorrentClient = new WebTorrent({
+        tracker: {
+          announce: [
+            'wss://tracker.btorrent.xyz',
+            'wss://tracker.openwebtorrent.com',
+            'wss://tracker.webtorrent.dev'
+          ]
+        },
+        dht: true,
+        webSeeds: true,
+        maxConns: 100,
+        downloadLimit: -1,
+        uploadLimit: -1,
+      });
+      
+      setClient(webTorrentClient);
       setIsLoading(false);
-    };
-    document.head.appendChild(script);
+      console.log("WebTorrent client initialized for progressive streaming (local bundle)");
+      
+    } catch (err) {
+      console.error("Failed to create WebTorrent client:", err);
+      setIsLoading(false);
+    }
 
     return () => {
       if (client) {
         client.destroy();
       }
-      document.head.removeChild(script);
     };
   }, []);
 
@@ -74,12 +64,12 @@ export function useWebTorrent() {
     }
 
     console.log('Adding new torrent:', magnetUri);
-    const torrent = client.add(magnetUri, (torrent: any) => {
+    const torrent = client.add(magnetUri, (torrent: WebTorrent.Torrent) => {
       console.log("Torrent loaded:", torrent.name);
       setIsSeeding(true);
 
       // Find video file
-      const videoFile = torrent.files.find((file: any) => 
+      const videoFile = torrent.files.find((file: WebTorrent.TorrentFile) => 
         file.name.match(/\.(mp4|webm|ogg|avi|mov)$/i)
       );
 
@@ -100,7 +90,7 @@ export function useWebTorrent() {
           maxBlobLength: 200 * 1024 * 1024,  // 200MB threshold
           autoplay: false,
           controls: true
-        }, (err: any) => {
+        }, (err: Error | undefined) => {
           if (err) {
             console.error('❌ renderTo failed:', err);
           } else {
@@ -132,7 +122,7 @@ export function useWebTorrent() {
       currentTorrent.current = torrent;
     });
 
-    torrent.on('error', (err: any) => {
+    torrent.on('error', (err: string | Error) => {
       console.error('WebTorrent torrent error:', err);
     });
   }, [client]);
@@ -143,7 +133,7 @@ export function useWebTorrent() {
       return Promise.reject(new Error("WebTorrent client not available"));
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<WebTorrent.Torrent>((resolve, reject) => {
       // Remove existing torrent to prevent conflicts
       if (currentTorrent.current) {
         console.log('Removing existing torrent before seeding new file');
@@ -151,7 +141,7 @@ export function useWebTorrent() {
         currentTorrent.current = null;
       }
 
-      const torrent = client.seed(file, (torrent: any) => {
+      const torrent = client.seed(file, (torrent: WebTorrent.Torrent) => {
         console.log("Seeding started:", torrent.name);
         setIsSeeding(true);
 
@@ -168,7 +158,7 @@ export function useWebTorrent() {
         resolve(torrent);
       });
 
-      torrent.on('error', (err: any) => {
+      torrent.on('error', (err: string | Error) => {
         console.error('Seeding error:', err);
         reject(err);
       });
@@ -181,22 +171,24 @@ export function useWebTorrent() {
       return;
     }
 
-    const torrent = client.add(magnetUri, (torrent: any) => {
+    const torrent = client.add(magnetUri, (torrent: WebTorrent.Torrent) => {
       const file = torrent.files[0];
       if (file) {
-        file.getBlobURL((err: any, url: string) => {
+        file.getBlobURL((err: Error | undefined, url?: string) => {
           if (err) {
             console.error('Error getting blob URL:', err);
             return;
           }
           
-          // Create download link
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = file.name;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          if (url) {
+            // Create download link
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
         });
       }
     });
