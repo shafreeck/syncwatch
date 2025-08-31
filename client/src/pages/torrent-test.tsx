@@ -13,11 +13,11 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent @latest with appendTo (like instant.io)');
+    console.log('🎯 Using WebTorrent v1.9.7 (exact instant.io version)');
     
     // Load WebTorrent latest version
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@1.9.7/webtorrent.min.js';
     
     console.log('🌐 Loading WebTorrent script from:', script.src);
     
