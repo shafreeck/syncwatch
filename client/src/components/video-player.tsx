@@ -9,9 +9,10 @@ interface VideoPlayerProps {
   currentVideo?: any;
   onVideoSync: (action: string, currentTime: number) => void;
   isConnected: boolean;
+  lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, lastSync }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -20,6 +21,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
   const [progress, setProgress] = useState(0);
 
   const {
+    client,
     downloadProgress,
     uploadSpeed,
     peers,
@@ -77,10 +79,31 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected }: 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !currentVideo || !currentVideo.magnetUri) return;
-    
     console.log("Loading video via torrent:", currentVideo.name);
     loadTorrent(currentVideo.magnetUri, video);
-  }, [currentVideo]); // Remove loadTorrent from dependencies to prevent infinite loops
+  }, [currentVideo]);
+
+  // Apply incoming sync messages (best-effort)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !lastSync) return;
+    const { action, currentTime } = lastSync;
+    try {
+      if (typeof currentTime === 'number' && !isNaN(currentTime)) {
+        // Only seek if difference is noticeable to avoid jank
+        if (Math.abs((video.currentTime || 0) - currentTime) > 0.5) {
+          video.currentTime = currentTime;
+        }
+      }
+      if (action === 'play') {
+        video.play().catch(() => {});
+        setIsPlaying(true);
+      } else if (action === 'pause') {
+        video.pause();
+        setIsPlaying(false);
+      }
+    } catch {}
+  }, [lastSync]);
 
   const togglePlay = () => {
     const video = videoRef.current;

@@ -30,6 +30,7 @@ export default function Home() {
     messages,
     videos,
     currentVideo,
+    lastSync,
     joinRoom,
     leaveRoom,
     sendMessage,
@@ -53,10 +54,16 @@ export default function Home() {
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
     try {
-      await joinRoom(roomCode, displayName);
+      // Prefer URL roomId if present, so invite links don't require typing the code
+      const targetRoomId = roomId || roomCode;
+      await joinRoom(targetRoomId, displayName);
       setUsername(displayName);
+      // persist name for frictionless re-joins
+      try { localStorage.setItem('syncwatch:username', displayName); } catch {}
+      // mark recent join to guard auto-join effect after navigation
+      try { sessionStorage.setItem('syncwatch:last-join', JSON.stringify({ roomId: targetRoomId, at: Date.now() })); } catch {}
       setShowRoomModal(false);
-      navigate(`/room/${roomCode}`);
+      navigate(`/room/${targetRoomId}`);
       
       toast({
         title: "Connected successfully",
@@ -70,6 +77,38 @@ export default function Home() {
       });
     }
   };
+
+  // Auto-join when visiting an invite link (/room/:roomId)
+  useEffect(() => {
+    if (!roomId) return;
+    // If already in a room with the same id, do nothing
+    if (room && room.id === roomId) return;
+
+    // When socket is connected, try to join automatically using saved name
+    if (isConnected) {
+      // Skip if we very recently joined this same room (avoid duplicate join)
+      try {
+        const raw = sessionStorage.getItem('syncwatch:last-join');
+        if (raw) {
+          const info = JSON.parse(raw);
+          if (info?.roomId === roomId && Date.now() - (info.at || 0) < 8000) {
+            return;
+          }
+        }
+      } catch {}
+      let saved = '';
+      try { saved = localStorage.getItem('syncwatch:username') || ''; } catch {}
+      if (saved) {
+        joinRoom(roomId, saved);
+        setUsername(saved);
+        setShowRoomModal(false);
+        try { sessionStorage.setItem('syncwatch:last-join', JSON.stringify({ roomId, at: Date.now() })); } catch {}
+      } else {
+        // No saved name – show modal to ask for display name
+        setShowRoomModal(true);
+      }
+    }
+  }, [roomId, isConnected, room, joinRoom]);
 
   const handleCreateRoom = async (roomName: string, displayName: string) => {
     try {
@@ -85,6 +124,10 @@ export default function Home() {
       const newRoom = await response.json();
       await joinRoom(newRoom.id, displayName);
       setUsername(displayName);
+      // persist name so auto-join effect won't reopen modal
+      try { localStorage.setItem('syncwatch:username', displayName); } catch {}
+      // mark recent join for duplicate-guard
+      try { sessionStorage.setItem('syncwatch:last-join', JSON.stringify({ roomId: newRoom.id, at: Date.now() })); } catch {}
       setShowRoomModal(false);
       navigate(`/room/${newRoom.id}`);
       
@@ -187,6 +230,7 @@ export default function Home() {
               currentVideo={currentVideo}
               onVideoSync={syncVideo}
               isConnected={isConnected}
+              lastSync={lastSync}
             />
             
             <FileUpload

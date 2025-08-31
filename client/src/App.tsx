@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
 import TorrentTest from "@/pages/torrent-test";
+import WebTorrentSelfTest from "@/pages/wt-self-test";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/test" component={TorrentTest} />
+      <Route path="/wt-self-test" component={WebTorrentSelfTest} />
       <Route path="/room/:roomId" component={Home} />
       <Route component={NotFound} />
     </Switch>

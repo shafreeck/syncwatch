@@ -46,7 +46,7 @@ Preferred communication style: Simple, everyday language.
 - **Modular Route System**: Organized API endpoints for rooms, users, messages, and videos
 
 ## Database Design
-- **PostgreSQL with Drizzle ORM**: Type-safe database operations with schema-first approach
+- **SQLite with Drizzle ORM**: Type-safe database operations with schema-first approach (single-file DB `sqlite.db`)
 - **Four Core Tables**:
   - `rooms`: Video watching sessions with host management
   - `users`: Participants in rooms with role-based permissions
@@ -67,10 +67,14 @@ Preferred communication style: Simple, everyday language.
 - **Responsive Design**: Mobile-first approach with breakpoint-based layouts
 - **Component Composition**: Reusable UI components with consistent styling patterns
 
+## Database Setup
+- Local development uses SQLite via `better-sqlite3`. The database file defaults to `sqlite.db` in the project root. Set `DATABASE_URL` to a custom path (e.g. `file:./data/app.db`) if desired.
+- Generate/apply schema with: `npm run db:push` (uses `drizzle-kit` and the schema in `shared/schema.ts`).
+
 # External Dependencies
 
 ## Core Framework Dependencies
-- **@neondatabase/serverless**: PostgreSQL serverless driver for database connectivity
+- **better-sqlite3**: SQLite driver for Node.js
 - **drizzle-orm**: Type-safe ORM for database operations and migrations
 - **express**: Web framework for REST API and static file serving
 - **ws**: WebSocket library for real-time communication

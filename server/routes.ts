@@ -67,6 +67,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   
   const roomConnections = new Map<string, Set<ExtendedWebSocket>>();
+  // Persist latest selected video per room so newcomers auto-load it
+  const roomCurrentSelection = new Map<string, { videoId: string; magnetUri: string }>();
+  // Persist last playback state (best-effort) so newcomers can align state
+  const roomPlaybackState = new Map<string, { action: 'play' | 'pause' | 'seek'; currentTime: number }>();
+
+  async function cleanupStaleUsers(roomId: string) {
+    try {
+      const active = roomConnections.get(roomId) || new Set();
+      const activeIds = new Set(Array.from(active).map(s => s.userId).filter(Boolean) as string[]);
+      const existing = await storage.getUsersByRoom(roomId);
+      await Promise.all(existing.map(async (u) => {
+        if (!activeIds.has(u.id)) {
+          try { await storage.deleteUser(u.id); } catch {}
+        }
+      }));
+    } catch {}
+  }
 
   function broadcastToRoom(roomId: string, message: any, excludeSocket?: ExtendedWebSocket) {
     const connections = roomConnections.get(roomId);
@@ -99,12 +116,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
               return;
             }
 
-            // Create user
-            const user = await storage.createUser({
-              username,
-              roomId,
-              isHost: false,
-            });
+            // If this socket already joined the same room, treat as idempotent join
+            if (socket.userId && socket.roomId === roomId) {
+              // Best-effort update of username
+              try { await storage.updateUser(socket.userId, { username }); } catch {}
+
+              await cleanupStaleUsers(roomId);
+              const users = await storage.getUsersByRoom(roomId);
+              const messages = await storage.getMessagesByRoom(roomId);
+              const videos = await storage.getVideosByRoom(roomId);
+              socket.send(JSON.stringify({ type: "room_state", data: { room, users, messages, videos } }));
+
+              const selection = roomCurrentSelection.get(roomId);
+              if (selection) {
+                socket.send(JSON.stringify({ type: "video_selected", data: { videoId: selection.videoId, magnetUri: selection.magnetUri } }));
+              }
+              const playback = roomPlaybackState.get(roomId);
+              if (playback) {
+                socket.send(JSON.stringify({ type: "video_sync", data: { action: playback.action, currentTime: playback.currentTime, roomId } }));
+              }
+              break;
+            }
+
+            // If this socket was in another room, leave previous
+            if (socket.userId && socket.roomId && socket.roomId !== roomId) {
+              try {
+                const prevRoomId = socket.roomId;
+                const prevUserId = socket.userId;
+                await storage.deleteUser(prevUserId);
+                const prevConns = roomConnections.get(prevRoomId);
+                prevConns?.delete(socket);
+                broadcastToRoom(prevRoomId, { type: "user_left", data: { userId: prevUserId } });
+              } catch {}
+            }
+
+            // Create user for this socket in the new room
+            // Before creating a new record, clean up any stale users in this room
+            await cleanupStaleUsers(roomId);
+            const user = await storage.createUser({ username, roomId, isHost: false });
 
             socket.userId = user.id;
             socket.roomId = roomId;
@@ -115,11 +164,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             roomConnections.get(roomId)!.add(socket);
 
-            // Broadcast user joined
+            // Broadcast user joined to everyone EXCEPT the joining socket
             broadcastToRoom(roomId, {
               type: "user_joined",
               data: { user }
-            });
+            }, socket);
 
             // Send current room state to new user
             const users = await storage.getUsersByRoom(roomId);
@@ -130,6 +179,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
               type: "room_state",
               data: { room, users, messages, videos }
             }));
+
+            // If there is an active selection in this room, inform the newcomer
+            const selection = roomCurrentSelection.get(roomId);
+            if (selection) {
+              socket.send(JSON.stringify({
+                type: "video_selected",
+                data: { videoId: selection.videoId, magnetUri: selection.magnetUri }
+              }));
+            }
+
+            // Also send last known playback state (best-effort)
+            const playback = roomPlaybackState.get(roomId);
+            if (playback) {
+              socket.send(JSON.stringify({
+                type: "video_sync",
+                data: { action: playback.action, currentTime: playback.currentTime, roomId }
+              }));
+            }
 
             break;
 
@@ -169,6 +236,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           case "video_sync":
             if (socket.roomId) {
+              // Remember last playback state for newcomers
+              try {
+                const { action, currentTime } = message.data || {};
+                if (action && typeof currentTime === 'number') {
+                  roomPlaybackState.set(socket.roomId, { action, currentTime });
+                }
+              } catch {}
               broadcastToRoom(socket.roomId, {
                 type: "video_sync",
                 data: message.data
@@ -196,6 +270,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           case "video_select":
             if (socket.roomId) {
+              // Persist current selection for this room
+              try {
+                roomCurrentSelection.set(socket.roomId, {
+                  videoId: message.data.videoId,
+                  magnetUri: message.data.magnetUri,
+                });
+              } catch {}
               broadcastToRoom(message.data.roomId, {
                 type: "video_selected",
                 data: {

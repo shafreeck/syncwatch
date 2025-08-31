@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Upload, Users, Activity, X } from "lucide-react";
@@ -62,6 +62,9 @@ export default function SeedingProgressModal({
               <X className="w-4 h-4" />
             </Button>
           </DialogTitle>
+          <DialogDescription>
+            Seeding your video over P2P. Keep this tab open to continue sharing.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">

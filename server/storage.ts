@@ -132,8 +132,8 @@ export class MemStorage implements IStorage {
       id,
       uploadedAt: new Date(),
       size: insertVideo.size || null,
-      magnetUri: insertVideo.magnetUri || null,
-      infoHash: insertVideo.infoHash || null,
+      magnetUri: insertVideo.magnetUri,
+      infoHash: insertVideo.infoHash,
     };
     this.videos.set(id, video);
     return video;
@@ -183,8 +183,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    const result = await db.delete(users).where(eq(users.id, id));
-    return (result.rowCount || 0) > 0;
+    const result = await db
+      .delete(users)
+      .where(eq(users.id, id))
+      .returning({ id: users.id });
+    return result.length > 0;
   }
 
   async createRoom(insertRoom: InsertRoom): Promise<Room> {
@@ -210,8 +213,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteRoom(id: string): Promise<boolean> {
-    const result = await db.delete(rooms).where(eq(rooms.id, id));
-    return (result.rowCount || 0) > 0;
+    const result = await db
+      .delete(rooms)
+      .where(eq(rooms.id, id))
+      .returning({ id: rooms.id });
+    return result.length > 0;
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {

@@ -40,9 +40,12 @@ export function useWebSocket() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
+  const [lastSync, setLastSync] = useState<{ action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null>(null);
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+  // Always call the latest message handler from ws.onmessage to avoid stale closures
+  const handleMessageRef = useRef<(message: any) => void>();
 
   const connect = useCallback(() => {
     try {
@@ -60,7 +63,9 @@ export function useWebSocket() {
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
-          handleMessage(message);
+          if (handleMessageRef.current) {
+            handleMessageRef.current(message);
+          }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
         }
@@ -120,7 +125,11 @@ export function useWebSocket() {
         break;
 
       case "user_joined":
-        setUsers(prev => [...prev, message.data.user]);
+        setUsers(prev => {
+          const u: User = message.data.user;
+          const exists = prev.some(x => x.id === u.id);
+          return exists ? prev.map(x => (x.id === u.id ? u : x)) : [...prev, u];
+        });
         break;
 
       case "user_left":
@@ -147,35 +156,39 @@ export function useWebSocket() {
       case "video_sync":
         // Handle video synchronization
         console.log("Video sync:", message.data);
+        try {
+          const { action, currentTime, roomId } = message.data || {};
+          if (action && typeof currentTime === 'number') {
+            setLastSync({ action, currentTime, roomId, at: Date.now() });
+          }
+        } catch {}
         break;
 
       case "video_selected":
-        // Handle video selection
+        // Handle video selection - always set a fresh object to force re-load
         console.log("Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
-        const selectedVideo = videos.find(v => v.id === message.data.videoId);
-        if (selectedVideo) {
-          // Only set currentVideo if it's different to prevent duplicate torrent loading
-          if (!currentVideo || currentVideo.id !== selectedVideo.id) {
-            setCurrentVideo(selectedVideo);
-            console.log("Setting current video from videos list:", selectedVideo);
+        {
+          const selectedVideo = videos.find(v => v.id === message.data.videoId);
+          if (selectedVideo) {
+            const fresh = { ...selectedVideo };
+            setCurrentVideo(fresh);
+            console.log("Setting current video from videos list:", fresh);
           } else {
-            console.log("Video already selected, skipping duplicate load:", selectedVideo.name);
+            // If video not found in current videos list, create it from message data
+            const videoFromMessage = {
+              id: message.data.videoId,
+              magnetUri: message.data.magnetUri,
+              name: "Selected Video",
+              size: undefined,
+              infoHash: undefined,
+              roomId: room?.id || "",
+              uploadedBy: "",
+              uploadedAt: new Date()
+            };
+            setCurrentVideo(videoFromMessage);
+            console.log("Setting current video from message data:", videoFromMessage);
           }
-        } else {
-          // If video not found in current videos list, create it from message data
-          const videoFromMessage = {
-            id: message.data.videoId,
-            magnetUri: message.data.magnetUri,
-            name: "Selected Video",
-            size: undefined,
-            infoHash: undefined,
-            roomId: room?.id || "",
-            uploadedBy: "",
-            uploadedAt: new Date()
-          };
-          setCurrentVideo(videoFromMessage);
-          console.log("Setting current video from message data:", videoFromMessage);
         }
         break;
 
@@ -191,6 +204,11 @@ export function useWebSocket() {
         console.log("Unknown message type:", message.type);
     }
   }, [currentVideo, videos, room, toast]);
+
+  // Keep a ref of the latest handler so ws.onmessage always calls up-to-date logic
+  useEffect(() => {
+    handleMessageRef.current = handleMessage;
+  }, [handleMessage]);
 
   const sendMessage = useCallback((type: string, data: any) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -245,30 +263,15 @@ export function useWebSocket() {
     console.log("Starting P2P video sharing for:", file.name);
     
     try {
-      // Wait for WebTorrent to be available
-      let attempts = 0;
-      while (attempts < 10 && !(window as any).WebTorrent) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        attempts++;
-      }
-      
-      if (!(window as any).WebTorrent) {
-        throw new Error("WebTorrent not available");
-      }
-      
-      const client = new (window as any).WebTorrent({
-        tracker: {
-          announce: [
-            'wss://tracker.btorrent.xyz',
-            'wss://tracker.openwebtorrent.com',
-            'wss://tracker.webtorrent.dev',
-            'wss://tracker.files.fm:7073/announce'
-          ]
-        },
-        dht: true,
-        webSeeds: true,
-        maxConns: 100
-      });
+      // Use the same simplest logic as the test page (official tutorial) via centralized loader
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      const client = new WebTorrent();
+
+      // For seeding, we don't need to start the BrowserServer.
+      // Avoid creating a second server instance that can race and reply 404s.
+      // Keep SW registration minimal to speed up control for other views.
+      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
       console.log("Creating torrent from file...");
       
@@ -359,6 +362,7 @@ export function useWebSocket() {
     messages,
     videos,
     currentVideo,
+    lastSync,
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,

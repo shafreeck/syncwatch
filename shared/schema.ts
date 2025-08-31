@@ -1,41 +1,42 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, json, boolean } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { randomUUID } from "crypto";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const rooms = pgTable("rooms", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const rooms = sqliteTable("rooms", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   name: text("name").notNull(),
-  hostId: varchar("host_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  isActive: boolean("is_active").default(true),
+  hostId: text("host_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  isActive: integer("is_active", { mode: "boolean" }).default(true),
 });
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   username: text("username").notNull(),
-  roomId: varchar("room_id"),
-  isHost: boolean("is_host").default(false),
-  joinedAt: timestamp("joined_at").defaultNow(),
+  roomId: text("room_id"),
+  isHost: integer("is_host", { mode: "boolean" }).default(false),
+  joinedAt: integer("joined_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
 
-export const messages = pgTable("messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const messages = sqliteTable("messages", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   content: text("content").notNull(),
-  userId: varchar("user_id").notNull(),
-  roomId: varchar("room_id").notNull(),
-  timestamp: timestamp("timestamp").defaultNow(),
+  userId: text("user_id").notNull(),
+  roomId: text("room_id").notNull(),
+  timestamp: integer("timestamp", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
 
-export const videos = pgTable("videos", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const videos = sqliteTable("videos", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   name: text("name").notNull(),
   magnetUri: text("magnet_uri").notNull(), // P2P磁力链接
   infoHash: text("info_hash").notNull(), // torrent哈希值
-  size: varchar("size"), // 文件大小
-  roomId: varchar("room_id").notNull(),
-  uploadedBy: varchar("uploaded_by").notNull(),
-  uploadedAt: timestamp("uploaded_at").defaultNow(),
+  size: text("size"), // 文件大小
+  roomId: text("room_id").notNull(),
+  uploadedBy: text("uploaded_by").notNull(),
+  uploadedAt: integer("uploaded_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
 
 // Insert schemas
