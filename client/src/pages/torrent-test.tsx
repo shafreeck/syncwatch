@@ -78,41 +78,26 @@ export default function TorrentTest() {
         // Clear previous video elements
         videoContainerRef.current.innerHTML = '';
         
-        // Use appendTo like instant.io - let WebTorrent create and manage the video element
+        // Use appendTo exactly like instant.io
         videoFile.appendTo(videoContainerRef.current, {
-          autoplay: false,
-          controls: true,
-          maxBlobLength: 200 * 1000 * 1000  // 200MB like instant.io
+          maxBlobLength: 2 * 1000 * 1000 * 1000  // 2 GB exactly like instant.io
         }, (err: any, videoElement: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
             console.error('❌ appendTo failed:', err);
           } else {
-            setStatus('📺 Video ready - will auto-play when loaded');
-            console.log('✅ appendTo SUCCESS (instant.io style)');
+            setStatus('📺 Video ready (instant.io exact config)');
+            console.log('✅ appendTo SUCCESS - exact instant.io config');
             
-            // Apply styling to the WebTorrent-created video element
+            // Apply styling and controls to the WebTorrent-created video element
             videoElement.className = 'w-full max-w-2xl';
+            videoElement.controls = true;
             
-            // Log streaming strategy
+            // Log streaming strategy - but DON'T trigger play()
             const isMediaSource = videoElement.src?.includes('mediasource');
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
-            
-            // Check if metadata is already loaded or wait for it
-            if (videoElement.duration && videoElement.duration > 0) {
-              console.log('✅ Metadata already available - starting playback now');
-              setStatus('🎬 Playing');
-              videoElement.play();
-            } else {
-              console.log('⏳ Waiting for metadata...');
-              videoElement.addEventListener('loadedmetadata', () => {
-                console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
-                console.log('🎬 Starting playback');
-                setStatus('🎬 Playing');
-                videoElement.play();
-              });
-            }
+            console.log('🚫 No automatic playback - user must click play (like instant.io)');
           }
         });
       } else {
