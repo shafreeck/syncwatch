@@ -13,11 +13,11 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent v1.8.25 (pipe error fix)');
+    console.log('🎯 Using WebTorrent v2.8.4 (latest version)');
     
-    // Load WebTorrent v1.8.25 (fixed version without pipe errors)
+    // Load WebTorrent v2.8.4 (latest version)
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@1.8.25/webtorrent.min.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@2.8.4/webtorrent.min.js';
     script.onload = () => {
       // @ts-ignore
       clientRef.current = new WebTorrent();
