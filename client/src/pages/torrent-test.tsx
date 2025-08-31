@@ -13,29 +13,37 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using WebTorrent v2.8.4 (latest version)');
+    console.log('🎯 Using WebTorrent @latest');
     
-    // Load WebTorrent v2.8.4 (latest version)
+    // Load WebTorrent latest version
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@2.8.4/webtorrent.min.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js';
+    
+    console.log('🌐 Loading WebTorrent script from:', script.src);
+    
     script.onload = () => {
-      console.log('📦 WebTorrent script loaded');
+      console.log('📦 WebTorrent script loaded successfully');
       console.log('🔍 Available WebTorrent:', typeof window.WebTorrent);
       console.log('🔍 Global scope check:', Object.keys(window).filter(key => key.toLowerCase().includes('torrent')));
       
       // @ts-ignore
       if (window.WebTorrent) {
-        clientRef.current = new window.WebTorrent();
-        setStatus('WebTorrent client ready');
-        console.log('✅ WebTorrent client created:', !!clientRef.current);
+        try {
+          clientRef.current = new window.WebTorrent();
+          setStatus('WebTorrent client ready');
+          console.log('✅ WebTorrent client created successfully');
+        } catch (error) {
+          console.error('❌ Error creating WebTorrent client:', error);
+          setStatus('Error creating WebTorrent client');
+        }
       } else {
         console.error('❌ WebTorrent not found on window object');
-        setStatus('Failed to load WebTorrent');
+        setStatus('WebTorrent not available');
       }
     };
     
-    script.onerror = () => {
-      console.error('❌ Failed to load WebTorrent script');
+    script.onerror = (error) => {
+      console.error('❌ Failed to load WebTorrent script:', error);
       setStatus('Failed to load WebTorrent script');
     };
     document.head.appendChild(script);
