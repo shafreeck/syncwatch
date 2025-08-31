@@ -78,18 +78,41 @@ export default function TorrentTest() {
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
             
+            // Monitor buffering progress and auto-play when enough data is buffered
+            let hasStartedPlaying = false;
+            
+            const checkBufferAndPlay = () => {
+              if (hasStartedPlaying) return;
+              
+              const buffered = videoElement.buffered;
+              if (buffered.length > 0) {
+                const bufferedEnd = buffered.end(buffered.length - 1);
+                const currentTime = videoElement.currentTime;
+                const bufferedAhead = bufferedEnd - currentTime;
+                
+                console.log(`📊 Buffer status: ${bufferedAhead.toFixed(1)}s ahead, ${bufferedEnd.toFixed(1)}s total`);
+                
+                // Start playing when we have 10 seconds buffered or 5% of total duration
+                const minBuffer = Math.min(10, videoElement.duration * 0.05);
+                if (bufferedAhead >= minBuffer && videoElement.readyState >= 3) {
+                  console.log('🚀 Sufficient buffer available, starting playback...');
+                  hasStartedPlaying = true;
+                  setStatus('🎬 Auto-playing with P2P buffering');
+                  videoElement.play().catch(err => {
+                    console.log('❌ Autoplay failed (browser policy):', err.message);
+                    setStatus('📺 Buffered and ready - click to play');
+                  });
+                }
+              }
+            };
+            
             videoElement.addEventListener('loadedmetadata', () => {
               console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
-              console.log('🎬 Starting playback automatically...');
-              videoElement.play().catch(err => {
-                console.log('❌ Autoplay failed (browser policy):', err.message);
-                setStatus('📺 Video ready - click to play');
-              });
             });
             
-            videoElement.addEventListener('canplay', () => {
-              console.log('✅ Can play - ready for playback');
-            });
+            videoElement.addEventListener('progress', checkBufferAndPlay);
+            videoElement.addEventListener('canplay', checkBufferAndPlay);
+            videoElement.addEventListener('canplaythrough', checkBufferAndPlay);
           }
         });
       } else {
