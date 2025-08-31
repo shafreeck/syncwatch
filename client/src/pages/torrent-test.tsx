@@ -78,15 +78,11 @@ export default function TorrentTest() {
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
             
-            // Simple: when enough data is loaded, start playing
-            videoElement.addEventListener('canplay', () => {
-              console.log('✅ Can play - starting playback');
-              setStatus('🎬 Playing');
-              videoElement.play();
-            });
-            
             videoElement.addEventListener('loadedmetadata', () => {
               console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
+              console.log('🎬 Starting playback immediately');
+              setStatus('🎬 Playing');
+              videoElement.play();
             });
           }
         });

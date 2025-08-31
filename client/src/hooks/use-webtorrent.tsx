@@ -109,9 +109,8 @@ export function useWebTorrent() {
             const isMediaSource = videoElement.src?.includes('mediasource');
             console.log('🎯 Strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             
-            // Simple: start playing when data is ready
-            videoElement.addEventListener('canplay', () => {
-              console.log('📹 Can play - starting video');
+            videoElement.addEventListener('loadedmetadata', () => {
+              console.log('📹 Metadata ready - starting video');
               videoElement.play();
             });
           }
