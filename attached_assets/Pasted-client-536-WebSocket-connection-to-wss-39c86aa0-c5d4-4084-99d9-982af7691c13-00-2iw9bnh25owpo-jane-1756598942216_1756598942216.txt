@@ -1,0 +1,63 @@
+client:536 WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=U9vRmBla7r_9' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=U9vRmBla7r_9' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-MQ6MFIVI.js?v=d6d9f2e0:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+torrent-test.tsx:12 🔍 Browser capability check:
+torrent-test.tsx:13 MediaSource supported: true
+torrent-test.tsx:14 WebRTC supported: true
+torrent-test.tsx:15 MP4 support: true
+torrent-test.tsx:16 🎯 Using WebTorrent v1.8.25 (pipe error fix)
+torrent-test.tsx:74 ✅ renderTo SUCCESS
+torrent-test.tsx:78 🎯 Streaming strategy: Blob URL
+torrent-test.tsx:79 📊 Duration: 888.064
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...
+torrent-test.tsx:88 🔍 Debug - buffered.length: 0
+torrent-test.tsx:89 🔍 Debug - readyState: 1
+torrent-test.tsx:90 🔍 Debug - duration: 888.064
+torrent-test.tsx:117 ⏳ Waiting for buffer data or duration...

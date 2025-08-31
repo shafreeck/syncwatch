@@ -78,62 +78,50 @@ export default function TorrentTest() {
             console.log('🎯 Streaming strategy:', isMediaSource ? 'MediaSource (Progressive)' : 'Blob URL');
             console.log('📊 Duration:', videoElement.duration || 'Loading...');
             
-            // Monitor buffering progress and auto-play when enough data is buffered
+            // Smart auto-play based on strategy type
             let hasStartedPlaying = false;
             
-            const checkBufferAndPlay = () => {
+            const tryAutoPlay = () => {
               if (hasStartedPlaying) return;
               
-              const buffered = videoElement.buffered;
-              console.log('🔍 Debug - buffered.length:', buffered.length);
-              console.log('🔍 Debug - readyState:', videoElement.readyState);
-              console.log('🔍 Debug - duration:', videoElement.duration);
+              console.log('🚀 Attempting auto-play...');
+              hasStartedPlaying = true;
+              setStatus('🎬 Auto-playing');
               
-              if (buffered.length > 0 && videoElement.duration) {
-                const bufferedEnd = buffered.end(buffered.length - 1);
-                const currentTime = videoElement.currentTime;
-                const bufferedAhead = bufferedEnd - currentTime;
-                const totalBuffered = bufferedEnd;
-                
-                console.log(`📊 Buffer: ${bufferedAhead.toFixed(1)}s ahead, ${totalBuffered.toFixed(1)}s total, duration: ${videoElement.duration.toFixed(1)}s`);
-                
-                // More aggressive trigger: 3 seconds buffered OR readyState >= 3
-                const minBuffer = 3;
-                const hasEnoughBuffer = bufferedAhead >= minBuffer || totalBuffered >= minBuffer;
-                const canPlay = videoElement.readyState >= 3; // HAVE_FUTURE_DATA
-                
-                console.log(`🎯 Trigger check: buffer=${hasEnoughBuffer}, canPlay=${canPlay}, bufferedAhead=${bufferedAhead.toFixed(1)}`);
-                
-                if (hasEnoughBuffer && canPlay) {
-                  console.log('🚀 Triggering auto-play!');
-                  hasStartedPlaying = true;
-                  setStatus('🎬 Auto-playing with P2P buffering');
-                  videoElement.play().catch(err => {
-                    console.log('❌ Autoplay failed:', err.message);
-                    setStatus('📺 Buffered and ready - click to play');
-                  });
-                }
-              } else {
-                console.log('⏳ Waiting for buffer data or duration...');
-              }
+              videoElement.play().catch(err => {
+                console.log('❌ Autoplay failed:', err.message);
+                setStatus('📺 Ready - click to play');
+                hasStartedPlaying = false; // Reset so user can try again
+              });
             };
+            
+            // For Blob URL: wait for canplay event (when enough data is loaded)
+            // For MediaSource: would use buffer monitoring (but we're getting Blob URL)
+            if (isMediaSource) {
+              console.log('📊 Using MediaSource strategy - monitoring buffer');
+              // Buffer monitoring for MediaSource (future use)
+              const checkBuffer = () => {
+                const buffered = videoElement.buffered;
+                if (buffered.length > 0) {
+                  const bufferedAhead = buffered.end(0) - videoElement.currentTime;
+                  if (bufferedAhead >= 3 && videoElement.readyState >= 3) {
+                    tryAutoPlay();
+                  }
+                }
+              };
+              videoElement.addEventListener('progress', checkBuffer);
+            } else {
+              console.log('📁 Using Blob URL strategy - waiting for canplay');
+              // For Blob URL, wait for sufficient loading
+              videoElement.addEventListener('canplay', () => {
+                console.log('✅ Can play - sufficient data loaded');
+                setTimeout(tryAutoPlay, 500); // Small delay to ensure stability
+              });
+            }
             
             videoElement.addEventListener('loadedmetadata', () => {
               console.log('✅ Metadata loaded - Duration:', videoElement.duration + 's');
             });
-            
-            videoElement.addEventListener('progress', checkBufferAndPlay);
-            videoElement.addEventListener('canplay', checkBufferAndPlay);
-            videoElement.addEventListener('canplaythrough', checkBufferAndPlay);
-            
-            // Also check periodically in case events don't fire
-            const bufferCheckInterval = setInterval(() => {
-              if (!hasStartedPlaying) {
-                checkBufferAndPlay();
-              } else {
-                clearInterval(bufferCheckInterval);
-              }
-            }, 1000);
           }
         });
       } else {
