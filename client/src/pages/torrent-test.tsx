@@ -85,24 +85,36 @@ export default function TorrentTest() {
               if (hasStartedPlaying) return;
               
               const buffered = videoElement.buffered;
-              if (buffered.length > 0) {
+              console.log('🔍 Debug - buffered.length:', buffered.length);
+              console.log('🔍 Debug - readyState:', videoElement.readyState);
+              console.log('🔍 Debug - duration:', videoElement.duration);
+              
+              if (buffered.length > 0 && videoElement.duration) {
                 const bufferedEnd = buffered.end(buffered.length - 1);
                 const currentTime = videoElement.currentTime;
                 const bufferedAhead = bufferedEnd - currentTime;
+                const totalBuffered = bufferedEnd;
                 
-                console.log(`📊 Buffer status: ${bufferedAhead.toFixed(1)}s ahead, ${bufferedEnd.toFixed(1)}s total`);
+                console.log(`📊 Buffer: ${bufferedAhead.toFixed(1)}s ahead, ${totalBuffered.toFixed(1)}s total, duration: ${videoElement.duration.toFixed(1)}s`);
                 
-                // Start playing when we have 10 seconds buffered or 5% of total duration
-                const minBuffer = Math.min(10, videoElement.duration * 0.05);
-                if (bufferedAhead >= minBuffer && videoElement.readyState >= 3) {
-                  console.log('🚀 Sufficient buffer available, starting playback...');
+                // More aggressive trigger: 3 seconds buffered OR readyState >= 3
+                const minBuffer = 3;
+                const hasEnoughBuffer = bufferedAhead >= minBuffer || totalBuffered >= minBuffer;
+                const canPlay = videoElement.readyState >= 3; // HAVE_FUTURE_DATA
+                
+                console.log(`🎯 Trigger check: buffer=${hasEnoughBuffer}, canPlay=${canPlay}, bufferedAhead=${bufferedAhead.toFixed(1)}`);
+                
+                if (hasEnoughBuffer && canPlay) {
+                  console.log('🚀 Triggering auto-play!');
                   hasStartedPlaying = true;
                   setStatus('🎬 Auto-playing with P2P buffering');
                   videoElement.play().catch(err => {
-                    console.log('❌ Autoplay failed (browser policy):', err.message);
+                    console.log('❌ Autoplay failed:', err.message);
                     setStatus('📺 Buffered and ready - click to play');
                   });
                 }
+              } else {
+                console.log('⏳ Waiting for buffer data or duration...');
               }
             };
             
@@ -113,6 +125,15 @@ export default function TorrentTest() {
             videoElement.addEventListener('progress', checkBufferAndPlay);
             videoElement.addEventListener('canplay', checkBufferAndPlay);
             videoElement.addEventListener('canplaythrough', checkBufferAndPlay);
+            
+            // Also check periodically in case events don't fire
+            const bufferCheckInterval = setInterval(() => {
+              if (!hasStartedPlaying) {
+                checkBufferAndPlay();
+              } else {
+                clearInterval(bufferCheckInterval);
+              }
+            }, 1000);
           }
         });
       } else {
