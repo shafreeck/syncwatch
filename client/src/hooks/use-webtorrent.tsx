@@ -1,18 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import WebTorrent from "webtorrent";
+// @ts-ignore
+import WebTorrent from 'webtorrent/dist/webtorrent.min.js';
 
 export function useWebTorrent() {
-  const [client, setClient] = useState<WebTorrent.Instance | null>(null);
+  const [client, setClient] = useState<any>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [uploadSpeed, setUploadSpeed] = useState(0);
   const [peers, setPeers] = useState(0);
   const [isSeeding, setIsSeeding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const currentTorrent = useRef<WebTorrent.Torrent | null>(null);
+  const currentTorrent = useRef<any>(null);
 
   useEffect(() => {
     try {
-      // Create WebTorrent client using local bundle
+      // Create WebTorrent client using pre-built bundle
       const webTorrentClient = new WebTorrent({
         tracker: {
           announce: [
@@ -30,7 +31,7 @@ export function useWebTorrent() {
       
       setClient(webTorrentClient);
       setIsLoading(false);
-      console.log("WebTorrent client initialized for progressive streaming (local bundle)");
+      console.log("WebTorrent client initialized for progressive streaming (pre-built bundle)");
       
     } catch (err) {
       console.error("Failed to create WebTorrent client:", err);

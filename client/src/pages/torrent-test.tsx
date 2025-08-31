@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import WebTorrent from 'webtorrent';
+// @ts-ignore
+import WebTorrent from 'webtorrent/dist/webtorrent.min.js';
 
 export default function TorrentTest() {
   const [magnetUrl, setMagnetUrl] = useState('magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com');
   const [status, setStatus] = useState('Initializing...');
   const [progress, setProgress] = useState(0);
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  const clientRef = useRef<WebTorrent.Instance | null>(null);
+  const clientRef = useRef<any>(null);
 
   useEffect(() => {
     // Browser capability checks
@@ -14,10 +15,10 @@ export default function TorrentTest() {
     console.log('MediaSource supported:', 'MediaSource' in window);
     console.log('WebRTC supported:', 'RTCPeerConnection' in window);
     console.log('MP4 support:', MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-    console.log('🎯 Using local WebTorrent v1.9.7 (bundled, like instant.io)');
+    console.log('🎯 Using WebTorrent v2.8.4 (pre-built dist bundle)');
     
     try {
-      // Create WebTorrent client exactly like instant.io
+      // Create WebTorrent client using pre-built bundle
       clientRef.current = new WebTorrent({
         tracker: {
           rtcConfig: {
@@ -28,15 +29,8 @@ export default function TorrentTest() {
         }
       });
       
-      console.log('✅ WebTorrent client created successfully (local bundle)');
+      console.log('✅ WebTorrent client created successfully (pre-built bundle)');
       setStatus('✅ Ready to load torrents');
-      
-      // Add error handlers
-      clientRef.current.on('error', (err: string | Error) => {
-        const message = typeof err === 'string' ? err : err.message;
-        console.error('❌ WebTorrent client error:', err);
-        setStatus(`❌ Client error: ${message}`);
-      });
       
     } catch (error) {
       console.error('❌ Failed to create WebTorrent client:', error);
@@ -58,11 +52,11 @@ export default function TorrentTest() {
 
     setStatus('Loading torrent...');
     
-    const torrent = clientRef.current.add(magnetUrl, (torrent: WebTorrent.Torrent) => {
+    const torrent = clientRef.current.add(magnetUrl, (torrent: any) => {
       setStatus(`Torrent loaded: ${torrent.name}`);
       
       // Find the video file
-      const videoFile = torrent.files.find((file: WebTorrent.TorrentFile) => 
+      const videoFile = torrent.files.find((file: any) => 
         file.name.match(/\.(mp4|webm|avi|mov|mkv)$/i)
       );
       
@@ -75,7 +69,7 @@ export default function TorrentTest() {
         // Use appendTo exactly like instant.io
         videoFile.appendTo(videoContainerRef.current, {
           maxBlobLength: 2 * 1000 * 1000 * 1000  // 2 GB exactly like instant.io
-        }, (err: Error | undefined, videoElement?: HTMLVideoElement) => {
+        }, (err: any, videoElement?: HTMLVideoElement) => {
           if (err) {
             setStatus(`Error: ${err.message}`);
             console.error('❌ appendTo failed:', err);
@@ -103,7 +97,7 @@ export default function TorrentTest() {
       setProgress(torrent.progress * 100);
     });
 
-    torrent.on('error', (err: string | Error) => {
+    torrent.on('error', (err: any) => {
       const message = typeof err === 'string' ? err : err.message;
       setStatus(`Torrent error: ${message}`);
       console.error('❌ Torrent error:', err);
