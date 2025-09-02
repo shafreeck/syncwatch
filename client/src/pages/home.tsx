@@ -46,6 +46,8 @@ export default function Home() {
     sendUserProgress,
     syncToHost,
     shareVideo,
+    shareTorrentFile,
+    shareMagnetLink,
   } = useWebSocket(registerTorrent);
 
   useEffect(() => {
@@ -315,6 +317,8 @@ export default function Home() {
             
             <FileShare
               onVideoShare={shareVideo}
+              onTorrentShare={shareTorrentFile}
+              onMagnetShare={shareMagnetLink}
               videos={videos}
               shareSpeed={shareSpeed}
               peers={peers}

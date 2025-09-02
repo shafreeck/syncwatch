@@ -458,6 +458,189 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     }
   }, [sendWSMessage, room]);
 
+  const shareTorrentFile = useCallback(async (torrentFile: File) => {
+    console.log('Torrent file share attempt - room state:', room);
+    
+    // Get room ID from either state or URL
+    const currentPath = window.location.pathname;
+    const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
+    const currentRoomId = room?.id || roomIdMatch?.[1];
+    
+    if (!room && !currentRoomId) {
+      console.error("No room available for torrent share - room state:", room);
+      toast({
+        title: "Not in a room",
+        description: "Please join a room before sharing torrents",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log("Starting P2P torrent file sharing for:", torrentFile.name);
+    
+    try {
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      const client = new WebTorrent();
+
+      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      
+      console.log("Loading torrent file...");
+      
+      // Read torrent file as ArrayBuffer
+      const torrentData = await torrentFile.arrayBuffer();
+      
+      // Add torrent to client
+      client.add(torrentData, (torrent: any) => {
+        console.log("Torrent loaded:", {
+          magnetURI: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          name: torrent.name,
+          length: torrent.length
+        });
+        
+        // Find video file in torrent
+        const videoFile = torrent.files.find((file: any) => 
+          file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
+        );
+        
+        if (!videoFile) {
+          toast({
+            title: "No video found",
+            description: "This torrent doesn't contain any video files",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Send torrent info to room via WebSocket
+        if (!currentRoomId) {
+          console.error("No room ID available for torrent share");
+          return;
+        }
+        
+        sendWSMessage("video_share", {
+          name: videoFile.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: currentRoomId,
+        });
+        
+        // Register torrent for P2P statistics if available
+        if (registerTorrent) {
+          console.log("📊 Registering torrent for P2P statistics tracking");
+          registerTorrent(torrent);
+        }
+        
+        console.log("Torrent is now being shared via P2P");
+        toast({
+          title: "Torrent loaded",
+          description: `${videoFile.name} is now available for streaming`,
+        });
+      });
+      
+    } catch (error) {
+      console.error("Failed to load torrent file:", error);
+      toast({
+        title: "Torrent load failed",
+        description: "Failed to load torrent file. Please check the file and try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }, [sendWSMessage, room, toast, registerTorrent]);
+
+  const shareMagnetLink = useCallback(async (magnetUri: string) => {
+    console.log('Magnet link share attempt - room state:', room);
+    
+    // Get room ID from either state or URL
+    const currentPath = window.location.pathname;
+    const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
+    const currentRoomId = room?.id || roomIdMatch?.[1];
+    
+    if (!room && !currentRoomId) {
+      console.error("No room available for magnet share - room state:", room);
+      toast({
+        title: "Not in a room",
+        description: "Please join a room before sharing magnet links",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log("Starting P2P magnet link sharing:", magnetUri);
+    
+    try {
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      const client = new WebTorrent();
+
+      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      
+      console.log("Loading magnet link...");
+      
+      // Add magnet URI to client
+      client.add(magnetUri, (torrent: any) => {
+        console.log("Magnet torrent loaded:", {
+          magnetURI: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          name: torrent.name,
+          length: torrent.length
+        });
+        
+        // Find video file in torrent
+        const videoFile = torrent.files.find((file: any) => 
+          file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
+        );
+        
+        if (!videoFile) {
+          toast({
+            title: "No video found",
+            description: "This magnet link doesn't contain any video files",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Send torrent info to room via WebSocket
+        if (!currentRoomId) {
+          console.error("No room ID available for magnet share");
+          return;
+        }
+        
+        sendWSMessage("video_share", {
+          name: videoFile.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: currentRoomId,
+        });
+        
+        // Register torrent for P2P statistics if available
+        if (registerTorrent) {
+          console.log("📊 Registering torrent for P2P statistics tracking");
+          registerTorrent(torrent);
+        }
+        
+        console.log("Magnet link is now being shared via P2P");
+        toast({
+          title: "Magnet loaded",
+          description: `${videoFile.name} is now available for streaming`,
+        });
+      });
+      
+    } catch (error) {
+      console.error("Failed to load magnet link:", error);
+      toast({
+        title: "Magnet load failed",
+        description: "Failed to load magnet link. Please check the link and try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }, [sendWSMessage, room, toast, registerTorrent]);
+
   useEffect(() => {
     connect();
     
@@ -486,5 +669,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     sendUserProgress,
     syncToHost,
     shareVideo,
+    shareTorrentFile,
+    shareMagnetLink,
   };
 }

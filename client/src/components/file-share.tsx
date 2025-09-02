@@ -1,7 +1,10 @@
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileVideo, Play, Share2, Trash2, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileVideo, Play, Share2, Trash2, AlertCircle, Upload, Link, FileText } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { getSeedByInfoHash } from "@/lib/seed-store";
 import {
@@ -29,6 +32,8 @@ interface Video {
 
 interface FileShareProps {
   onVideoShare: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
+  onTorrentShare?: (torrentFile: File) => Promise<void>;
+  onMagnetShare?: (magnetUri: string) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
   onDeleteVideo?: (video: Video) => void;
@@ -38,13 +43,16 @@ interface FileShareProps {
   currentUser?: { id: string; username: string } | null;
 }
 
-export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
+export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [seedingProgress, setSeedingProgress] = useState(0);
   const [currentFileName, setCurrentFileName] = useState("");
+  const [activeTab, setActiveTab] = useState("file");
+  const [magnetUri, setMagnetUri] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const torrentFileInputRef = useRef<HTMLInputElement>(null);
   const openingPickerRef = useRef(false);
   const { toast } = useToast();
   
@@ -184,7 +192,97 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
     openingPickerRef.current = false;
   };
 
-  // Note: Clicking the dropzone triggers openFileDialog
+  const openTorrentFileDialog = () => {
+    if (torrentFileInputRef.current) {
+      torrentFileInputRef.current.value = '';
+      torrentFileInputRef.current.click();
+    }
+  };
+
+  const handleTorrentFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    console.log("Selected torrent file:", { name: file.name, type: file.type, size: file.size });
+    
+    // Validate torrent file type
+    if (!file.name.toLowerCase().endsWith('.torrent')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a .torrent file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (onTorrentShare) {
+        setIsUploading(true);
+        setCurrentFileName(file.name);
+        setSeedingProgress(0);
+        setShowProgressModal(true);
+        console.log("Starting torrent share...");
+        await onTorrentShare(file);
+        console.log("Torrent share initialized");
+      }
+    } catch (error) {
+      console.error("Torrent share failed:", error);
+      setShowProgressModal(false);
+      toast({
+        title: "Share failed",
+        description: "Failed to load torrent file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleMagnetSubmit = async () => {
+    const uri = magnetUri.trim();
+    if (!uri) {
+      toast({
+        title: "Empty magnet link",
+        description: "Please enter a magnet link",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate magnet URI format
+    if (!uri.toLowerCase().startsWith('magnet:?')) {
+      toast({
+        title: "Invalid magnet link",
+        description: "Please enter a valid magnet link starting with 'magnet:?'",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (onMagnetShare) {
+        setIsUploading(true);
+        setCurrentFileName("Magnet Link");
+        setSeedingProgress(0);
+        setShowProgressModal(true);
+        console.log("Starting magnet share...");
+        await onMagnetShare(uri);
+        console.log("Magnet share initialized");
+        setMagnetUri(""); // Clear input after successful share
+      }
+    } catch (error) {
+      console.error("Magnet share failed:", error);
+      setShowProgressModal(false);
+      toast({
+        title: "Share failed",
+        description: "Failed to load magnet link. Please check the link and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
 
   const formatFileSize = (bytes: string | undefined) => {
     if (!bytes) return "";
@@ -316,6 +414,14 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
            video.uploadedBy === currentUser.id;
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Reset magnet input when switching tabs
+    if (tab !== 'magnet') {
+      setMagnetUri("");
+    }
+  };
+
   return (
     <>
     <Card className="p-6">
@@ -327,38 +433,115 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
         
       </div>
       
-      {/* Share Dropzone */}
-      <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-          isDragOver
-            ? "border-primary/50 bg-primary/5"
-            : "border-border hover:border-primary/50"
-        }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onClick={openFileDialog}
-        data-testid="dropzone-file-upload"
-      >
-          <div className="space-y-2">
-            <FileVideo className="w-12 h-12 text-muted-foreground mx-auto" />
-            <p className="text-foreground">
-            {isUploading ? "Preparing / Seeding..." : "Drop video files here or click to browse"}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Supports MP4, WebM, AVI • Max 2GB
-            </p>
-          </div>
+      {/* Share Tabs */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="file" data-testid="tab-file-upload">
+            <Upload className="w-4 h-4 mr-2" />
+            Local File
+          </TabsTrigger>
+          <TabsTrigger value="torrent" data-testid="tab-torrent-upload">
+            <FileText className="w-4 h-4 mr-2" />
+            Torrent File
+          </TabsTrigger>
+          <TabsTrigger value="magnet" data-testid="tab-magnet-link">
+            <Link className="w-4 h-4 mr-2" />
+            Magnet Link
+          </TabsTrigger>
+        </TabsList>
         
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={(e) => handleFileSelect(e.target.files)}
-          data-testid="input-file-upload"
-        />
-      </div>
+        <TabsContent value="file" className="space-y-4 mt-4">
+          {/* Local File Upload */}
+          <div
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              isDragOver
+                ? "border-primary/50 bg-primary/5"
+                : "border-border hover:border-primary/50"
+            }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={openFileDialog}
+            data-testid="dropzone-file-upload"
+          >
+            <div className="space-y-2">
+              <FileVideo className="w-12 h-12 text-muted-foreground mx-auto" />
+              <p className="text-foreground">
+                {isUploading ? "Preparing / Seeding..." : "Drop video files here or click to browse"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Supports MP4, WebM, AVI, MKV • Max 2GB
+              </p>
+            </div>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={(e) => handleFileSelect(e.target.files)}
+              data-testid="input-file-upload"
+            />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="torrent" className="space-y-4 mt-4">
+          {/* Torrent File Upload */}
+          <div
+            className="border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer border-border hover:border-primary/50"
+            onClick={openTorrentFileDialog}
+            data-testid="dropzone-torrent-upload"
+          >
+            <div className="space-y-2">
+              <FileText className="w-12 h-12 text-muted-foreground mx-auto" />
+              <p className="text-foreground">
+                {isUploading ? "Loading torrent..." : "Click to select a .torrent file"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Upload a .torrent file to start downloading and sharing
+              </p>
+            </div>
+            
+            <input
+              ref={torrentFileInputRef}
+              type="file"
+              accept=".torrent"
+              className="hidden"
+              onChange={(e) => handleTorrentFileSelect(e.target.files)}
+              data-testid="input-torrent-upload"
+            />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="magnet" className="space-y-4 mt-4">
+          {/* Magnet Link Input */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="magnet-uri">Magnet Link</Label>
+              <Input
+                id="magnet-uri"
+                type="text"
+                placeholder="magnet:?xt=urn:btih:..."
+                value={magnetUri}
+                onChange={(e) => setMagnetUri(e.target.value)}
+                disabled={isUploading}
+                data-testid="input-magnet-uri"
+              />
+              <p className="text-xs text-muted-foreground">
+                Paste a magnet link to start downloading and sharing the video
+              </p>
+            </div>
+            <Button
+              onClick={handleMagnetSubmit}
+              disabled={!magnetUri.trim() || isUploading}
+              className="w-full"
+              data-testid="button-magnet-submit"
+            >
+              {isUploading ? "Loading..." : "Start Download & Share"}
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Recent Files with improved layout */}
       {videos.length > 0 && (
