@@ -25,7 +25,7 @@ interface Video {
 }
 
 interface FileUploadProps {
-  onVideoUpload: (file: File, onProgress?: (progress: number) => void) => Promise<void>;
+  onVideoUpload: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
   onDeleteVideo?: (video: Video) => void;
@@ -127,7 +127,43 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
     setIsDragOver(false);
   };
 
-  const openFileDialog = () => {
+  const openFileDialog = async () => {
+    // Prefer File System Access API to retain a handle for auto re-seed after refresh
+    const canFSAP = typeof (window as any).showOpenFilePicker === 'function';
+    if (canFSAP) {
+      try {
+        const [h] = await (window as any).showOpenFilePicker({
+          multiple: false,
+          types: [{
+            description: 'Video Files',
+            accept: { 'video/*': ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.mkv'] },
+          }],
+          excludeAcceptAllOption: false,
+        });
+        if (h) {
+          try {
+            const file = await h.getFile();
+            // Reuse existing file selection logic, but pass the handle downstream via onVideoUpload
+            // One-click seeding with progress visualization
+            setIsUploading(true);
+            setCurrentFileName(file.name);
+            setSeedingProgress(0);
+            setShowProgressModal(true);
+            console.log("Starting video upload via FS Access API...");
+            await onVideoUpload(file, (progress: number) => {
+              setSeedingProgress(progress);
+              console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
+            }, h);
+            console.log("Video upload initialized (seeding continues in background)");
+          } catch (e) {
+            console.error('Failed reading file from handle:', e);
+          }
+          return;
+        }
+      } catch (e) {
+        // User canceled or API failed; fall back to classic input
+      }
+    }
     fileInputRef.current?.click();
   };
 

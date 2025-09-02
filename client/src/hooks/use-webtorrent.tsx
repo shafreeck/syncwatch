@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type WebTorrentNS from 'webtorrent';
 import getWebTorrent from '@/lib/wt-esm';
+import { getAllSeeds } from '@/lib/seed-store';
 
 // Singleton state to avoid multiple WebTorrent clients/servers per window
 let globalClient: any | null = null;
@@ -71,6 +72,50 @@ export function useWebTorrent() {
         setClient(shared);
         setIsLoading(false);
         console.log('WebTorrent client initialized (singleton)');
+
+        // After client is ready, attempt to re-seed from persisted file handles
+        try {
+          const seeds = await getAllSeeds();
+          if (seeds?.length) {
+            console.log('Auto re-seed: found persisted entries:', seeds.length);
+          }
+          for (const s of seeds) {
+            const handle = (s as any).handle;
+            if (!handle) continue;
+            try {
+              // Ensure read permission
+              const canRead = await (async () => {
+                try {
+                  if (typeof handle.queryPermission === 'function') {
+                    const p = await handle.queryPermission({ mode: 'read' });
+                    if (p === 'granted') return true;
+                  }
+                } catch {}
+                try {
+                  if (typeof handle.requestPermission === 'function') {
+                    const p = await handle.requestPermission({ mode: 'read' });
+                    return p === 'granted';
+                  }
+                } catch {}
+                return false;
+              })();
+              if (!canRead) {
+                console.log('Auto re-seed: permission not granted for', s.infoHash);
+                continue;
+              }
+              const file = await handle.getFile();
+              if (!file) continue;
+              console.log('Auto re-seed: seeding', s.name || file.name, s.infoHash);
+              shared.seed(file, (torrent: WebTorrentNS.Torrent) => {
+                console.log('Auto re-seed: ready', torrent.infoHash, torrent.name);
+              });
+            } catch (e) {
+              console.warn('Auto re-seed failed for', s.infoHash, e);
+            }
+          }
+        } catch (e) {
+          console.warn('Auto re-seed: enumeration failed', e);
+        }
       } catch (err) {
         console.error('Failed to create WebTorrent client:', err);
         setIsLoading(false);

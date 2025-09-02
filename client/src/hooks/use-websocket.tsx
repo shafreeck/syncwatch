@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { saveSeedHandle } from '@/lib/seed-store';
 
 interface Room {
   id: string;
@@ -267,7 +268,7 @@ export function useWebSocket() {
     }
   }, [sendMessage, room]);
 
-  const uploadVideo = useCallback(async (file: File, onProgress?: (progress: number) => void) => {
+  const uploadVideo = useCallback(async (file: File, onProgress?: (progress: number) => void, handle?: any) => {
     console.log('Upload attempt - room state:', room);
     if (!room) {
       console.error("No room available for upload - room state:", room);
@@ -297,7 +298,7 @@ export function useWebSocket() {
       try { onProgress?.(1); } catch {}
       
       // Create torrent from the file
-      client.seed(file, (torrent: any) => {
+      client.seed(file, async (torrent: any) => {
         console.log("Torrent created:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -329,6 +330,16 @@ export function useWebSocket() {
           size: torrent.length.toString(),
           roomId: room.id,
         });
+
+        // Persist file handle to re-seed after refresh (when available)
+        try {
+          if (handle && torrent?.infoHash) {
+            await saveSeedHandle({ infoHash: torrent.infoHash, roomId: room.id, name: file.name, handle });
+            console.log('Saved seed handle for auto re-seed:', torrent.infoHash);
+          }
+        } catch (e) {
+          console.warn('Failed saving seed handle:', e);
+        }
         
         console.log("Video is now being seeded and shared via P2P");
       });
