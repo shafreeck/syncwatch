@@ -588,8 +588,35 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       
       console.log("Loading magnet link...");
       
+      // Set up error handling and timeout
+      const timeout = setTimeout(() => {
+        console.warn('Magnet link loading timeout after 30 seconds');
+        toast({
+          title: "Loading timeout",
+          description: "Magnet link is taking longer than expected. It may still work in the background.",
+          variant: "destructive",
+        });
+      }, 30000);
+      
+      client.on('error', (err: any) => {
+        console.error('WebTorrent client error:', err);
+        clearTimeout(timeout);
+        toast({
+          title: "Torrent error",
+          description: "Failed to load magnet link. Please check the link.",
+          variant: "destructive",
+        });
+      });
+      
       // Add magnet URI to client
-      client.add(magnetUri, (torrent: any) => {
+      client.add(magnetUri, {
+        announce: [
+          'wss://tracker.openwebtorrent.com',
+          'wss://tracker.btorrent.xyz',
+          'wss://tracker.webtorrent.dev'
+        ]
+      }, (torrent: any) => {
+        clearTimeout(timeout);
         console.log("Magnet torrent loaded:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -644,6 +671,21 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           title: "Magnet loaded",
           description: `${videoFile.name} is now available for streaming`,
         });
+      });
+      
+      // Listen for torrent errors
+      client.torrents.forEach((t: any) => {
+        if (t.magnetURI === magnetUri) {
+          t.on('error', (err: any) => {
+            console.error('Torrent error:', err);
+            clearTimeout(timeout);
+            toast({
+              title: "Torrent error",
+              description: "Failed to load torrent data from peers.",
+              variant: "destructive",
+            });
+          });
+        }
       });
       
       // For magnet links, we don't need to wait for download completion
