@@ -28,7 +28,9 @@ interface ChatSidebarProps {
   userProgresses?: Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>;
   currentUser: User | null;
   onSendMessage: (content: string) => void;
+  onSyncToHost?: (targetTime: number) => void;
   roomId?: string;
+  videoDuration?: number; // For accurate progress bar calculation
 }
 
 export default function ChatSidebar({
@@ -37,7 +39,9 @@ export default function ChatSidebar({
   userProgresses = {},
   currentUser,
   onSendMessage,
+  onSyncToHost,
   roomId,
+  videoDuration = 600, // Default 10 minutes
 }: ChatSidebarProps) {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -154,13 +158,19 @@ export default function ChatSidebar({
                     if (!progress) return null;
                     
                     return (
-                      <div className="flex items-center space-x-1 text-xs">
-                        <span className={`${progress.isPlaying ? 'text-green-500' : 'text-gray-500'}`}>
+                      <div className="flex items-center space-x-2 min-w-[60px]">
+                        <span className={`text-xs ${progress.isPlaying ? 'text-green-500' : 'text-gray-500'}`}>
                           {progress.isPlaying ? '▶' : '⏸'}
                         </span>
-                        <span className={`text-muted-foreground ${progress.isStale ? 'opacity-50' : ''}`}>
-                          {formatProgressTime(progress.currentTime)}
-                        </span>
+                        {/* Thin progress bar */}
+                        <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-300 ${progress.isPlaying ? 'bg-green-500' : 'bg-gray-400'} ${progress.isStale ? 'opacity-50' : ''}`}
+                            style={{ 
+                              width: `${videoDuration > 0 ? Math.min(100, Math.max(0, (progress.currentTime / videoDuration) * 100)) : 0}%`
+                            }}
+                          />
+                        </div>
                       </div>
                     );
                   })()}

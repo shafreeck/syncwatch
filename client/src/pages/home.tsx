@@ -41,6 +41,7 @@ export default function Home() {
     sendWSMessage,
     syncVideo,
     sendUserProgress,
+    syncToHost,
     shareVideo,
   } = useWebSocket(registerTorrent);
 
@@ -232,6 +233,7 @@ export default function Home() {
               currentVideo={currentVideo}
               onVideoSync={syncVideo}
               onUserProgress={sendUserProgress}
+              onSyncToHost={syncToHost}
               isConnected={isConnected}
               lastSync={lastSync}
               statsByInfoHash={statsByInfoHash}
@@ -312,7 +314,9 @@ export default function Home() {
               userProgresses={userProgresses}
               currentUser={currentUser}
               onSendMessage={sendMessage}
+              onSyncToHost={syncToHost}
               roomId={roomId}
+              videoDuration={currentVideo ? 600 : 0} // TODO: Get actual video duration
             />
           </div>
         </div>

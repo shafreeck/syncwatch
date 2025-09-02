@@ -2,25 +2,28 @@ import { useRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload, Sync } from "lucide-react";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 
 interface VideoPlayerProps {
   currentVideo?: any;
   onVideoSync: (action: string, currentTime: number) => void;
   onUserProgress?: (currentTime: number, isPlaying: boolean) => void;
+  onSyncToHost?: (targetTime: number) => void;
   isConnected: boolean;
   lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
   statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
+  const [showSyncNotification, setShowSyncNotification] = useState(false);
 
   const {
     client,
@@ -40,8 +43,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       setCurrentTime(newTime);
       setProgress((newTime / video.duration) * 100 || 0);
       
-      // Send periodic user progress updates (every ~2 seconds during playback)
-      if (onUserProgress && !video.paused && Math.floor(newTime) % 2 === 0) {
+      // Send periodic user progress updates (every 2 seconds for better real-time tracking)
+      // This is ONLY for visualization - does NOT control playback
+      const now = Date.now();
+      if (onUserProgress && (now - lastProgressUpdate) > 2000) {
+        setLastProgressUpdate(now);
+        // Send current state without affecting video control
         onUserProgress(newTime, !video.paused);
       }
     };
@@ -98,8 +105,19 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const { action, currentTime } = lastSync;
     try {
       if (typeof currentTime === 'number' && !isNaN(currentTime)) {
-        // Only seek if difference is noticeable to avoid jank
-        if (Math.abs((video.currentTime || 0) - currentTime) > 0.5) {
+        const timeDiff = Math.abs((video.currentTime || 0) - currentTime);
+        
+        // Show sync notification if user is behind by more than 5 seconds
+        if (timeDiff > 5 && currentTime > video.currentTime) {
+          setShowSyncNotification(true);
+          // Auto-hide notification after 10 seconds
+          setTimeout(() => setShowSyncNotification(false), 10000);
+        } else {
+          setShowSyncNotification(false);
+        }
+        
+        // Only seek if difference is noticeable to avoid jank (only for official sync events)
+        if (timeDiff > 0.5) {
           video.currentTime = currentTime;
         }
       }
@@ -112,6 +130,13 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       }
     } catch {}
   }, [lastSync]);
+  
+  const handleSyncToHost = () => {
+    if (lastSync && onSyncToHost) {
+      onSyncToHost(lastSync.currentTime);
+      setShowSyncNotification(false);
+    }
+  };
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -261,6 +286,26 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
               <div className="text-6xl mb-4">🎬</div>
               <p className="text-xl text-white mb-2">No video selected</p>
               <p className="text-muted-foreground">Share or select a video to start watching together</p>
+            </div>
+          </div>
+        )}
+
+        {/* Sync notification */}
+        {showSyncNotification && (
+          <div className="absolute top-4 right-4 z-50 bg-background/90 border rounded-lg p-3 shadow-lg">
+            <div className="flex items-center space-x-3">
+              <div className="text-sm">
+                <p className="font-medium">You're behind</p>
+                <p className="text-muted-foreground text-xs">Catch up to the group?</p>
+              </div>
+              <Button 
+                size="sm" 
+                onClick={handleSyncToHost}
+                className="flex items-center gap-1"
+              >
+                <Sync className="w-3 h-3" />
+                Sync
+              </Button>
             </div>
           </div>
         )}

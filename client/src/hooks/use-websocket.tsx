@@ -293,10 +293,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     }
   }, [sendMessage, room]);
 
-  // New function to send periodic user progress updates
+  // New function to send periodic user progress updates (visualization only)
   const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
     if (room) {
+      // Only send for visualization - does NOT affect video playback control
       sendMessage("user_progress", { currentTime, isPlaying, roomId: room.id });
+    }
+  }, [sendMessage, room]);
+
+  // Function to sync to host progress (for catching up)
+  const syncToHost = useCallback((targetTime: number) => {
+    if (room) {
+      // This DOES affect video playback - for manual sync
+      sendMessage("video_sync", { action: "seek", currentTime: targetTime, roomId: room.id });
     }
   }, [sendMessage, room]);
 
@@ -445,6 +454,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     sendWSMessage,
     syncVideo,
     sendUserProgress,
+    syncToHost,
     shareVideo,
   };
 }
