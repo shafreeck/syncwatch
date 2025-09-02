@@ -242,6 +242,7 @@ export default function Home() {
               statsByInfoHash={statsByInfoHash}
               onDeleteVideo={(video) => {
                 if (!room) return;
+                console.log(`🗑️ Sending video_delete request:`, { videoId: video.id, roomId: room.id });
                 sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
                 toast({
                   title: "Requesting delete",

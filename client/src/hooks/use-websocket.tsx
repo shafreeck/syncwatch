@@ -164,7 +164,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         break;
 
       case "video_deleted":
-        setVideos(prev => prev.filter(v => v.id !== message.data.videoId));
+        console.log(`🗑️ Received video_deleted message:`, message.data);
+        setVideos(prev => {
+          console.log(`📝 Before delete - videos:`, prev.length);
+          const newVideos = prev.filter(v => v.id !== message.data.videoId);
+          console.log(`📝 After delete - videos:`, newVideos.length);
+          return newVideos;
+        });
         // If the current playing video is deleted, clear it
         setCurrentVideo(prev => (prev && prev.id === message.data.videoId ? null : prev));
         toast({

@@ -304,25 +304,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (socket.roomId) {
               try {
                 const { videoId, roomId } = message.data || {};
+                console.log(`🗑️ Delete request: videoId=${videoId}, roomId=${roomId}`);
                 const video = await storage.getVideo(videoId);
+                console.log(`🔍 Found video:`, video);
                 if (!video || video.roomId !== roomId) {
+                  console.log(`❌ Video not found or room mismatch`);
                   socket.send(JSON.stringify({ type: "error", message: "Video not found" }));
                   break;
                 }
                 // Allow any participant in the room to delete for now.
                 // (We can tighten to host/uploader once host is reliably tracked.)
+                console.log(`🔥 Deleting video from storage...`);
                 const ok = await storage.deleteVideo(videoId);
+                console.log(`🎯 Delete result: ${ok}`);
                 if (ok) {
+                  console.log(`📡 Broadcasting video_deleted to room ${roomId}`);
                   broadcastToRoom(roomId, {
                     type: "video_deleted",
                     data: { videoId }
                   });
+                  console.log(`✅ Video ${videoId} deleted successfully`);
                 } else {
+                  console.log(`💥 Failed to delete video from storage`);
                   socket.send(JSON.stringify({ type: "error", message: "Failed to delete video" }));
                 }
               } catch (e) {
+                console.error(`💥 Exception during video delete:`, e);
                 socket.send(JSON.stringify({ type: "error", message: "Failed to delete video" }));
               }
+            } else {
+              console.log(`❌ No roomId in socket for video_delete`);
             }
             break;
         }
