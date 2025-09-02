@@ -1,14 +1,14 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Upload, Users, Activity, X } from "lucide-react";
+import { Share, Users, Activity } from "lucide-react";
 
 interface SeedingProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
   fileName: string;
   progress: number;
-  uploadSpeed: number;
+  shareSpeed: number;
   peers: number;
   isCompleted: boolean;
 }
@@ -18,7 +18,7 @@ export default function SeedingProgressModal({
   onClose,
   fileName,
   progress,
-  uploadSpeed,
+  shareSpeed,
   peers,
   isCompleted
 }: SeedingProgressModalProps) {
@@ -54,17 +54,9 @@ export default function SeedingProgressModal({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center">
-              <Upload className="w-5 h-5 text-primary mr-2" />
+              <Share className="w-5 h-5 text-primary mr-2" />
               Sharing Video
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              data-testid="button-close-progress"
-            >
-              <X className="w-4 h-4" />
-            </Button>
           </DialogTitle>
           <DialogDescription>
             Seeding your video over P2P. Keep this tab open to continue sharing.
@@ -98,27 +90,34 @@ export default function SeedingProgressModal({
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center space-x-2">
-              <Activity className="w-4 h-4 text-green-500" />
-              <div>
-                <p className="text-xs text-muted-foreground">Upload Speed</p>
-                <p className="text-sm font-mono" data-testid="text-upload-speed">
-                  {formatSpeed(uploadSpeed)}
-                </p>
+          {(() => {
+            const showSpeed = peers > 0 && shareSpeed > 0;
+            return (
+              <div className={`grid ${showSpeed ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+                {showSpeed && (
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-4 h-4 text-green-500" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Upload Speed</p>
+                      <p className="text-sm font-mono" data-testid="text-upload-speed">
+                        {formatSpeed(shareSpeed)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-blue-500" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Connected Peers</p>
+                    <p className="text-sm font-mono" data-testid="text-peer-count">
+                      {peers}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-blue-500" />
-              <div>
-                <p className="text-xs text-muted-foreground">Connected Peers</p>
-                <p className="text-sm font-mono" data-testid="text-peer-count">
-                  {peers}
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2">

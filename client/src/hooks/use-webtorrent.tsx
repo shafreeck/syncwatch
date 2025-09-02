@@ -10,7 +10,7 @@ let globalInit: Promise<any> | null = null;
 export function useWebTorrent() {
   const [client, setClient] = useState<any>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [uploadSpeed, setUploadSpeed] = useState(0);
+  const [shareSpeed, setShareSpeed] = useState(0);
   const [peers, setPeers] = useState(0);
   const [isSeeding, setIsSeeding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -185,12 +185,12 @@ export function useWebTorrent() {
       // Track progress and stats
       torrent.on('download', () => {
         setDownloadProgress(torrent.progress * 100);
-        setUploadSpeed(torrent.uploadSpeed);
+        setShareSpeed(torrent.uploadSpeed);
         setPeers(torrent.numPeers);
       });
 
       torrent.on('upload', () => {
-        setUploadSpeed(torrent.uploadSpeed);
+        setShareSpeed(torrent.uploadSpeed);
         setPeers(torrent.numPeers);
       });
 
@@ -222,7 +222,7 @@ export function useWebTorrent() {
 
         // Track upload progress
         const updateProgress = () => {
-          setUploadSpeed(torrent.uploadSpeed);
+          setShareSpeed(torrent.uploadSpeed);
           setPeers(torrent.numPeers);
         };
 
@@ -268,7 +268,7 @@ export function useWebTorrent() {
   return {
     client,
     downloadProgress,
-    uploadSpeed,
+    shareSpeed,
     peers,
     isSeeding,
     isLoading,

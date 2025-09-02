@@ -23,7 +23,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
   const {
     client,
     downloadProgress,
-    uploadSpeed,
+    shareSpeed,
     peers,
     isSeeding,
     loadTorrent,
@@ -194,10 +194,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
               <span>Download: {Math.round(downloadProgress)}%</span>
             </div>
           )}
-          {uploadSpeed > 0 && (
+          {shareSpeed > 0 && (
             <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
               <Upload className="w-3 h-3" />
-              <span>↑ {uploadSpeed} MB/s</span>
+              <span>↑ {shareSpeed} MB/s</span>
             </div>
           )}
         </div>
@@ -236,7 +236,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
             <div className="text-center">
               <div className="text-6xl mb-4">🎬</div>
               <p className="text-xl text-white mb-2">No video selected</p>
-              <p className="text-muted-foreground">Upload or select a video to start watching together</p>
+              <p className="text-muted-foreground">Share or select a video to start watching together</p>
             </div>
           </div>
         )}

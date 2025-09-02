@@ -268,13 +268,13 @@ export function useWebSocket() {
     }
   }, [sendMessage, room]);
 
-  const uploadVideo = useCallback(async (file: File, onProgress?: (progress: number) => void, handle?: any) => {
-    console.log('Upload attempt - room state:', room);
+  const shareVideo = useCallback(async (file: File, onProgress?: (progress: number) => void, handle?: any) => {
+    console.log('Share attempt - room state:', room);
     if (!room) {
-      console.error("No room available for upload - room state:", room);
+      console.error("No room available for share - room state:", room);
       toast({
         title: "Not in a room",
-        description: "Please join a room before uploading videos",
+        description: "Please join a room before sharing videos",
         variant: "destructive",
       });
       return;
@@ -323,7 +323,7 @@ export function useWebSocket() {
         }
         
         // Send torrent info to room via WebSocket
-        sendWSMessage("video_upload", {
+        sendWSMessage("video_share", {
           name: file.name,
           magnetUri: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -373,6 +373,6 @@ export function useWebSocket() {
     sendMessage: sendChatMessage,
     sendWSMessage,
     syncVideo,
-    uploadVideo,
+    shareVideo,
   };
 }

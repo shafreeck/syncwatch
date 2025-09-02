@@ -101,6 +101,17 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     }),
   }),
   z.object({
+    type: z.literal("video_share"),
+    data: z.object({
+      name: z.string(),
+      magnetUri: z.string(),
+      infoHash: z.string(),
+      size: z.string(),
+      roomId: z.string(),
+    }),
+  }),
+  // Backward-compat alias to support older clients
+  z.object({
     type: z.literal("video_upload"),
     data: z.object({
       name: z.string(),

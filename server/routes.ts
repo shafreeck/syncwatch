@@ -251,6 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             break;
 
           case "video_upload":
+          case "video_share":
             if (socket.userId && socket.roomId) {
               // Deduplicate by (roomId, infoHash)
               const roomId = message.data.roomId;

@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import VideoPlayer from "@/components/video-player";
 import ChatSidebar from "@/components/chat-sidebar";
 import RoomModal from "@/components/room-modal";
-import FileUpload from "@/components/file-upload";
+import FileShare from "@/components/file-share";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 import { Card } from "@/components/ui/card";
@@ -36,11 +36,11 @@ export default function Home() {
     sendMessage,
     sendWSMessage,
     syncVideo,
-    uploadVideo,
+    shareVideo,
   } = useWebSocket();
 
   // Get WebTorrent statistics for progress visualization
-  const { uploadSpeed, peers } = useWebTorrent();
+  const { shareSpeed, peers } = useWebTorrent();
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)
@@ -233,10 +233,10 @@ export default function Home() {
               lastSync={lastSync}
             />
             
-            <FileUpload
-              onVideoUpload={uploadVideo}
+            <FileShare
+              onVideoShare={shareVideo}
               videos={videos}
-              uploadSpeed={uploadSpeed}
+              shareSpeed={shareSpeed}
               peers={peers}
               onDeleteVideo={(video) => {
                 if (!room) return;

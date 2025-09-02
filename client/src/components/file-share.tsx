@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CloudUpload, FileVideo, Play, Share2, Trash2 } from "lucide-react";
+import { FileVideo, Play, Share2, Trash2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   Dialog,
@@ -24,27 +24,28 @@ interface Video {
   magnetUri?: string;
 }
 
-interface FileUploadProps {
-  onVideoUpload: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
+interface FileShareProps {
+  onVideoShare: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
   onDeleteVideo?: (video: Video) => void;
-  uploadSpeed?: number;
+  shareSpeed?: number;
   peers?: number;
 }
 
-export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDeleteVideo, uploadSpeed = 0, peers = 0 }: FileUploadProps) {
+export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0 }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [seedingProgress, setSeedingProgress] = useState(0);
   const [currentFileName, setCurrentFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const openingPickerRef = useRef(false);
   const { toast } = useToast();
   
   // Reduce logging frequency
   if (videos?.length !== 0) {
-    console.log('FileUpload rendered with videos:', videos?.length || 0, videos);
+    console.log('FileShare rendered with videos:', videos?.length || 0, videos);
   }
 
   const handleFileSelect = async (files: FileList | null) => {
@@ -79,16 +80,16 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
     setCurrentFileName(file.name);
     setSeedingProgress(0);
     setShowProgressModal(true);
-    console.log("Starting video upload...");
+    console.log("Starting video share...");
     
     try {
       // Pass progress callback to track seeding progress
-      await onVideoUpload(file, (progress: number) => {
+      await onVideoShare(file, (progress: number) => {
         setSeedingProgress(progress);
         console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
       });
 
-      console.log("Video upload initialized (seeding continues in background)");
+      console.log("Video share initialized (seeding continues in background)");
       // Do not auto-close: keep the modal until user closes/minimizes
       if (seedingProgress >= 100) {
         toast({
@@ -98,11 +99,11 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
       }
 
     } catch (error) {
-      console.error("Video upload failed:", error);
+      console.error("Video share failed:", error);
       setShowProgressModal(false);
       toast({
-        title: "Upload failed",
-        description: "Failed to upload video. Please try again.",
+        title: "Share failed",
+        description: "Failed to share video. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -128,6 +129,8 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
   };
 
   const openFileDialog = async () => {
+    if (openingPickerRef.current) return;
+    openingPickerRef.current = true;
     // Prefer File System Access API to retain a handle for auto re-seed after refresh
     const canFSAP = typeof (window as any).showOpenFilePicker === 'function';
     if (canFSAP) {
@@ -143,33 +146,40 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
         if (h) {
           try {
             const file = await h.getFile();
-            // Reuse existing file selection logic, but pass the handle downstream via onVideoUpload
+            // Reuse existing file selection logic, but pass the handle downstream via onVideoShare
             // One-click seeding with progress visualization
             setIsUploading(true);
             setCurrentFileName(file.name);
             setSeedingProgress(0);
             setShowProgressModal(true);
-            console.log("Starting video upload via FS Access API...");
-            await onVideoUpload(file, (progress: number) => {
+            console.log("Starting video share via FS Access API...");
+            await onVideoShare(file, (progress: number) => {
               setSeedingProgress(progress);
               console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
             }, h);
-            console.log("Video upload initialized (seeding continues in background)");
+            console.log("Video share initialized (seeding continues in background)");
           } catch (e) {
             console.error('Failed reading file from handle:', e);
           }
+          openingPickerRef.current = false;
           return;
         }
-      } catch (e) {
-        // User canceled or API failed; fall back to classic input
+      } catch (e: any) {
+        // If user canceled, exit quietly without fallback
+        const name = e?.name || e?.constructor?.name || '';
+        if (name === 'AbortError' || name === 'AbortErrorDOMException') {
+          openingPickerRef.current = false;
+          return;
+        }
+        // Otherwise, fall back to classic input
       }
     }
+    try { if (fileInputRef.current) fileInputRef.current.value = ''; } catch {}
     fileInputRef.current?.click();
+    openingPickerRef.current = false;
   };
 
-  const handleOneClickSeed = () => {
-    openFileDialog();
-  };
+  // Note: Clicking the dropzone triggers openFileDialog
 
   const formatFileSize = (bytes: string | undefined) => {
     if (!bytes) return "";
@@ -186,7 +196,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
     return `${fileSize.toFixed(1)} ${units[unitIndex]}`;
   };
 
-  const formatUploadTime = (date?: Date) => {
+  const formatSharedTime = (date?: Date) => {
     if (!date) return "";
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
@@ -208,24 +218,13 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold flex items-center">
-          <CloudUpload className="w-5 h-5 text-primary mr-2" />
+          <Share2 className="w-5 h-5 text-primary mr-2" />
           Share Video
         </h3>
         
-        {/* One-Click Seed Button */}
-        <Button
-          onClick={handleOneClickSeed}
-          disabled={isUploading}
-          size="sm"
-          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-          data-testid="button-one-click-seed"
-        >
-          <Share2 className="w-4 h-4 mr-1" />
-          One-Click Share
-        </Button>
       </div>
       
-      {/* Upload Dropzone */}
+      {/* Share Dropzone */}
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
           isDragOver
@@ -278,7 +277,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
                       {video.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {formatFileSize(video.size)} • {formatUploadTime(video.uploadedAt)}
+                      {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
                     </p>
                     {/* Inline seeding progress for the current uploading file */}
                     {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
@@ -365,7 +364,7 @@ export default function FileUpload({ onVideoUpload, videos, onSelectVideo, onDel
       onClose={() => setShowProgressModal(false)}
       fileName={currentFileName}
       progress={seedingProgress}
-      uploadSpeed={uploadSpeed}
+      shareSpeed={shareSpeed}
       peers={peers}
       isCompleted={seedingProgress >= 100}
     />
