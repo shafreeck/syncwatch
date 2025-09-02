@@ -200,9 +200,9 @@ export function useWebTorrent() {
       setIsSeeding(true);
       registerTorrent(torrent);
 
-      // Find video file
+      // Find video file (including MKV)
       const videoFile = torrent.files.find((file: WebTorrentNS.TorrentFile) => 
-        file.name.match(/\.(mp4|webm|ogg|avi|mov)$/i)
+        file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
       );
 
       if (videoFile && videoElement) {
@@ -214,7 +214,16 @@ export function useWebTorrent() {
             console.log('Setting sequential download priority for smoother streaming');
           }
         } catch {}
-        try { (videoFile as any).streamTo(videoElement); } catch (e) { console.error('streamTo failed:', e); }
+        try { 
+          (videoFile as any).streamTo(videoElement); 
+          console.log('StreamTo setup successful for:', videoFile.name);
+        } catch (e) { 
+          console.error('streamTo failed for', videoFile.name, ':', e); 
+          // Add fallback for unsupported formats
+          if (videoFile.name.toLowerCase().includes('.mkv')) {
+            console.warn('MKV format may have limited browser support. Consider converting to MP4.');
+          }
+        }
         
         // Add better error handling and buffering monitoring
         videoElement.addEventListener('loadedmetadata', () => {
@@ -232,6 +241,13 @@ export function useWebTorrent() {
         
         videoElement.addEventListener('stalled', () => {
           console.warn('Video stalled at time:', videoElement.currentTime);
+        });
+        
+        videoElement.addEventListener('error', (e) => {
+          console.error('Video element error:', e, 'File:', videoFile.name);
+          if (videoFile.name.toLowerCase().includes('.mkv')) {
+            console.error('MKV playback failed - this format has limited browser support');
+          }
         });
       }
 
