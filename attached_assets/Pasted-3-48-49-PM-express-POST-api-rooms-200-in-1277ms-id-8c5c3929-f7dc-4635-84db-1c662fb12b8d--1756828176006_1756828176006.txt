@@ -1,0 +1,56 @@
+3:48:49 PM [express] POST /api/rooms 200 in 1277ms :: {"id":"8c5c3929-f7dc-4635-84db-1c662fb12b8d","…
+WebSocket message error: ZodError: [
+  {
+    "code": "invalid_union_discriminator",
+    "options": [
+      "join_room",
+      "leave_room",
+      "chat_message",
+      "video_sync",
+      "video_upload",
+      "video_select"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid discriminator value. Expected 'join_room' | 'leave_room' | 'chat_message' | 'video_sync' | 'video_upload' | 'video_select'"
+  }
+]
+    at get error [as error] (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:587:31)
+    at ZodDiscriminatedUnion.parse (file:///home/runner/workspace/node_modules/zod/lib/index.mjs:663:22)
+    at WebSocket.<anonymous> (/home/runner/workspace/server/routes.ts:89:52)
+    at WebSocket.emit (node:events:524:28)
+    at Receiver.receiverOnMessage (/home/runner/workspace/node_modules/ws/lib/websocket.js:1220:20)
+    at Receiver.emit (node:events:524:28)
+    at Receiver.dataMessage (/home/runner/workspace/node_modules/ws/lib/receiver.js:596:14)
+    at Receiver.getData (/home/runner/workspace/node_modules/ws/lib/receiver.js:496:10)
+    at Receiver.startLoop (/home/runner/workspace/node_modules/ws/lib/receiver.js:167:16)
+    at Receiver._write (/home/runner/workspace/node_modules/ws/lib/receiver.js:94:10)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at Socket.socketOnData (/home/runner/workspace/node_modules/ws/lib/websocket.js:1355:35)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:191:23) {
+  issues: [
+    {
+      code: 'invalid_union_discriminator',
+      options: [Array],
+      path: [Array],
+      message: "Invalid discriminator value. Expected 'join_room' | 'leave_room' | 'chat_message' | 'video_sync' | 'video_upload' | 'video_select'"
+    }
+  ],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)],
+  errors: [
+    {
+      code: 'invalid_union_discriminator',
+      options: [Array],
+      path: [Array],
+      message: "Invalid discriminator value. Expected 'join_room' | 'leave_room' | 'chat_message' | 'video_sync' | 'video_upload' | 'video_select'"
+    }
+  ]
+}
