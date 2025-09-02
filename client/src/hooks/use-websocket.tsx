@@ -128,7 +128,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         console.log('✓ Videos state updated:', message.data.videos);
         
         // Find current user by username if we have a temp current user
-        if (currentUser && !currentUser.id && users.length > 0) {
+        console.log('🔍 Checking for current user match:', { currentUser, hasCurrentUser: !!currentUser, currentUserId: currentUser?.id, usersCount: users.length });
+        if (currentUser && (!currentUser.id || currentUser.id === '') && users.length > 0) {
           const foundUser = users.find((u: User) => u.username === currentUser.username);
           if (foundUser) {
             console.log('🔍 Found current user:', foundUser);
