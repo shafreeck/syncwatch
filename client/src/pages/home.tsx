@@ -208,8 +208,10 @@ export default function Home() {
                   size="sm"
                   onClick={copyInviteLink}
                   data-testid="button-copy-invite"
+                  className="flex items-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm">Share</span>
                 </Button>
               )}
               

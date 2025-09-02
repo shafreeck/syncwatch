@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, MessageCircle, Send, Copy } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Users, MessageCircle, Send } from "lucide-react";
 
 interface User {
   id: string;
@@ -45,7 +44,6 @@ export default function ChatSidebar({
 }: ChatSidebarProps) {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -69,17 +67,6 @@ export default function ChatSidebar({
     }
   };
 
-  const copyInviteLink = async () => {
-    if (!roomId) return;
-    
-    const link = `${window.location.origin}/room/${roomId}`;
-    await navigator.clipboard.writeText(link);
-    
-    toast({
-      title: "Invite link copied",
-      description: "Share this link with friends to join the room",
-    });
-  };
 
   const getInitials = (username: string) => {
     return username.substring(0, 2).toUpperCase();
@@ -236,26 +223,6 @@ export default function ChatSidebar({
           ))}
         </div>
 
-        {/* Invite Link */}
-        <div className="mt-4 pt-3 border-t border-border">
-          <div className="flex items-center space-x-2">
-            <Input
-              type="text"
-              value={roomId ? `syncwatch.app/room/${roomId}` : ""}
-              readOnly
-              className="flex-1 text-sm"
-              data-testid="input-invite-link"
-            />
-            <Button
-              variant="default"
-              size="sm"
-              onClick={copyInviteLink}
-              data-testid="button-copy-invite-link"
-            >
-              <Copy className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
       </Card>
 
       {/* Chat Section */}

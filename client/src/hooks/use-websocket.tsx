@@ -128,14 +128,10 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         console.log('✓ Videos state updated:', message.data.videos);
         
         // Find current user by username if we have a temp current user
-        console.log('🔍 Checking for current user match:', { currentUser, hasCurrentUser: !!currentUser, currentUserId: currentUser?.id, usersCount: users.length });
         if (currentUser && (!currentUser.id || currentUser.id === '') && users.length > 0) {
           const foundUser = users.find((u: User) => u.username === currentUser.username);
           if (foundUser) {
-            console.log('🔍 Found current user:', foundUser);
             setCurrentUser(foundUser);
-          } else {
-            console.log('🔍 Current user not found in users list:', { currentUser, users });
           }
         }
         break;
@@ -148,7 +144,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           
           // Check if this is the current user joining by matching username
           if (currentUser && !currentUser.id && u.username === currentUser.username) {
-            console.log('🔍 Setting current user from user_joined:', u);
             setCurrentUser(u);
           }
           
@@ -295,9 +290,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
     // Store the username temporarily to identify current user when room state is received
-    const tempUser = { id: '', username, isHost: false, joinedAt: new Date() } as User;
-    console.log('🔍 Setting temp current user:', tempUser);
-    setCurrentUser(tempUser);
+    setCurrentUser({ id: '', username, isHost: false, joinedAt: new Date() } as User);
     sendMessage("join_room", { roomId, username });
   }, [sendMessage]);
 
@@ -321,26 +314,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
 
   // New function to send periodic user progress updates (visualization only)
   const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
-    console.log('📊 sendUserProgress called:', { currentTime, isPlaying, hasRoom: !!room, hasCurrentUser: !!currentUser, currentUserId: currentUser?.id });
     if (room && currentUser && currentUser.id) {
       // Update local state immediately
-      setUserProgresses(prev => {
-        const newState = {
-          ...prev,
-          [currentUser.id]: {
-            currentTime,
-            isPlaying,
-            lastUpdate: Date.now()
-          }
-        };
-        console.log('📊 Updated userProgresses:', newState);
-        return newState;
-      });
+      setUserProgresses(prev => ({
+        ...prev,
+        [currentUser.id]: {
+          currentTime,
+          isPlaying,
+          lastUpdate: Date.now()
+        }
+      }));
       
       // Send to other users - does NOT affect video playback control
       sendMessage("user_progress", { currentTime, isPlaying, roomId: room.id });
-    } else {
-      console.log('📊 Cannot send progress - missing requirements:', { room: !!room, currentUser: !!currentUser, currentUserId: currentUser?.id });
     }
   }, [sendMessage, room, currentUser]);
 
