@@ -1,13 +1,30 @@
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle as drizzleSQLite } from 'drizzle-orm/better-sqlite3';
+import { Pool } from 'pg';
 import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from "@shared/schema";
 
-// Allow overriding path via env; default to local file
-const dbFile = process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('postgres')
-  ? process.env.DATABASE_URL.replace(/^file:/, '')
-  : 'sqlite.db';
+// Check if we should use PostgreSQL (for production/Render) or SQLite (for development)
+const usePostgres = process.env.DATABASE_URL?.startsWith('postgres');
 
-const sqlite = new Database(dbFile);
+let db: ReturnType<typeof drizzle> | ReturnType<typeof drizzleSQLite>;
+
+if (usePostgres && process.env.DATABASE_URL) {
+  // PostgreSQL for production (Render)
+  console.log('Using PostgreSQL database for production');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  });
+  db = drizzle(pool, { schema });
+} else {
+  // SQLite for development
+  console.log('Using SQLite database for development');
+  const dbFile = process.env.DATABASE_URL?.replace(/^file:/, '') || 'sqlite.db';
+  const sqlite = new Database(dbFile);
+  ensureSchema(sqlite); // Only run schema setup for SQLite
+  db = drizzleSQLite(sqlite, { schema });
+}
 
 // Ensure required tables exist when running on a fresh environment (e.g., Render)
 // This is a minimal bootstrap to avoid manual migration steps on ephemeral disks.
@@ -18,6 +35,7 @@ function ensureSchema(db: Database.Database) {
       id TEXT PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
       host_id TEXT NOT NULL,
+      room_code TEXT,
       created_at INTEGER,
       is_active INTEGER DEFAULT 1
     )
@@ -95,5 +113,4 @@ function ensureSchema(db: Database.Database) {
   }
 }
 
-ensureSchema(sqlite);
-export const db = drizzle(sqlite, { schema });
+export { db };
