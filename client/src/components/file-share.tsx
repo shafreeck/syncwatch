@@ -531,9 +531,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                 disabled={isUploading}
                 data-testid="input-magnet-uri"
               />
-              <p className="text-xs text-muted-foreground">
-                Paste a magnet link to start downloading and sharing the video
-              </p>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p>Paste a magnet link to start downloading and sharing the video</p>
+                <p className="text-amber-600 dark:text-amber-400">
+                  ⚠️ Note: Only WebTorrent-compatible magnets work reliably. Traditional BitTorrent magnets may timeout.
+                </p>
+              </div>
             </div>
             <Button
               onClick={handleMagnetSubmit}

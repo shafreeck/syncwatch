@@ -633,8 +633,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       const timeout = setTimeout(() => {
         console.warn('Magnet link loading timeout after 30 seconds');
         toast({
-          title: "Loading timeout",
-          description: "Magnet link is taking longer than expected. It may still work in the background.",
+          title: "Connection timeout",
+          description: "This magnet link may not have WebTorrent-compatible peers. Try using magnets from WebTorrent-compatible sources.",
           variant: "destructive",
         });
       }, 30000);
@@ -643,8 +643,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         console.error('WebTorrent client error:', err);
         clearTimeout(timeout);
         toast({
-          title: "Torrent error",
-          description: "Failed to load magnet link. Please check the link.",
+          title: "Magnet link error",
+          description: "This magnet link is not compatible with WebTorrent. Try using WebTorrent-optimized sources.",
           variant: "destructive",
         });
       });
