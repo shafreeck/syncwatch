@@ -56,19 +56,6 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
           
           <TabsContent value="join" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="join-room-code">Room Password (if required)</Label>
-              <Input
-                id="join-room-code"
-                type="password"
-                placeholder="Enter room password (leave empty if no password)"
-                value={joinRoomCode}
-                onChange={(e) => setJoinRoomCode(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, handleJoin)}
-                data-testid="input-join-room-code"
-              />
-            </div>
-            
-            <div className="space-y-2">
               <Label htmlFor="join-username">Your Name</Label>
               <Input
                 id="join-username"
@@ -79,6 +66,19 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
                 onChange={(e) => setJoinUsername(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleJoin)}
                 data-testid="input-join-username"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="join-room-code">Room Password (if required)</Label>
+              <Input
+                id="join-room-code"
+                type="password"
+                placeholder="Enter room password (leave empty if no password)"
+                value={joinRoomCode}
+                onChange={(e) => setJoinRoomCode(e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, handleJoin)}
+                data-testid="input-join-room-code"
               />
             </div>
             
