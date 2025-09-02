@@ -18,7 +18,7 @@ export default function Home() {
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [username, setUsername] = useState("");
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  // currentUser is now provided by useWebSocket hook
 
   // Extract room ID from URL
   const roomId = location.split("/room/")[1];
@@ -35,6 +35,7 @@ export default function Home() {
     currentVideo,
     lastSync,
     userProgresses,
+    currentUser,
     joinRoom,
     leaveRoom,
     sendMessage,

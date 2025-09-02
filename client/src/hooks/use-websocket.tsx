@@ -43,6 +43,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [lastSync, setLastSync] = useState<{ action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null>(null);
   const [userProgresses, setUserProgresses] = useState<Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>>({});
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
@@ -120,17 +121,33 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           videosData: message.data.videos
         });
         setRoom(message.data.room);
-        setUsers(message.data.users || []);
+        const users = message.data.users || [];
+        setUsers(users);
         setMessages(message.data.messages || []);
         setVideos(message.data.videos || []);
         console.log('✓ Videos state updated:', message.data.videos);
+        
+        // Find current user by username if we have a temp current user
+        if (currentUser && !currentUser.id && users.length > 0) {
+          const foundUser = users.find((u: User) => u.username === currentUser.username);
+          if (foundUser) {
+            setCurrentUser(foundUser);
+          }
+        }
         break;
 
       case "user_joined":
         setUsers(prev => {
           const u: User = message.data.user;
           const exists = prev.some(x => x.id === u.id);
-          return exists ? prev.map(x => (x.id === u.id ? u : x)) : [...prev, u];
+          const newUsers = exists ? prev.map(x => (x.id === u.id ? u : x)) : [...prev, u];
+          
+          // Check if this is the current user joining by matching username
+          if (currentUser && !currentUser.id && u.username === currentUser.username) {
+            setCurrentUser(u);
+          }
+          
+          return newUsers;
         });
         break;
 
@@ -272,6 +289,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
 
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
+    // Store the username temporarily to identify current user when room state is received
+    setCurrentUser({ id: '', username, isHost: false, joinedAt: new Date() } as User);
     sendMessage("join_room", { roomId, username });
   }, [sendMessage]);
 
@@ -295,11 +314,21 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
 
   // New function to send periodic user progress updates (visualization only)
   const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
-    if (room) {
-      // Only send for visualization - does NOT affect video playback control
+    if (room && currentUser) {
+      // Update local state immediately
+      setUserProgresses(prev => ({
+        ...prev,
+        [currentUser.id]: {
+          currentTime,
+          isPlaying,
+          lastUpdate: Date.now()
+        }
+      }));
+      
+      // Send to other users - does NOT affect video playback control
       sendMessage("user_progress", { currentTime, isPlaying, roomId: room.id });
     }
-  }, [sendMessage, room]);
+  }, [sendMessage, room, currentUser]);
 
   // Function to sync to host progress (for catching up)
   const syncToHost = useCallback((targetTime: number) => {
@@ -448,6 +477,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     currentVideo,
     lastSync,
     userProgresses,
+    currentUser,
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,
