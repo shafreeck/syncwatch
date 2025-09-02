@@ -109,15 +109,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       if (typeof currentTime === 'number' && !isNaN(currentTime)) {
         const timeDiff = Math.abs((video.currentTime || 0) - currentTime);
         
-        // Show sync notification if user is behind by more than 5 seconds
-        if (timeDiff > 5 && currentTime > video.currentTime) {
-          setShowSyncNotification(true);
-          // Auto-hide notification after 10 seconds
-          setTimeout(() => setShowSyncNotification(false), 10000);
-        } else {
-          setShowSyncNotification(false);
-        }
-        
         // Only seek if difference is noticeable to avoid jank (only for official sync events)
         if (timeDiff > 0.5) {
           video.currentTime = currentTime;
