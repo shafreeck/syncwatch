@@ -277,7 +277,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
 
   const shareVideo = useCallback(async (file: File, onProgress?: (progress: number) => void, handle?: any) => {
     console.log('Share attempt - room state:', room);
-    if (!room) {
+    
+    // Get room ID from either state or URL
+    const currentPath = window.location.pathname;
+    const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
+    const currentRoomId = room?.id || roomIdMatch?.[1];
+    
+    if (!room && !currentRoomId) {
       console.error("No room available for share - room state:", room);
       toast({
         title: "Not in a room",
@@ -285,6 +291,27 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         variant: "destructive",
       });
       return;
+    }
+    
+    if (!room && currentRoomId && isConnected) {
+      console.log("🔄 Room state not loaded yet, waiting briefly...");
+      toast({
+        title: "Please wait",
+        description: "Connecting to room...",
+      });
+      
+      // Wait a moment for room state to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check again - if still no room state, continue with roomId from URL
+      if (!room && !currentRoomId) {
+        toast({
+          title: "Connection issue",
+          description: "Please refresh and try again",
+          variant: "destructive",
+        });
+        return;
+      }
     }
     
     console.log("Starting P2P video sharing for:", file.name);
@@ -330,12 +357,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         }
         
         // Send torrent info to room via WebSocket
+        if (!currentRoomId) {
+          console.error("No room ID available for video share");
+          return;
+        }
+        
         sendWSMessage("video_share", {
           name: file.name,
           magnetUri: torrent.magnetURI,
           infoHash: torrent.infoHash,
           size: torrent.length.toString(),
-          roomId: room.id,
+          roomId: currentRoomId,
         });
 
         // Persist file handle to re-seed after refresh (when available)
