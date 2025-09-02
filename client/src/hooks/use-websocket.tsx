@@ -603,7 +603,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           return;
         }
         
-        // Send torrent info to room via WebSocket
+        // Send torrent info to room via WebSocket immediately
         if (!currentRoomId) {
           console.error("No room ID available for magnet share");
           return;
@@ -629,6 +629,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           description: `${videoFile.name} is now available for streaming`,
         });
       });
+      
+      // For magnet links, we don't need to wait for download completion
+      // The video will stream directly from P2P network
       
     } catch (error) {
       console.error("Failed to load magnet link:", error);

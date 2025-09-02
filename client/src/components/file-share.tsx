@@ -218,16 +218,18 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     try {
       if (onTorrentShare) {
         setIsUploading(true);
-        setCurrentFileName(file.name);
-        setSeedingProgress(0);
-        setShowProgressModal(true);
         console.log("Starting torrent share...");
         await onTorrentShare(file);
         console.log("Torrent share initialized");
+        
+        // For torrent files, we don't show progress modal since it streams directly
+        toast({
+          title: "Torrent file loaded",
+          description: "Video is now available for streaming",
+        });
       }
     } catch (error) {
       console.error("Torrent share failed:", error);
-      setShowProgressModal(false);
       toast({
         title: "Share failed",
         description: "Failed to load torrent file. Please try again.",
@@ -262,17 +264,19 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     try {
       if (onMagnetShare) {
         setIsUploading(true);
-        setCurrentFileName("Magnet Link");
-        setSeedingProgress(0);
-        setShowProgressModal(true);
         console.log("Starting magnet share...");
         await onMagnetShare(uri);
         console.log("Magnet share initialized");
         setMagnetUri(""); // Clear input after successful share
+        
+        // For magnet links, we don't show progress modal since it streams directly
+        toast({
+          title: "Magnet link added",
+          description: "Video is now available for streaming",
+        });
       }
     } catch (error) {
       console.error("Magnet share failed:", error);
-      setShowProgressModal(false);
       toast({
         title: "Share failed",
         description: "Failed to load magnet link. Please check the link and try again.",
