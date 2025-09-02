@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload, RotateCcw } from "lucide-react";
+import { RotateCcw, Share, Download, Upload } from "lucide-react";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 
 interface VideoPlayerProps {
@@ -20,10 +20,8 @@ interface VideoPlayerProps {
 export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [showSyncNotification, setShowSyncNotification] = useState(false);
 
@@ -43,9 +41,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
     const updateTime = () => {
       const newTime = video.currentTime || 0;
-      const videoDuration = video.duration || 0;
       setCurrentTime(newTime);
-      setProgress((newTime / videoDuration) * 100 || 0);
       
       // Send periodic user progress updates (every 2 seconds for better real-time tracking)
       const now = Date.now();
@@ -186,7 +182,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     if (!video) return;
 
     video.muted = !video.muted;
-    setIsMuted(video.muted);
   };
 
   const toggleFullscreen = () => {
@@ -379,63 +374,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         )}
       </div>
 
-      {/* Custom Video Controls */}
-      <div className="bg-secondary/80 backdrop-blur-sm p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="default"
-              size="sm"
-              onClick={togglePlay}
-              data-testid="button-toggle-play"
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </Button>
-            
-            <div className="flex items-center space-x-2 text-sm">
-              <span data-testid="text-current-time">{formatTime(currentTime)}</span>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-muted-foreground" data-testid="text-duration">
-                {formatTime(duration)}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleMute}
-              data-testid="button-toggle-mute"
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleFullscreen}
-              data-testid="button-toggle-fullscreen"
-            >
-              <Maximize className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="mt-3">
-          <div
-            className="w-full bg-border rounded-full h-1 cursor-pointer"
-            onClick={handleSeek}
-            data-testid="progress-bar"
-          >
-            <div
-              className="bg-primary h-1 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-      </div>
     </Card>
   );
 }
