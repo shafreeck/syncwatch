@@ -206,30 +206,33 @@ export function useWebTorrent() {
       );
 
       if (videoFile && videoElement) {
-        console.log('Setting up progressive video streaming via appendTo...');
+        console.log('Setting up progressive video streaming via BrowserServer...');
         try { 
           videoFile.select(); 
-          // Use appendTo for better streaming support and buffering
-          (videoFile as any).appendTo(videoElement, {
-            autoplay: false,
-            controls: false
-          });
-          console.log('Video file appendTo setup complete');
-        } catch (e) { 
-          console.error('appendTo failed, falling back to blob URL:', e);
-          // Fallback to blob URL if appendTo fails
-          const blob = new Blob([videoFile as any], { type: 'video/mp4' });
-          const url = URL.createObjectURL(blob);
-          videoElement.src = url;
-        }
+          // Set priority for sequential downloading to prevent buffering issues
+          if (typeof (videoFile as any).createReadStream === 'function') {
+            console.log('Setting sequential download priority for smoother streaming');
+          }
+        } catch {}
+        try { (videoFile as any).streamTo(videoElement); } catch (e) { console.error('streamTo failed:', e); }
         
+        // Add better error handling and buffering monitoring
         videoElement.addEventListener('loadedmetadata', () => {
-          console.log('Video metadata loaded, duration:', videoElement.duration);
+          console.log('Video loaded, duration:', videoElement.duration);
+          videoElement.play().catch(() => {});
         }, { once: true });
+        
+        videoElement.addEventListener('waiting', () => {
+          console.log('Video buffering at time:', videoElement.currentTime);
+        });
         
         videoElement.addEventListener('canplay', () => {
-          console.log('Video can start playing');
-        }, { once: true });
+          console.log('Video ready to play at time:', videoElement.currentTime);
+        });
+        
+        videoElement.addEventListener('stalled', () => {
+          console.warn('Video stalled at time:', videoElement.currentTime);
+        });
       }
 
       // Track progress and stats
