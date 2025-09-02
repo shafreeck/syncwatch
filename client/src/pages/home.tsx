@@ -231,6 +231,7 @@ export default function Home() {
               onVideoSync={syncVideo}
               isConnected={isConnected}
               lastSync={lastSync}
+              statsByInfoHash={statsByInfoHash}
             />
             
             <FileShare

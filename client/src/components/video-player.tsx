@@ -10,9 +10,10 @@ interface VideoPlayerProps {
   onVideoSync: (action: string, currentTime: number) => void;
   isConnected: boolean;
   lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
+  statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, lastSync }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -188,24 +189,40 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
             <Share className="w-3 h-3 text-primary" />
             <span className="text-muted-foreground">P2P Streaming</span>
           </div>
-          {downloadProgress > 0 && (
-            <div className="text-green-400 flex items-center space-x-1" data-testid="text-download-progress">
-              <Download className="w-3 h-3" />
-              <span>Download: {Math.round(downloadProgress)}%</span>
-            </div>
-          )}
-          {shareSpeed > 0 && (
-            <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
-              <Upload className="w-3 h-3" />
-              <span>Send: {shareSpeed} MB/s</span>
-            </div>
-          )}
+          {(() => {
+            // Get current video's specific stats
+            const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
+            const currentProgress = currentStats?.progress || downloadProgress;
+            const currentUploadSpeed = currentStats?.uploadMBps || shareSpeed;
+            const currentPeers = currentStats?.peers || peers;
+            
+            return (
+              <>
+                {currentProgress > 0 && (
+                  <div className="text-green-400 flex items-center space-x-1" data-testid="text-download-progress">
+                    <Download className="w-3 h-3" />
+                    <span>Recv: {Math.round(currentProgress)}%</span>
+                  </div>
+                )}
+                {currentUploadSpeed > 0 && (
+                  <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
+                    <Upload className="w-3 h-3" />
+                    <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
-        {peers > 0 && (
-          <div className="text-muted-foreground flex items-center space-x-1" data-testid="text-peer-count">
-            <span>{peers} peers</span>
-          </div>
-        )}
+        {(() => {
+          const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
+          const currentPeers = currentStats?.peers || peers;
+          return currentPeers > 0 && (
+            <div className="text-muted-foreground flex items-center space-x-1" data-testid="text-peer-count">
+              <span>{currentPeers} peers</span>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Video Player */}
