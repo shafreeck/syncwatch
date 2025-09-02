@@ -242,6 +242,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                     <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
                   </div>
                 )}
+                {isConnected && (
+                  <div className="text-green-400 flex items-center space-x-1" data-testid="text-sync-status">
+                    <div className="w-2 h-2 bg-green-400 rounded-full" />
+                    <span>Synced</span>
+                  </div>
+                )}
               </>
             );
           })()}
@@ -269,15 +275,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           Your browser does not support the video tag.
         </video>
 
-        {/* Sync Status Overlay */}
-        {isConnected && (
-          <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full" />
-              <span className="text-white">Synced</span>
-            </div>
-          </div>
-        )}
 
         {/* Loading Overlay */}
         {!currentVideo && (
