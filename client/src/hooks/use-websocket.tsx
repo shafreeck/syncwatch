@@ -481,7 +481,22 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     try {
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
       const WebTorrent = await getWebTorrent();
-      const client = new WebTorrent();
+      // Use default WebTorrent configuration for torrent files (enable DHT, PEX, etc.)
+      console.log("Creating WebTorrent client with DHT enabled for torrent files");
+      const client = new WebTorrent({
+        // Enable DHT for better peer discovery
+        dht: true,
+        // Enable peer exchange
+        utPex: true,
+        // Add WebSocket trackers for better connectivity
+        tracker: {
+          announce: [
+            'wss://tracker.openwebtorrent.com',
+            'wss://tracker.btorrent.xyz', 
+            'wss://tracker.webtorrent.dev'
+          ]
+        }
+      });
 
       await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
@@ -582,7 +597,22 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     try {
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
       const WebTorrent = await getWebTorrent();
-      const client = new WebTorrent();
+      // Use default WebTorrent configuration for magnet links (enable DHT, PEX, etc.)
+      console.log("Creating WebTorrent client with DHT enabled for magnet links");
+      const client = new WebTorrent({
+        // Enable DHT for magnet link resolution - this is crucial!
+        dht: true,
+        // Enable peer exchange
+        utPex: true,
+        // Add WebSocket trackers for better connectivity
+        tracker: {
+          announce: [
+            'wss://tracker.openwebtorrent.com',
+            'wss://tracker.btorrent.xyz', 
+            'wss://tracker.webtorrent.dev'
+          ]
+        }
+      });
 
       await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
