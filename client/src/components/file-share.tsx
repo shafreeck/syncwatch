@@ -297,7 +297,13 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
 
   // Helper to check if video is currently being seeded
   const isVideoBeingSeeded = (video: Video) => {
-    return video.infoHash && statsByInfoHash[video.infoHash] && statsByInfoHash[video.infoHash].peers >= 0;
+    // Check if this video is currently being uploaded/seeded (inline progress)
+    const isCurrentlySeeding = currentFileName === video.name && (isUploading || seedingProgress > 0);
+    
+    // Check if video has active P2P stats (peers connected)
+    const hasActiveStats = video.infoHash && statsByInfoHash[video.infoHash] && statsByInfoHash[video.infoHash].peers >= 0;
+    
+    return isCurrentlySeeding || hasActiveStats;
   };
 
   return (
