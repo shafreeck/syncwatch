@@ -163,15 +163,40 @@ export default function ChatSidebar({
                   const isStale = progress.isStale;
                   const isPlaying = progress.isPlaying;
                   
-                  // Different colors for different states
-                  let barColor = 'bg-gray-400'; // Default/paused
-                  if (isPlaying && !isStale) {
-                    barColor = 'bg-green-500'; // Playing
-                  } else if (isStale) {
-                    barColor = 'bg-red-400'; // Stale/offline
-                  }
+                  let barColor = '';
+                  let tooltipText = '';
                   
-                  const tooltipText = isStale ? 'Offline' : (isPlaying ? 'Playing' : 'Paused');
+                  if (isStale) {
+                    // 离线状态 - 灰色
+                    barColor = 'bg-gray-400';
+                    tooltipText = 'Offline';
+                  } else if (!isPlaying) {
+                    // 暂停状态 - 黄色
+                    barColor = 'bg-yellow-500';
+                    tooltipText = 'Paused';
+                  } else {
+                    // 播放状态 - 根据落后程度显示绿色到红色
+                    // 获取房间中最快的进度作为参考（假设是房主或最快用户）
+                    const allProgresses = Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying);
+                    const maxProgress = Math.max(...allProgresses.map(p => p.currentTime), progress.currentTime);
+                    const timeBehind = maxProgress - progress.currentTime;
+                    
+                    // 考虑网络延迟，3秒内算正常，3-10秒渐变，10秒以上完全红色
+                    if (timeBehind <= 3) {
+                      barColor = 'bg-green-500';
+                      tooltipText = 'Playing (synced)';
+                    } else if (timeBehind >= 10) {
+                      barColor = 'bg-red-500';
+                      tooltipText = `Playing (${Math.round(timeBehind)}s behind)`;
+                    } else {
+                      // 3-10秒之间的渐变：绿色到红色
+                      const ratio = (timeBehind - 3) / 7; // 0-1之间
+                      const red = Math.round(34 + ratio * (239 - 34)); // 34 -> 239 (green-500 -> red-500)
+                      const green = Math.round(197 - ratio * 197); // 197 -> 0
+                      barColor = '';
+                      tooltipText = `Playing (${Math.round(timeBehind)}s behind)`;
+                    }
+                  }
                   
                   return (
                     <div 
@@ -179,8 +204,14 @@ export default function ChatSidebar({
                       title={tooltipText}
                     >
                       <div 
-                        className={`h-full transition-all duration-300 ${barColor} ${isStale ? 'opacity-60' : ''}`}
-                        style={{ width: `${progressPercent}%` }}
+                        className={`h-full transition-all duration-300 ${barColor}`}
+                        style={{ 
+                          width: `${progressPercent}%`,
+                          ...(barColor === '' && !isStale && isPlaying ? {
+                            // 动态颜色用于3-10秒落后的渐变
+                            backgroundColor: `rgb(${Math.round(34 + ((Math.max(...Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying).map(p => p.currentTime), progress.currentTime) - progress.currentTime - 3) / 7) * (239 - 34))}, ${Math.round(197 - ((Math.max(...Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying).map(p => p.currentTime), progress.currentTime) - progress.currentTime - 3) / 7) * 197)}, 82)`
+                          } : {})
+                        }}
                       />
                     </div>
                   );
