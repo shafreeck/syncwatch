@@ -160,7 +160,7 @@ export default function ChatSidebar({
                   if (!progress) return null;
                   
                   const progressPercent = videoDuration > 0 ? Math.min(100, Math.max(0, (progress.currentTime / videoDuration) * 100)) : 0;
-                  const isStale = progress.isStale;
+                  const isStale = (progress as any).isStale;
                   const isPlaying = progress.isPlaying;
                   
                   let barColor = '';
@@ -176,9 +176,14 @@ export default function ChatSidebar({
                     tooltipText = 'Paused';
                   } else {
                     // 播放状态 - 根据落后程度显示绿色到红色
-                    // 获取房间中最快的进度作为参考（假设是房主或最快用户）
-                    const allProgresses = Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying);
-                    const maxProgress = Math.max(...allProgresses.map(p => p.currentTime), progress.currentTime);
+                    // 获取房间中最快的进度作为参考
+                    const allUserIds = Object.keys(userProgresses || {});
+                    const activeProgresses = allUserIds
+                      .map(id => getUserProgress(id))
+                      .filter(p => p && !(p as any).isStale && p.isPlaying)
+                      .map(p => p!.currentTime);
+                    
+                    const maxProgress = Math.max(...activeProgresses, progress.currentTime);
                     const timeBehind = maxProgress - progress.currentTime;
                     
                     // 考虑网络延迟，3秒内算正常，3-10秒渐变，10秒以上完全红色
@@ -191,8 +196,6 @@ export default function ChatSidebar({
                     } else {
                       // 3-10秒之间的渐变：绿色到红色
                       const ratio = (timeBehind - 3) / 7; // 0-1之间
-                      const red = Math.round(34 + ratio * (239 - 34)); // 34 -> 239 (green-500 -> red-500)
-                      const green = Math.round(197 - ratio * 197); // 197 -> 0
                       barColor = '';
                       tooltipText = `Playing (${Math.round(timeBehind)}s behind)`;
                     }
@@ -209,7 +212,19 @@ export default function ChatSidebar({
                           width: `${progressPercent}%`,
                           ...(barColor === '' && !isStale && isPlaying ? {
                             // 动态颜色用于3-10秒落后的渐变
-                            backgroundColor: `rgb(${Math.round(34 + ((Math.max(...Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying).map(p => p.currentTime), progress.currentTime) - progress.currentTime - 3) / 7) * (239 - 34))}, ${Math.round(197 - ((Math.max(...Object.values(userProgresses || {}).filter(p => !p.isStale && p.isPlaying).map(p => p.currentTime), progress.currentTime) - progress.currentTime - 3) / 7) * 197)}, 82)`
+                            backgroundColor: (() => {
+                              const allUserIds = Object.keys(userProgresses || {});
+                              const activeProgresses = allUserIds
+                                .map(id => getUserProgress(id))
+                                .filter(p => p && !(p as any).isStale && p.isPlaying)
+                                .map(p => p!.currentTime);
+                              const maxProgress = Math.max(...activeProgresses, progress.currentTime);
+                              const timeBehind = maxProgress - progress.currentTime;
+                              const ratio = (timeBehind - 3) / 7;
+                              const red = Math.round(34 + ratio * (239 - 34));
+                              const green = Math.round(197 - ratio * 197);
+                              return `rgb(${red}, ${green}, 82)`;
+                            })()
                           } : {})
                         }}
                       />
