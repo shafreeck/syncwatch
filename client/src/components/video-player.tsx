@@ -24,6 +24,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const [duration, setDuration] = useState(0);
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [showSyncNotification, setShowSyncNotification] = useState(false);
+  const [showControls, setShowControls] = useState(false);
 
   const {
     client,
@@ -265,6 +266,46 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     }
   }, [currentTime, userProgresses, isPlaying, currentUser, showSyncNotification]);
 
+  // Handle video controls visibility (sync with native controls)
+  useEffect(() => {
+    const videoContainer = document.querySelector('[data-testid="video-player"]')?.parentElement;
+    if (!videoContainer) return;
+
+    let hideTimeout: NodeJS.Timeout;
+
+    const showControlsHandler = () => {
+      setShowControls(true);
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        setShowControls(false);
+      }, 3000); // Hide after 3 seconds of inactivity
+    };
+
+    const hideControlsHandler = () => {
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        setShowControls(false);
+      }, 100);
+    };
+
+    videoContainer.addEventListener('mousemove', showControlsHandler);
+    videoContainer.addEventListener('mouseenter', showControlsHandler);
+    videoContainer.addEventListener('mouseleave', hideControlsHandler);
+
+    // Show initially
+    setShowControls(true);
+    hideTimeout = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+
+    return () => {
+      videoContainer.removeEventListener('mousemove', showControlsHandler);
+      videoContainer.removeEventListener('mouseenter', showControlsHandler);
+      videoContainer.removeEventListener('mouseleave', hideControlsHandler);
+      clearTimeout(hideTimeout);
+    };
+  }, [currentVideo]);
+
   return (
     <Card className="overflow-hidden shadow-2xl">
       {/* Video Player */}
@@ -289,9 +330,11 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           Your browser does not support the video tag.
         </video>
 
-        {/* P2P Status Overlay - Auto-hide */}
+        {/* P2P Status Overlay - Sync with native controls */}
         {currentVideo && (
-          <div className="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 text-xs text-white opacity-60 hover:opacity-100 transition-opacity duration-300">
+          <div className={`absolute top-2 left-2 z-10 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 text-xs text-white transition-opacity duration-300 ${
+            showControls ? 'opacity-100' : 'opacity-0'
+          }`}>
             <div className="flex items-center space-x-3">
               {(() => {
                 // Get current video's specific stats
