@@ -15,6 +15,36 @@ export function useWebTorrent() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const currentTorrent = useRef<any>(null);
+  const [statsByInfoHash, setStatsByInfoHash] = useState<Record<string, {
+    uploadMBps: number;
+    downloadMBps: number;
+    peers: number;
+    progress: number;
+    name?: string;
+  }>>({});
+
+  const registerTorrent = useCallback((torrent: any) => {
+    const toMB = (x: number) => (x || 0) / (1024 * 1024);
+    const update = () => {
+      try {
+        setStatsByInfoHash(prev => ({
+          ...prev,
+          [torrent.infoHash]: {
+            uploadMBps: toMB(torrent.uploadSpeed || 0),
+            downloadMBps: toMB(torrent.downloadSpeed || 0),
+            peers: torrent.numPeers || 0,
+            progress: (torrent.progress || 0) * 100,
+            name: torrent.name,
+          }
+        }));
+      } catch {}
+    };
+    update();
+    torrent.on('download', update);
+    torrent.on('upload', update);
+    torrent.on('wire', update);
+    torrent.on('done', update);
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -108,6 +138,7 @@ export function useWebTorrent() {
               console.log('Auto re-seed: seeding', s.name || file.name, s.infoHash);
               shared.seed(file, (torrent: WebTorrentNS.Torrent) => {
                 console.log('Auto re-seed: ready', torrent.infoHash, torrent.name);
+                registerTorrent(torrent);
               });
             } catch (e) {
               console.warn('Auto re-seed failed for', s.infoHash, e);
@@ -167,6 +198,7 @@ export function useWebTorrent() {
     const torrent = wt.add(magnetUri, { announce: WSS }, (torrent: WebTorrentNS.Torrent) => {
       console.log("Torrent loaded:", torrent.name);
       setIsSeeding(true);
+      registerTorrent(torrent);
 
       // Find video file
       const videoFile = torrent.files.find((file: WebTorrentNS.TorrentFile) => 
@@ -219,6 +251,7 @@ export function useWebTorrent() {
       const torrent = client.seed(file, (torrent: WebTorrentNS.Torrent) => {
         console.log("Seeding started:", torrent.name);
         setIsSeeding(true);
+        registerTorrent(torrent);
 
         // Track upload progress
         const updateProgress = () => {
@@ -275,5 +308,6 @@ export function useWebTorrent() {
     loadTorrent,
     seedFile,
     downloadFile,
+    statsByInfoHash,
   };
 }

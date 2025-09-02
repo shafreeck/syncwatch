@@ -197,7 +197,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
           {shareSpeed > 0 && (
             <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
               <Upload className="w-3 h-3" />
-              <span>↑ {shareSpeed} MB/s</span>
+              <span>Send: {shareSpeed} MB/s</span>
             </div>
           )}
         </div>

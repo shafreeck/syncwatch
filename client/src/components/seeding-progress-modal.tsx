@@ -98,7 +98,7 @@ export default function SeedingProgressModal({
                   <div className="flex items-center space-x-2">
                     <Activity className="w-4 h-4 text-green-500" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Upload Speed</p>
+                      <p className="text-xs text-muted-foreground">Send Speed</p>
                       <p className="text-sm font-mono" data-testid="text-upload-speed">
                         {formatSpeed(shareSpeed)}
                       </p>

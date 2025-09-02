@@ -22,6 +22,7 @@ interface Video {
   size?: string;
   uploadedAt?: Date;
   magnetUri?: string;
+  infoHash?: string;
 }
 
 interface FileShareProps {
@@ -31,9 +32,10 @@ interface FileShareProps {
   onDeleteVideo?: (video: Video) => void;
   shareSpeed?: number;
   peers?: number;
+  statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
 }
 
-export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0 }: FileShareProps) {
+export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {} }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -196,6 +198,11 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
     return `${fileSize.toFixed(1)} ${units[unitIndex]}`;
   };
 
+  const formatSpeed = (mbps: number) => {
+    if (mbps < 1) return `${(mbps * 1024).toFixed(0)} KB/s`;
+    return `${mbps.toFixed(1)} MB/s`;
+  };
+
   const formatSharedTime = (date?: Date) => {
     if (!date) return "";
     const now = new Date();
@@ -279,6 +286,19 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                     <p className="text-xs text-muted-foreground">
                       {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
                     </p>
+                    {/* P2P status row */}
+                    {video.infoHash && statsByInfoHash[video.infoHash] ? (
+                      <div className="mt-1 text-[11px] text-muted-foreground flex items-center gap-3">
+                        <span className="text-green-500">Seeding</span>
+                        <span>Peers: {statsByInfoHash[video.infoHash].peers}</span>
+                        <span>Send: {formatSpeed(statsByInfoHash[video.infoHash].uploadMBps)}</span>
+                        <span>Recv: {formatSpeed(statsByInfoHash[video.infoHash].downloadMBps)}</span>
+                      </div>
+                    ) : (
+                      <div className="mt-1 text-[11px] text-muted-foreground">
+                        Not sharing on this device. Click to re-share.
+                      </div>
+                    )}
                     {/* Inline seeding progress for the current uploading file */}
                     {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
                       <div className="mt-1">
@@ -298,6 +318,17 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  {/* Re-share action for non-active items */}
+                  {(!video.infoHash || !statsByInfoHash[video.infoHash]) && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={openFileDialog}
+                    >
+                      <Share2 className="w-3 h-3 mr-1" />
+                      Re-share
+                    </Button>
+                  )}
                   {onDeleteVideo && (
                     <TooltipProvider delayDuration={200}>
                       <Dialog>

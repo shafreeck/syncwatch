@@ -40,7 +40,7 @@ export default function Home() {
   } = useWebSocket();
 
   // Get WebTorrent statistics for progress visualization
-  const { shareSpeed, peers } = useWebTorrent();
+  const { shareSpeed, peers, statsByInfoHash } = useWebTorrent();
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)
@@ -238,6 +238,7 @@ export default function Home() {
               videos={videos}
               shareSpeed={shareSpeed}
               peers={peers}
+              statsByInfoHash={statsByInfoHash}
               onDeleteVideo={(video) => {
                 if (!room) return;
                 sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
