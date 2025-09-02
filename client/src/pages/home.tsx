@@ -23,6 +23,9 @@ export default function Home() {
   // Extract room ID from URL
   const roomId = location.split("/room/")[1];
 
+  // Get WebTorrent statistics for progress visualization
+  const { shareSpeed, peers, statsByInfoHash, registerTorrent } = useWebTorrent();
+
   const {
     isConnected,
     room,
@@ -37,10 +40,7 @@ export default function Home() {
     sendWSMessage,
     syncVideo,
     shareVideo,
-  } = useWebSocket();
-
-  // Get WebTorrent statistics for progress visualization
-  const { shareSpeed, peers, statsByInfoHash } = useWebTorrent();
+  } = useWebSocket(registerTorrent);
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)

@@ -309,5 +309,6 @@ export function useWebTorrent() {
     seedFile,
     downloadFile,
     statsByInfoHash,
+    registerTorrent, // Export registerTorrent so shareVideo can use it
   };
 }

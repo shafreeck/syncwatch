@@ -33,7 +33,7 @@ interface Video {
   uploadedAt: Date;
 }
 
-export function useWebSocket() {
+export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [room, setRoom] = useState<Room | null>(null);
@@ -339,6 +339,12 @@ export function useWebSocket() {
           }
         } catch (e) {
           console.warn('Failed saving seed handle:', e);
+        }
+        
+        // Register torrent for P2P statistics if available
+        if (registerTorrent) {
+          console.log("📊 Registering torrent for P2P statistics tracking");
+          registerTorrent(torrent);
         }
         
         console.log("Video is now being seeded and shared via P2P");
