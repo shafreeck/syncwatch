@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import type WebTorrentNS from 'webtorrent';
-import getWebTorrent from '@/lib/wt-esm';
-import { getAllSeeds } from '@/lib/seed-store';
+import type WebTorrentNS from "webtorrent";
+import getWebTorrent from "@/lib/wt-esm";
+import { getAllSeeds } from "@/lib/seed-store";
 
 // Singleton state to avoid multiple WebTorrent clients/servers per window
 let globalClient: any | null = null;
@@ -15,19 +15,24 @@ export function useWebTorrent() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const currentTorrent = useRef<any>(null);
-  const [statsByInfoHash, setStatsByInfoHash] = useState<Record<string, {
-    uploadMBps: number;
-    downloadMBps: number;
-    peers: number;
-    progress: number;
-    name?: string;
-  }>>({});
+  const [statsByInfoHash, setStatsByInfoHash] = useState<
+    Record<
+      string,
+      {
+        uploadMBps: number;
+        downloadMBps: number;
+        peers: number;
+        progress: number;
+        name?: string;
+      }
+    >
+  >({});
 
   const registerTorrent = useCallback((torrent: any) => {
     const toMB = (x: number) => (x || 0) / (1024 * 1024);
     const update = () => {
       try {
-        setStatsByInfoHash(prev => ({
+        setStatsByInfoHash((prev) => ({
           ...prev,
           [torrent.infoHash]: {
             uploadMBps: toMB(torrent.uploadSpeed || 0),
@@ -35,15 +40,15 @@ export function useWebTorrent() {
             peers: torrent.numPeers || 0,
             progress: (torrent.progress || 0) * 100,
             name: torrent.name,
-          }
+          },
         }));
       } catch {}
     };
     update();
-    torrent.on('download', update);
-    torrent.on('upload', update);
-    torrent.on('wire', update);
-    torrent.on('done', update);
+    torrent.on("download", update);
+    torrent.on("upload", update);
+    torrent.on("wire", update);
+    torrent.on("done", update);
   }, []);
 
   useEffect(() => {
@@ -59,37 +64,38 @@ export function useWebTorrent() {
           globalInit = (async () => {
             // Import WebTorrent constructor via centralized loader
             const WebTorrent = await getWebTorrent();
-            const WSS = [
-              'wss://tracker.btorrent.xyz',
-              'wss://tracker.openwebtorrent.com',
-              'wss://tracker.webtorrent.dev'
-            ];
-            const webTorrentClient = new WebTorrent({
-              tracker: { announce: WSS },
-              dht: false,
-              lsd: false,
-              utPex: false,
-              natUpnp: false,
-              natPmp: false,
-            });
+
+            const webTorrentClient = new WebTorrent();
 
             const reg = await navigator.serviceWorker
-              .register('/sw.min.js', { scope: '/' })
-              .then((r) => new Promise<ServiceWorkerRegistration>((resolve) => {
-                const w = r.active || r.waiting || r.installing;
-                const ok = (sw: ServiceWorker | null | undefined) => sw && sw.state === 'activated';
-                if (ok(w)) return resolve(r);
-                w?.addEventListener('statechange', () => { if (ok(w)) resolve(r); });
-              }));
+              .register("/sw.min.js", { scope: "/" })
+              .then(
+                (r) =>
+                  new Promise<ServiceWorkerRegistration>((resolve) => {
+                    const w = r.active || r.waiting || r.installing;
+                    const ok = (sw: ServiceWorker | null | undefined) =>
+                      sw && sw.state === "activated";
+                    if (ok(w)) return resolve(r);
+                    w?.addEventListener("statechange", () => {
+                      if (ok(w)) resolve(r);
+                    });
+                  }),
+              );
             // Ensure the current page is controlled by our SW
             if (!navigator.serviceWorker.controller) {
               await new Promise<void>((resolve) => {
-                const onCtrl = () => { resolve(); };
-                navigator.serviceWorker.addEventListener('controllerchange', onCtrl, { once: true } as any);
+                const onCtrl = () => {
+                  resolve();
+                };
+                navigator.serviceWorker.addEventListener(
+                  "controllerchange",
+                  onCtrl,
+                  { once: true } as any,
+                );
               });
             }
 
-            if (typeof webTorrentClient.createServer === 'function') {
+            if (typeof webTorrentClient.createServer === "function") {
               webTorrentClient.createServer({ controller: reg });
             }
 
@@ -101,13 +107,13 @@ export function useWebTorrent() {
         const shared = await globalInit;
         setClient(shared);
         setIsLoading(false);
-        console.log('WebTorrent client initialized (singleton)');
+        console.log("WebTorrent client initialized (singleton)");
 
         // After client is ready, attempt to re-seed from persisted file handles
         try {
           const seeds = await getAllSeeds();
           if (seeds?.length) {
-            console.log('Auto re-seed: found persisted entries:', seeds.length);
+            console.log("Auto re-seed: found persisted entries:", seeds.length);
           }
           for (const s of seeds) {
             const handle = (s as any).handle;
@@ -116,39 +122,50 @@ export function useWebTorrent() {
               // Ensure read permission
               const canRead = await (async () => {
                 try {
-                  if (typeof handle.queryPermission === 'function') {
-                    const p = await handle.queryPermission({ mode: 'read' });
-                    if (p === 'granted') return true;
+                  if (typeof handle.queryPermission === "function") {
+                    const p = await handle.queryPermission({ mode: "read" });
+                    if (p === "granted") return true;
                   }
                 } catch {}
                 try {
-                  if (typeof handle.requestPermission === 'function') {
-                    const p = await handle.requestPermission({ mode: 'read' });
-                    return p === 'granted';
+                  if (typeof handle.requestPermission === "function") {
+                    const p = await handle.requestPermission({ mode: "read" });
+                    return p === "granted";
                   }
                 } catch {}
                 return false;
               })();
               if (!canRead) {
-                console.log('Auto re-seed: permission not granted for', s.infoHash);
+                console.log(
+                  "Auto re-seed: permission not granted for",
+                  s.infoHash,
+                );
                 continue;
               }
               const file = await handle.getFile();
               if (!file) continue;
-              console.log('Auto re-seed: seeding', s.name || file.name, s.infoHash);
+              console.log(
+                "Auto re-seed: seeding",
+                s.name || file.name,
+                s.infoHash,
+              );
               shared.seed(file, (torrent: WebTorrentNS.Torrent) => {
-                console.log('Auto re-seed: ready', torrent.infoHash, torrent.name);
+                console.log(
+                  "Auto re-seed: ready",
+                  torrent.infoHash,
+                  torrent.name,
+                );
                 registerTorrent(torrent);
               });
             } catch (e) {
-              console.warn('Auto re-seed failed for', s.infoHash, e);
+              console.warn("Auto re-seed failed for", s.infoHash, e);
             }
           }
         } catch (e) {
-          console.warn('Auto re-seed: enumeration failed', e);
+          console.warn("Auto re-seed: enumeration failed", e);
         }
       } catch (err) {
-        console.error('Failed to create WebTorrent client:', err);
+        console.error("Failed to create WebTorrent client:", err);
         setIsLoading(false);
       }
     };
@@ -159,181 +176,221 @@ export function useWebTorrent() {
     };
   }, []);
 
-  const loadTorrent = useCallback(async (magnetUri: string, videoElement?: HTMLVideoElement | null) => {
-    // Ensure a client instance, even if this hook mounted before init completed
-    let wt: any = client || globalClient;
-    if (!wt) {
-      try {
-        if (!globalInit) {
-          // Trigger init path if somehow not started yet
-          console.warn('WebTorrent not initialized yet; deferring load until ready');
+  const loadTorrent = useCallback(
+    async (magnetUri: string, videoElement?: HTMLVideoElement | null) => {
+      // Ensure a client instance, even if this hook mounted before init completed
+      let wt: any = client || globalClient;
+      if (!wt) {
+        try {
+          if (!globalInit) {
+            // Trigger init path if somehow not started yet
+            console.warn(
+              "WebTorrent not initialized yet; deferring load until ready",
+            );
+          }
+          wt = await globalInit;
+          if (wt && !client) setClient(wt);
+        } catch (e) {
+          console.error("Failed waiting for WebTorrent client:", e);
+          return;
         }
-        wt = await globalInit;
-        if (wt && !client) setClient(wt);
-      } catch (e) {
-        console.error('Failed waiting for WebTorrent client:', e);
+      }
+
+      // Check if we're already loading this same torrent
+      if (
+        currentTorrent.current &&
+        currentTorrent.current.magnetURI === magnetUri
+      ) {
+        console.log(
+          "Same torrent already loaded, skipping duplicate load:",
+          magnetUri,
+        );
         return;
       }
-    }
 
-    // Check if we're already loading this same torrent
-    if (currentTorrent.current && currentTorrent.current.magnetURI === magnetUri) {
-      console.log('Same torrent already loaded, skipping duplicate load:', magnetUri);
-      return;
-    }
-
-    // Remove existing torrent to prevent conflicts
-    if (currentTorrent.current) {
-      console.log('Removing existing torrent to prevent pipe conflicts');
-      wt.remove(currentTorrent.current);
-      currentTorrent.current = null;
-    }
-
-    console.log('Adding new torrent:', magnetUri);
-    const WSS = [
-      'wss://tracker.btorrent.xyz',
-      'wss://tracker.openwebtorrent.com',
-      'wss://tracker.webtorrent.dev'
-    ];
-    const torrent = wt.add(magnetUri, { announce: WSS }, (torrent: WebTorrentNS.Torrent) => {
-      console.log("Torrent loaded:", torrent.name);
-      setIsSeeding(true);
-      registerTorrent(torrent);
-
-      // Find video file (including MKV)
-      const videoFile = torrent.files.find((file: WebTorrentNS.TorrentFile) => 
-        file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
-      );
-
-      if (videoFile && videoElement) {
-        console.log('Setting up progressive video streaming via BrowserServer...');
-        try { 
-          videoFile.select(); 
-          // Set priority for sequential downloading to prevent buffering issues
-          if (typeof (videoFile as any).createReadStream === 'function') {
-            console.log('Setting sequential download priority for smoother streaming');
-          }
-        } catch {}
-        try { 
-          (videoFile as any).streamTo(videoElement); 
-          console.log('StreamTo setup successful for:', videoFile.name);
-        } catch (e) { 
-          console.error('streamTo failed for', videoFile.name, ':', e); 
-          // Add fallback for unsupported formats
-          if (videoFile.name.toLowerCase().includes('.mkv')) {
-            console.warn('MKV format may have limited browser support. Consider converting to MP4.');
-          }
-        }
-        
-        // Add better error handling and buffering monitoring
-        videoElement.addEventListener('loadedmetadata', () => {
-          console.log('Video loaded, duration:', videoElement.duration);
-          videoElement.play().catch(() => {});
-        }, { once: true });
-        
-        videoElement.addEventListener('waiting', () => {
-          console.log('Video buffering at time:', videoElement.currentTime);
-        });
-        
-        videoElement.addEventListener('canplay', () => {
-          console.log('Video ready to play at time:', videoElement.currentTime);
-        });
-        
-        videoElement.addEventListener('stalled', () => {
-          console.warn('Video stalled at time:', videoElement.currentTime);
-        });
-        
-        videoElement.addEventListener('error', (e) => {
-          console.error('Video element error:', e, 'File:', videoFile.name);
-          if (videoFile.name.toLowerCase().includes('.mkv')) {
-            console.error('MKV playback failed - this format has limited browser support');
-          }
-        });
-      }
-
-      // Track progress and stats
-      torrent.on('download', () => {
-        setDownloadProgress(torrent.progress * 100);
-        setShareSpeed(torrent.uploadSpeed);
-        setPeers(torrent.numPeers);
-      });
-
-      torrent.on('upload', () => {
-        setShareSpeed(torrent.uploadSpeed);
-        setPeers(torrent.numPeers);
-      });
-
-      currentTorrent.current = torrent;
-    });
-
-    torrent.on('error', (err: string | Error) => {
-      console.error('WebTorrent torrent error:', err);
-    });
-  }, [client]);
-
-  const seedFile = useCallback((file: File) => {
-    if (!client) {
-      console.error("WebTorrent client not available");
-      return Promise.reject(new Error("WebTorrent client not available"));
-    }
-
-    return new Promise<WebTorrentNS.Torrent>((resolve, reject) => {
       // Remove existing torrent to prevent conflicts
       if (currentTorrent.current) {
-        console.log('Removing existing torrent before seeding new file');
-        client.remove(currentTorrent.current);
+        console.log("Removing existing torrent to prevent pipe conflicts");
+        wt.remove(currentTorrent.current);
         currentTorrent.current = null;
       }
 
-      const torrent = client.seed(file, (torrent: WebTorrentNS.Torrent) => {
-        console.log("Seeding started:", torrent.name);
-        setIsSeeding(true);
-        registerTorrent(torrent);
+      console.log("Adding new torrent:", magnetUri);
+      const WSS = [
+        "wss://tracker.btorrent.xyz",
+        "wss://tracker.openwebtorrent.com",
+        "wss://tracker.webtorrent.dev",
+      ];
+      const torrent = wt.add(
+        magnetUri,
+        { announce: WSS },
+        (torrent: WebTorrentNS.Torrent) => {
+          console.log("Torrent loaded:", torrent.name);
+          setIsSeeding(true);
+          registerTorrent(torrent);
 
-        // Track upload progress
-        const updateProgress = () => {
-          setShareSpeed(torrent.uploadSpeed);
-          setPeers(torrent.numPeers);
-        };
+          // Find video file (including MKV)
+          const videoFile = torrent.files.find(
+            (file: WebTorrentNS.TorrentFile) =>
+              file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+          );
 
-        torrent.on('upload', updateProgress);
-        torrent.on('wire', updateProgress);
-        
-        currentTorrent.current = torrent;
-        resolve(torrent);
+          if (videoFile && videoElement) {
+            console.log(
+              "Setting up progressive video streaming via BrowserServer...",
+            );
+            try {
+              videoFile.select();
+              // Set priority for sequential downloading to prevent buffering issues
+              if (typeof (videoFile as any).createReadStream === "function") {
+                console.log(
+                  "Setting sequential download priority for smoother streaming",
+                );
+              }
+            } catch {}
+            try {
+              (videoFile as any).streamTo(videoElement);
+              console.log("StreamTo setup successful for:", videoFile.name);
+            } catch (e) {
+              console.error("streamTo failed for", videoFile.name, ":", e);
+              // Add fallback for unsupported formats
+              if (videoFile.name.toLowerCase().includes(".mkv")) {
+                console.warn(
+                  "MKV format may have limited browser support. Consider converting to MP4.",
+                );
+              }
+            }
+
+            // Add better error handling and buffering monitoring
+            videoElement.addEventListener(
+              "loadedmetadata",
+              () => {
+                console.log("Video loaded, duration:", videoElement.duration);
+                videoElement.play().catch(() => {});
+              },
+              { once: true },
+            );
+
+            videoElement.addEventListener("waiting", () => {
+              console.log("Video buffering at time:", videoElement.currentTime);
+            });
+
+            videoElement.addEventListener("canplay", () => {
+              console.log(
+                "Video ready to play at time:",
+                videoElement.currentTime,
+              );
+            });
+
+            videoElement.addEventListener("stalled", () => {
+              console.warn("Video stalled at time:", videoElement.currentTime);
+            });
+
+            videoElement.addEventListener("error", (e) => {
+              console.error("Video element error:", e, "File:", videoFile.name);
+              if (videoFile.name.toLowerCase().includes(".mkv")) {
+                console.error(
+                  "MKV playback failed - this format has limited browser support",
+                );
+              }
+            });
+          }
+
+          // Track progress and stats
+          torrent.on("download", () => {
+            setDownloadProgress(torrent.progress * 100);
+            setShareSpeed(torrent.uploadSpeed);
+            setPeers(torrent.numPeers);
+          });
+
+          torrent.on("upload", () => {
+            setShareSpeed(torrent.uploadSpeed);
+            setPeers(torrent.numPeers);
+          });
+
+          currentTorrent.current = torrent;
+        },
+      );
+
+      torrent.on("error", (err: string | Error) => {
+        console.error("WebTorrent torrent error:", err);
       });
+    },
+    [client],
+  );
 
-      torrent.on('error', (err: string | Error) => {
-        console.error('Seeding error:', err);
-        reject(err);
-      });
-    });
-  }, [client]);
-
-  const downloadFile = useCallback((magnetUri: string) => {
-    if (!client) {
-      console.error("WebTorrent client not available");
-      return;
-    }
-
-    const torrent = client.add(magnetUri, (torrent: WebTorrentNS.Torrent) => {
-      const file: any = torrent.files[0];
-      if (file) {
-        file.blob().then((blob: Blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = file.name || 'download';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }).catch((err: any) => {
-          console.error('Error creating blob URL:', err);
-        });
+  const seedFile = useCallback(
+    (file: File) => {
+      if (!client) {
+        console.error("WebTorrent client not available");
+        return Promise.reject(new Error("WebTorrent client not available"));
       }
-    });
-  }, [client]);
+
+      return new Promise<WebTorrentNS.Torrent>((resolve, reject) => {
+        // Remove existing torrent to prevent conflicts
+        if (currentTorrent.current) {
+          console.log("Removing existing torrent before seeding new file");
+          client.remove(currentTorrent.current);
+          currentTorrent.current = null;
+        }
+
+        const torrent = client.seed(file, (torrent: WebTorrentNS.Torrent) => {
+          console.log("Seeding started:", torrent.name);
+          setIsSeeding(true);
+          registerTorrent(torrent);
+
+          // Track upload progress
+          const updateProgress = () => {
+            setShareSpeed(torrent.uploadSpeed);
+            setPeers(torrent.numPeers);
+          };
+
+          torrent.on("upload", updateProgress);
+          torrent.on("wire", updateProgress);
+
+          currentTorrent.current = torrent;
+          resolve(torrent);
+        });
+
+        torrent.on("error", (err: string | Error) => {
+          console.error("Seeding error:", err);
+          reject(err);
+        });
+      });
+    },
+    [client],
+  );
+
+  const downloadFile = useCallback(
+    (magnetUri: string) => {
+      if (!client) {
+        console.error("WebTorrent client not available");
+        return;
+      }
+
+      const torrent = client.add(magnetUri, (torrent: WebTorrentNS.Torrent) => {
+        const file: any = torrent.files[0];
+        if (file) {
+          file
+            .blob()
+            .then((blob: Blob) => {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = file.name || "download";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            })
+            .catch((err: any) => {
+              console.error("Error creating blob URL:", err);
+            });
+        }
+      });
+    },
+    [client],
+  );
 
   return {
     client,

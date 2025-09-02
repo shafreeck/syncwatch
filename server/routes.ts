@@ -304,6 +304,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           case "video_upload":
           case "video_share":
+            console.log(`📹 Received ${message.type} message:`, {
+              userId: socket.userId,
+              roomId: socket.roomId,
+              data: message.data
+            });
             if (socket.userId && socket.roomId) {
               // Deduplicate by (roomId, infoHash)
               const roomId = message.data.roomId;
@@ -316,6 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 // Optionally, we could update name/magnet if changed; keep first seen stable for now
                 // Do not broadcast a new item to avoid duplicates on clients
               } else {
+                console.log(`📝 Creating new video in storage...`);
                 video = await storage.createVideo({
                   name: message.data.name,
                   magnetUri: message.data.magnetUri,
@@ -324,11 +330,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   roomId: roomId,
                   uploadedBy: socket.userId,
                 });
+                console.log(`✅ Video created:`, video);
 
+                console.log(`📡 Broadcasting new_video to room ${roomId}...`);
                 broadcastToRoom(roomId, {
                   type: "new_video",
                   data: { video }
                 });
+                console.log(`✅ new_video message broadcasted`);
               }
             }
             break;
