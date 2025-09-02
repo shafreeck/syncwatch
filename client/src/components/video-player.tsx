@@ -4,9 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload, RotateCcw } from "lucide-react";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
-import videojs from "video.js";
-import "video.js/dist/video-js.css";
-import "@videojs/themes/dist/city/index.css";
 
 interface VideoPlayerProps {
   currentVideo?: any;
@@ -22,7 +19,6 @@ interface VideoPlayerProps {
 
 export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const playerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -40,42 +36,27 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     loadTorrent,
   } = useWebTorrent();
 
-  // Initialize Video.js player
+  // Set up video element event listeners
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || playerRef.current) return;
-
-    const player = videojs(video, {
-      controls: true,
-      responsive: true,
-      fluid: true,
-      playbackRates: [0.5, 1, 1.25, 1.5, 2],
-      sources: [],
-      html5: {
-        vhs: {
-          overrideNative: true
-        }
-      }
-    });
-
-    playerRef.current = player;
+    if (!video) return;
 
     const updateTime = () => {
-      const newTime = player.currentTime() || 0;
-      const playerDuration = player.duration() || 0;
+      const newTime = video.currentTime || 0;
+      const videoDuration = video.duration || 0;
       setCurrentTime(newTime);
-      setProgress((newTime / playerDuration) * 100 || 0);
+      setProgress((newTime / videoDuration) * 100 || 0);
       
       // Send periodic user progress updates (every 2 seconds for better real-time tracking)
       const now = Date.now();
       if (onUserProgress && (now - lastProgressUpdate) > 2000) {
         setLastProgressUpdate(now);
-        onUserProgress(newTime, !player.paused());
+        onUserProgress(newTime, !video.paused);
       }
     };
 
     const updateDuration = () => {
-      setDuration(player.duration() || 0);
+      setDuration(video.duration || 0);
     };
 
     const handleCanPlay = () => {
@@ -87,72 +68,54 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     };
     
     const handleError = (e: any) => {
-      console.error('Video error:', e);
-    };
-
-    const handlePlay = () => {
-      setIsPlaying(true);
-      onVideoSync('play', player.currentTime() || 0);
-    };
-
-    const handlePause = () => {
-      setIsPlaying(false);
-      onVideoSync('pause', player.currentTime() || 0);
-    };
-
-    const handleSeeking = () => {
-      onVideoSync('seek', player.currentTime() || 0);
-    };
-
-    player.on('timeupdate', updateTime);
-    player.on('durationchange', updateDuration);
-    player.on('loadedmetadata', updateDuration);
-    player.on('canplay', handleCanPlay);
-    player.on('loadeddata', handleLoadedData);
-    player.on('error', handleError);
-    player.on('play', handlePlay);
-    player.on('pause', handlePause);
-    player.on('seeking', handleSeeking);
-
-    return () => {
-      if (playerRef.current && !playerRef.current.isDisposed()) {
-        playerRef.current.dispose();
-        playerRef.current = null;
+      if (e.target.error && e.target.error.code !== 4) {
+        console.error('Video error:', e.target.error);
       }
     };
-  }, [isPlaying, onVideoSync]);
+
+    video.addEventListener('timeupdate', updateTime);
+    video.addEventListener('durationchange', updateDuration);
+    video.addEventListener('loadedmetadata', updateDuration);
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('error', handleError);
+
+    return () => {
+      video.removeEventListener('timeupdate', updateTime);
+      video.removeEventListener('durationchange', updateDuration);
+      video.removeEventListener('loadedmetadata', updateDuration);
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('error', handleError);
+    };
+  }, [onUserProgress, lastProgressUpdate]);
 
   useEffect(() => {
-    const player = playerRef.current;
-    if (!player || !currentVideo || !currentVideo.magnetUri) return;
+    const video = videoRef.current;
+    if (!video || !currentVideo || !currentVideo.magnetUri) return;
     console.log("Loading video via torrent:", currentVideo.name);
-    
-    // Get the underlying video element for WebTorrent
-    const video = player.el().querySelector('video');
-    if (video) {
-      loadTorrent(currentVideo.magnetUri, video);
-    }
+    loadTorrent(currentVideo.magnetUri, video);
   }, [currentVideo, loadTorrent]);
 
   // Apply incoming sync messages (best-effort)
   useEffect(() => {
-    const player = playerRef.current;
-    if (!player || !lastSync) return;
+    const video = videoRef.current;
+    if (!video || !lastSync) return;
     const { action, currentTime } = lastSync;
     try {
       if (typeof currentTime === 'number' && !isNaN(currentTime)) {
-        const timeDiff = Math.abs((player.currentTime() || 0) - currentTime);
+        const timeDiff = Math.abs((video.currentTime || 0) - currentTime);
         
         // Only seek if difference is noticeable to avoid jank (only for official sync events)
         if (timeDiff > 0.5) {
-          player.currentTime(currentTime);
+          video.currentTime = currentTime;
         }
       }
       if (action === 'play') {
-        player.play().catch(() => {});
+        video.play().catch(() => {});
         setIsPlaying(true);
       } else if (action === 'pause') {
-        player.pause();
+        video.pause();
         setIsPlaying(false);
       }
     } catch {}
@@ -365,8 +328,19 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       <div className="relative bg-black aspect-video">
         <video
           ref={videoRef}
-          className="video-js vjs-theme-city w-full h-full"
-          data-setup="{}"
+          className="w-full h-full"
+          controls
+          onPlay={() => {
+            setIsPlaying(true);
+            onVideoSync('play', videoRef.current?.currentTime || 0);
+          }}
+          onPause={() => {
+            setIsPlaying(false);
+            onVideoSync('pause', videoRef.current?.currentTime || 0);
+          }}
+          onSeeking={() => {
+            onVideoSync('seek', videoRef.current?.currentTime || 0);
+          }}
           data-testid="video-player"
         >
           Your browser does not support the video tag.
