@@ -267,58 +267,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
   return (
     <Card className="overflow-hidden shadow-2xl">
-      {/* WebTorrent Status Bar */}
-      <div className="bg-secondary/50 px-4 py-2 flex items-center justify-between text-sm">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Share className="w-3 h-3 text-primary" />
-            <span className="text-muted-foreground">P2P Streaming</span>
-          </div>
-          {(() => {
-            // Get current video's specific stats
-            const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
-            const currentProgress = currentStats?.progress || downloadProgress;
-            const currentUploadSpeed = currentStats?.uploadMBps || shareSpeed;
-            const currentPeers = currentStats?.peers || peers;
-            
-            return (
-              <>
-                {currentProgress > 0 && (
-                  <div className="text-green-400 flex items-center space-x-1" data-testid="text-download-progress">
-                    <Download className="w-3 h-3" />
-                    <span>Recv: {Math.round(currentProgress)}%</span>
-                  </div>
-                )}
-                {currentUploadSpeed > 0 && (
-                  <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
-                    <Upload className="w-3 h-3" />
-                    <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
-                  </div>
-                )}
-                {(() => {
-                  const syncStatus = getSyncStatus();
-                  return (
-                    <div className={`${syncStatus.color} flex items-center space-x-1`} data-testid="text-sync-status">
-                      <div className={`w-2 h-2 ${syncStatus.dotColor} rounded-full`} />
-                      <span>{syncStatus.status}</span>
-                    </div>
-                  );
-                })()}
-              </>
-            );
-          })()}
-        </div>
-        {(() => {
-          const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
-          const currentPeers = currentStats?.peers || peers;
-          return currentPeers > 0 && (
-            <div className="text-muted-foreground flex items-center space-x-1" data-testid="text-peer-count">
-              <span>{currentPeers} peers</span>
-            </div>
-          );
-        })()}
-      </div>
-
       {/* Video Player */}
       <div className="relative bg-black aspect-video">
         <video
@@ -341,6 +289,53 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           Your browser does not support the video tag.
         </video>
 
+        {/* P2P Status Overlay - Auto-hide */}
+        {currentVideo && (
+          <div className="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 text-xs text-white opacity-60 hover:opacity-100 transition-opacity duration-300">
+            <div className="flex items-center space-x-3">
+              {(() => {
+                // Get current video's specific stats
+                const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
+                const currentProgress = currentStats?.progress || downloadProgress;
+                const currentUploadSpeed = currentStats?.uploadMBps || shareSpeed;
+                const currentPeers = currentStats?.peers || peers;
+                
+                return (
+                  <>
+                    <div className="flex items-center space-x-1">
+                      <Share className="w-3 h-3 text-blue-400" />
+                      <span className="text-white/80">P2P</span>
+                    </div>
+                    {currentProgress > 0 && (
+                      <div className="text-green-400 flex items-center space-x-1" data-testid="text-download-progress">
+                        <Download className="w-3 h-3" />
+                        <span>Recv: {Math.round(currentProgress)}%</span>
+                      </div>
+                    )}
+                    {currentUploadSpeed > 0 && (
+                      <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
+                        <Upload className="w-3 h-3" />
+                        <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
+                      </div>
+                    )}
+                    {(() => {
+                      const syncStatus = getSyncStatus();
+                      return (
+                        <div className={`${syncStatus.color} flex items-center space-x-1`} data-testid="text-sync-status">
+                          <div className={`w-2 h-2 ${syncStatus.dotColor} rounded-full`} />
+                          <span>{syncStatus.status}</span>
+                        </div>
+                      );
+                    })()}
+                    {currentPeers > 0 && (
+                      <span className="text-white/80">{currentPeers} peers</span>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        )}
 
         {/* Loading Overlay */}
         {!currentVideo && (

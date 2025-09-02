@@ -145,14 +145,14 @@ export default function ChatSidebar({
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium" data-testid={`text-username-${user.id}`}>
+                    <span 
+                      className={`text-sm font-medium ${
+                        user.isHost ? 'text-purple-400' : ''
+                      }`} 
+                      data-testid={`text-username-${user.id}`}
+                    >
                       {user.username}
                     </span>
-                    {user.isHost && (
-                      <Badge variant="default" className="text-xs">
-                        HOST
-                      </Badge>
-                    )}
                   </div>
                   
                 </div>
