@@ -519,6 +519,14 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           return;
         }
         
+        console.log("🔔 Sending video_share message for torrent file:", {
+          name: videoFile.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: currentRoomId,
+        });
+        
         sendWSMessage("video_share", {
           name: videoFile.name,
           magnetUri: torrent.magnetURI,
@@ -608,6 +616,14 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           console.error("No room ID available for magnet share");
           return;
         }
+        
+        console.log("🔔 Sending video_share message for magnet:", {
+          name: videoFile.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: currentRoomId,
+        });
         
         sendWSMessage("video_share", {
           name: videoFile.name,
