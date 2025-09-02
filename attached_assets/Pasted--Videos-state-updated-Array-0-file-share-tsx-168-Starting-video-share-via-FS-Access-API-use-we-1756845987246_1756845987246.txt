@@ -1,0 +1,55 @@
+✓ Videos state updated: Array(0)
+file-share.tsx:168 Starting video share via FS Access API...
+use-websocket.tsx:342 Share attempt - room state: Object
+use-websocket.tsx:380 Starting P2P video sharing for: 抖音202591-587987.mp4
+use-websocket.tsx:393 Creating torrent from file...
+file-share.tsx:171 📈 Seeding progress: 1.0%
+file-share.tsx:173 Video share initialized (seeding continues in background)
+use-websocket.tsx:399 Torrent created: Object
+use-websocket.tsx:408 📊 Tracking seeding readiness...
+file-share.tsx:171 📈 Seeding progress: 10.0%
+file-share.tsx:171 📈 Seeding progress: 100.0%
+use-websocket.tsx:413 🎯 Torrent ready for seeding (progress 100%)
+use-websocket.tsx:440 Saved seed handle for auto re-seed: d7f325a3cc39b6b25e73ed54a64b474dc79acc35
+use-websocket.tsx:448 📊 Registering torrent for P2P statistics tracking
+use-websocket.tsx:452 Video is now being seeded and shared via P2P
+use-websocket.tsx:113 Received WebSocket message: new_video Object
+use-websocket.tsx:163 Received new video: Object
+use-websocket.tsx:175 ✓ Videos list updated, new count: 1
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:206 Selected torrent file: Object
+file-share.tsx:221 Starting torrent share...
+use-websocket.tsx:462 Torrent file share attempt - room state: Object
+use-websocket.tsx:479 Starting P2P torrent file sharing for: 阳光电影dygod.org.F1：狂飙飞车.2025.HD.1080P.中英双字.mkv.torrent
+use-websocket.tsx:485 Creating WebTorrent client with DHT enabled for torrent files
+use-websocket.tsx:503 Loading torrent file...
+file-share.tsx:223 Torrent share initialized
+webtorrent.min.js?import:1 Uncaught Error: Invalid torrent identifier
+    at webtorrent.min.js?import:1:112086
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:267 Starting magnet share...
+use-websocket.tsx:578 Magnet link share attempt - room state: Object
+use-websocket.tsx:595 Starting P2P magnet link sharing: magnet:?xt=urn:btih:5743193A21CB7F957DE9020FEF6666F46B905558
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:601 Creating WebTorrent client with DHT enabled for magnet links
+use-websocket.tsx:619 Loading magnet link...
+file-share.tsx:269 Magnet share initialized
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 [{…}]
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 [{…}]
+use-websocket.tsx:623 Magnet link loading timeout after 30 seconds
+(anonymous) @ use-websocket.tsx:623
+file-share.tsx:61 FileShare rendered with videos: 1 [{…}]

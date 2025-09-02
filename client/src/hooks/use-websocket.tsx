@@ -502,10 +502,21 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       
       console.log("Loading torrent file...");
       
+      // Set up error handling for torrent loading
+      client.on('error', (err: any) => {
+        console.error('WebTorrent client error during torrent file loading:', err);
+        toast({
+          title: "Torrent file error", 
+          description: "Failed to load torrent file: " + err.message,
+          variant: "destructive",
+        });
+      });
+      
       // Read torrent file as ArrayBuffer
       const torrentData = await torrentFile.arrayBuffer();
       
-      // Add torrent to client
+      // Add torrent to client using ArrayBuffer
+      console.log("Adding torrent data to client, size:", torrentData.byteLength, "bytes");
       client.add(torrentData, (torrent: any) => {
         console.log("Torrent loaded:", {
           magnetURI: torrent.magnetURI,
@@ -638,12 +649,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
         });
       });
       
-      // Add magnet URI to client
+      // Add magnet URI to client with additional trackers
       client.add(magnetUri, {
         announce: [
+          // WebSocket trackers for browser support
           'wss://tracker.openwebtorrent.com',
           'wss://tracker.btorrent.xyz',
-          'wss://tracker.webtorrent.dev'
+          'wss://tracker.webtorrent.dev',
+          // Additional UDP trackers (DHT will handle these)
+          'udp://tracker.opentrackr.org:1337',
+          'udp://tracker.leechers-paradise.org:6969',
+          'udp://9.rarbg.to:2710',
+          'udp://exodus.desync.com:6969'
         ]
       }, (torrent: any) => {
         clearTimeout(timeout);
