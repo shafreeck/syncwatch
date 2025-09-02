@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, MessageCircle, Send } from "lucide-react";
+import { Users, MessageCircle, Send, Settings } from "lucide-react";
 
 interface User {
   id: string;
@@ -28,6 +28,7 @@ interface ChatSidebarProps {
   currentUser: User | null;
   onSendMessage: (content: string) => void;
   onSyncToHost?: (targetTime: number) => void;
+  onShowRoomSettings?: () => void;
   roomId?: string;
   videoDuration?: number; // For accurate progress bar calculation
 }
@@ -39,6 +40,7 @@ export default function ChatSidebar({
   currentUser,
   onSendMessage,
   onSyncToHost,
+  onShowRoomSettings,
   roomId,
   videoDuration = 600, // Default 10 minutes
 }: ChatSidebarProps) {
@@ -105,9 +107,22 @@ export default function ChatSidebar({
             <Users className="w-5 h-5 text-primary mr-2" />
             Viewers
           </span>
-          <span className="text-sm text-muted-foreground" data-testid="text-user-count">
-            {users.length}
-          </span>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground" data-testid="text-user-count">
+              {users.length}
+            </span>
+            {currentUser?.isHost && onShowRoomSettings && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onShowRoomSettings}
+                className="h-8 w-8 p-0"
+                data-testid="button-room-settings"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </h3>
         
         <div className="space-y-2">

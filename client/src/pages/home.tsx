@@ -4,6 +4,7 @@ import VideoPlayer from "@/components/video-player";
 import ChatSidebar from "@/components/chat-sidebar";
 import RoomModal from "@/components/room-modal";
 import FileShare from "@/components/file-share";
+import RoomSettingsModal from "@/components/room-settings-modal";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 import { Card } from "@/components/ui/card";
@@ -17,6 +18,7 @@ export default function Home() {
   const { toast } = useToast();
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showRoomSettings, setShowRoomSettings] = useState(false);
   const [username, setUsername] = useState("");
   // currentUser is now provided by useWebSocket hook
 
@@ -62,25 +64,22 @@ export default function Home() {
       let targetRoomId = roomId;
       
       if (targetRoomId) {
-        // 如果有URL roomId，验证房间代码（如果提供的话）
+        // 如果有URL roomId，验证房间密码（如果房间有密码且用户输入了密码）
         const response = await fetch(`/api/rooms/${targetRoomId}`);
         if (!response.ok) {
           throw new Error("Room not found");
         }
         const room = await response.json();
         
-        // 如果房间设置了密码，验证输入的代码
-        if (room.roomCode && room.roomCode !== roomCode) {
-          throw new Error("Invalid room code");
+        // 如果房间设置了密码，必须验证输入的密码
+        if (room.roomCode) {
+          if (!roomCode || room.roomCode !== roomCode) {
+            throw new Error("Invalid room password");
+          }
         }
       } else {
-        // 如果没有URL roomId，通过房间代码查找房间
-        const response = await fetch(`/api/rooms/code/${roomCode}`);
-        if (!response.ok) {
-          throw new Error("Room not found");
-        }
-        const room = await response.json();
-        targetRoomId = room.id;
+        // 如果没有URL roomId，需要通过房间代码或其他方式查找房间
+        throw new Error("No room specified");
       }
       
       await joinRoom(targetRoomId, displayName);
@@ -99,8 +98,8 @@ export default function Home() {
     } catch (error) {
       toast({
         title: "Connection failed",
-        description: error instanceof Error && error.message === "Invalid room code" 
-          ? "Incorrect room code. Please check and try again." 
+        description: error instanceof Error && error.message === "Invalid room password" 
+          ? "Incorrect room password. Please check and try again." 
           : "Room not found or connection failed.",
         variant: "destructive",
       });
@@ -187,12 +186,22 @@ export default function Home() {
 
   if (showRoomModal) {
     return (
-      <RoomModal
-        isOpen={showRoomModal}
-        onClose={() => setShowRoomModal(false)}
-        onJoinRoom={handleJoinRoom}
-        onCreateRoom={handleCreateRoom}
-      />
+      <>
+        <RoomModal
+          isOpen={showRoomModal}
+          onClose={() => setShowRoomModal(false)}
+          onJoinRoom={handleJoinRoom}
+          onCreateRoom={handleCreateRoom}
+        />
+        <RoomSettingsModal 
+          open={showRoomSettings}
+          onOpenChange={setShowRoomSettings}
+          room={room}
+          onRoomUpdate={(updatedRoom) => {
+            console.log("Room settings updated:", updatedRoom);
+          }}
+        />
+      </>
     );
   }
 
@@ -346,6 +355,7 @@ export default function Home() {
               currentUser={currentUser}
               onSendMessage={sendMessage}
               onSyncToHost={syncToHost}
+              onShowRoomSettings={() => setShowRoomSettings(true)}
               roomId={roomId}
               videoDuration={currentVideo ? 600 : 0} // TODO: Get actual video duration
             />
@@ -353,6 +363,15 @@ export default function Home() {
         </div>
 
       </main>
+
+      <RoomSettingsModal 
+        open={showRoomSettings}
+        onOpenChange={setShowRoomSettings}
+        room={room}
+        onRoomUpdate={(updatedRoom) => {
+          console.log("Room settings updated:", updatedRoom);
+        }}
+      />
     </div>
   );
 }

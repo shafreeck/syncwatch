@@ -76,6 +76,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update room settings
+  app.patch("/api/rooms/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { roomCode } = req.body;
+      
+      const existingRoom = await storage.getRoom(id);
+      if (!existingRoom) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      
+      const updatedRoom = await storage.updateRoom(id, { roomCode });
+      res.json(updatedRoom);
+    } catch (error) {
+      console.error("Error updating room:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   // WebSocket server for real-time communication
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });

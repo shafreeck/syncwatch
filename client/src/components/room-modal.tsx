@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
   const [createRoomName, setCreateRoomName] = useState("");
   const [createUsername, setCreateUsername] = useState("");
   const [createRoomCode, setCreateRoomCode] = useState("");
+  const [showRoomCodeInput, setShowRoomCodeInput] = useState(false);
   const [activeTab, setActiveTab] = useState("join");
 
   const handleJoin = () => {
@@ -28,7 +30,8 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
 
   const handleCreate = () => {
     if (createRoomName.trim() && createUsername.trim()) {
-      onCreateRoom(createRoomName.trim(), createUsername.trim(), createRoomCode.trim() || undefined);
+      const roomCode = showRoomCodeInput && createRoomCode.trim() ? createRoomCode.trim() : undefined;
+      onCreateRoom(createRoomName.trim(), createUsername.trim(), roomCode);
     }
   };
 
@@ -53,11 +56,11 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
           
           <TabsContent value="join" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="join-room-code">Room Code</Label>
+              <Label htmlFor="join-room-code">Room Password (if required)</Label>
               <Input
                 id="join-room-code"
                 type="password"
-                placeholder="Enter room code (e.g., abc123)"
+                placeholder="Enter room password (leave empty if no password)"
                 value={joinRoomCode}
                 onChange={(e) => setJoinRoomCode(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleJoin)}
@@ -81,7 +84,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
             
             <Button
               onClick={handleJoin}
-              disabled={!joinRoomCode.trim() || !joinUsername.trim()}
+              disabled={!joinUsername.trim()}
               className="w-full"
               data-testid="button-join-room"
             >
@@ -116,17 +119,33 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="create-room-code">Room Code (Optional)</Label>
-              <Input
-                id="create-room-code"
-                type="password"
-                placeholder="Enter custom room code (leave empty for auto-generated)"
-                value={createRoomCode}
-                onChange={(e) => setCreateRoomCode(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, handleCreate)}
-                data-testid="input-create-room-code"
-              />
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="enable-room-code"
+                  checked={showRoomCodeInput}
+                  onCheckedChange={setShowRoomCodeInput}
+                  data-testid="switch-enable-room-code"
+                />
+                <Label htmlFor="enable-room-code" className="text-sm font-medium">
+                  Set Room Password
+                </Label>
+              </div>
+              
+              {showRoomCodeInput && (
+                <div className="space-y-2">
+                  <Label htmlFor="create-room-code">Room Password</Label>
+                  <Input
+                    id="create-room-code"
+                    type="password"
+                    placeholder="Enter room password"
+                    value={createRoomCode}
+                    onChange={(e) => setCreateRoomCode(e.target.value)}
+                    onKeyPress={(e) => handleKeyPress(e, handleCreate)}
+                    data-testid="input-create-room-code"
+                  />
+                </div>
+              )}
             </div>
             
             <Button
