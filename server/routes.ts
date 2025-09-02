@@ -186,7 +186,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Create user for this socket in the new room
             // Before creating a new record, clean up any stale users in this room
             await cleanupStaleUsers(roomId);
-            const user = await storage.createUser({ username, roomId, isHost: false });
+            
+            // Check if this user should be the host (first user in the room or room creator)
+            const existingUsers = await storage.getUsersByRoom(roomId);
+            const isHost = existingUsers.length === 0; // First user becomes host
+            
+            const user = await storage.createUser({ username, roomId, isHost });
 
             socket.userId = user.id;
             socket.roomId = roomId;

@@ -115,12 +115,10 @@ export default function ChatSidebar({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  console.log("Settings button clicked!");
-                  onShowRoomSettings();
-                }}
+                onClick={onShowRoomSettings}
                 className="h-8 w-8 p-0"
                 data-testid="button-room-settings"
+                title="Room Settings"
               >
                 <Settings className="w-4 h-4" />
               </Button>

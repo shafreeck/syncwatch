@@ -390,10 +390,7 @@ export default function Home() {
               currentUser={currentUser}
               onSendMessage={sendMessage}
               onSyncToHost={syncToHost}
-              onShowRoomSettings={() => {
-                console.log("Opening room settings modal...");
-                setShowRoomSettings(true);
-              }}
+              onShowRoomSettings={() => setShowRoomSettings(true)}
               roomId={roomId}
               videoDuration={currentVideo ? 600 : 0} // TODO: Get actual video duration
             />
@@ -404,10 +401,7 @@ export default function Home() {
 
       <RoomSettingsModal 
         open={showRoomSettings}
-        onOpenChange={(open) => {
-          console.log("Room settings modal open state changed:", open);
-          setShowRoomSettings(open);
-        }}
+        onOpenChange={setShowRoomSettings}
         room={room}
         onRoomUpdate={(updatedRoom) => {
           console.log("Room settings updated:", updatedRoom);
