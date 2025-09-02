@@ -1,0 +1,59 @@
+FileShare rendered with videos: 1 Array(1)
+file-share.tsx:51 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:379 Uncaught TypeError: Cannot read properties of undefined (reading 'peers')
+    at file-share.tsx:379:72
+    at Array.map (<anonymous>)
+    at FileShare (file-share.tsx:360:21)
+    at renderWithHooks (chunk-WERSD76P.js?v=1ff71ecb:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=1ff71ecb:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=1ff71ecb:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=1ff71ecb:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=1ff71ecb:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=1ff71ecb:3733:39)
+    at beginWork$1 (chunk-WERSD76P.js?v=1ff71ecb:19765:15)
+file-share.tsx:51 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:51 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:379 Uncaught TypeError: Cannot read properties of undefined (reading 'peers')
+    at file-share.tsx:379:72
+    at Array.map (<anonymous>)
+    at FileShare (file-share.tsx:360:21)
+    at renderWithHooks (chunk-WERSD76P.js?v=1ff71ecb:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=1ff71ecb:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=1ff71ecb:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=1ff71ecb:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=1ff71ecb:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=1ff71ecb:3733:39)
+    at beginWork$1 (chunk-WERSD76P.js?v=1ff71ecb:19765:15)
+chunk-WERSD76P.js?v=1ff71ecb:14032 The above error occurred in the <FileShare> component:
+
+    at FileShare (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/src/components/file-share.tsx:36:37)
+    at div
+    at div
+    at main
+    at div
+    at Home (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/src/pages/home.tsx:32:32)
+    at Route (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1ff71ecb:323:16)
+    at Switch (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1ff71ecb:379:17)
+    at Router
+    at Provider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-PLT6GTVM.js?v=1ff71ecb:38:15)
+    at TooltipProvider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=1ff71ecb:2250:5)
+    at QueryClientProvider (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1ff71ecb:2805:3)
+    at div
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-WERSD76P.js?v=1ff71ecb:14032
+Show 1 more frame
+Show less
+chunk-WERSD76P.js?v=1ff71ecb:19413 Uncaught TypeError: Cannot read properties of undefined (reading 'peers')
+    at file-share.tsx:379:72
+    at Array.map (<anonymous>)
+    at FileShare (file-share.tsx:360:21)
+    at renderWithHooks (chunk-WERSD76P.js?v=1ff71ecb:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=1ff71ecb:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=1ff71ecb:15924:22)
+    at beginWork$1 (chunk-WERSD76P.js?v=1ff71ecb:19753:22)
+    at performUnitOfWork (chunk-WERSD76P.js?v=1ff71ecb:19198:20)
+    at workLoopSync (chunk-WERSD76P.js?v=1ff71ecb:19137:13)
+    at renderRootSync (chunk-WERSD76P.js?v=1ff71ecb:19116:15)

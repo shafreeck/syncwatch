@@ -373,12 +373,12 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                       {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
                     </p>
                     {/* P2P status row */}
-                    {isVideoBeingSeeded(video) ? (
+                    {isVideoBeingSeeded(video) && video.infoHash && statsByInfoHash[video.infoHash] ? (
                       <div className="mt-1 text-[11px] text-muted-foreground flex items-center gap-3">
                         <span className="text-green-500">Seeding</span>
-                        <span>Peers: {statsByInfoHash[video.infoHash!].peers}</span>
-                        <span>Send: {formatSpeed(statsByInfoHash[video.infoHash!].uploadMBps)}</span>
-                        <span>Recv: {formatSpeed(statsByInfoHash[video.infoHash!].downloadMBps)}</span>
+                        <span>Peers: {statsByInfoHash[video.infoHash].peers}</span>
+                        <span>Send: {formatSpeed(statsByInfoHash[video.infoHash].uploadMBps)}</span>
+                        <span>Recv: {formatSpeed(statsByInfoHash[video.infoHash].downloadMBps)}</span>
                       </div>
                     ) : null}
                     {/* Inline seeding progress for the current uploading file */}
