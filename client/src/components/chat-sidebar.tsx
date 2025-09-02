@@ -25,6 +25,7 @@ interface Message {
 interface ChatSidebarProps {
   users: User[];
   messages: Message[];
+  userProgresses?: Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>;
   currentUser: User | null;
   onSendMessage: (content: string) => void;
   roomId?: string;
@@ -33,6 +34,7 @@ interface ChatSidebarProps {
 export default function ChatSidebar({
   users,
   messages,
+  userProgresses = {},
   currentUser,
   onSendMessage,
   roomId,
@@ -79,6 +81,21 @@ export default function ChatSidebar({
     return username.substring(0, 2).toUpperCase();
   };
 
+  const formatProgressTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const getUserProgress = (userId: string) => {
+    const progress = userProgresses[userId];
+    if (!progress) return null;
+    
+    // Show as "stale" if last update was more than 10 seconds ago
+    const isStale = Date.now() - progress.lastUpdate > 10000;
+    return { ...progress, isStale };
+  };
+
   const formatTime = (date?: Date) => {
     if (!date) return "";
     return new Intl.DateTimeFormat("en-US", {
@@ -119,15 +136,34 @@ export default function ChatSidebar({
               </div>
               
               <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium" data-testid={`text-username-${user.id}`}>
-                    {user.username}
-                  </span>
-                  {user.isHost && (
-                    <Badge variant="default" className="text-xs">
-                      HOST
-                    </Badge>
-                  )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium" data-testid={`text-username-${user.id}`}>
+                      {user.username}
+                    </span>
+                    {user.isHost && (
+                      <Badge variant="default" className="text-xs">
+                        HOST
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* User playback progress */}
+                  {(() => {
+                    const progress = getUserProgress(user.id);
+                    if (!progress) return null;
+                    
+                    return (
+                      <div className="flex items-center space-x-1 text-xs">
+                        <span className={`${progress.isPlaying ? 'text-green-500' : 'text-gray-500'}`}>
+                          {progress.isPlaying ? '▶' : '⏸'}
+                        </span>
+                        <span className={`text-muted-foreground ${progress.isStale ? 'opacity-50' : ''}`}>
+                          {formatProgressTime(progress.currentTime)}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

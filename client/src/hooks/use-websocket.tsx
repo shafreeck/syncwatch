@@ -42,6 +42,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [lastSync, setLastSync] = useState<{ action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null>(null);
+  const [userProgresses, setUserProgresses] = useState<Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>>({});
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
@@ -189,6 +190,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
           }
         } catch {}
         break;
+        
+      case "user_progress":
+        // Handle individual user progress updates
+        try {
+          const { userId, currentTime, isPlaying } = message.data || {};
+          if (userId && typeof currentTime === 'number') {
+            setUserProgresses(prev => ({
+              ...prev,
+              [userId]: {
+                currentTime,
+                isPlaying: !!isPlaying,
+                lastUpdate: Date.now()
+              }
+            }));
+          }
+        } catch {}
+        break;
 
       case "video_selected":
         // Handle video selection - always set a fresh object to force re-load
@@ -272,6 +290,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   const syncVideo = useCallback((action: string, currentTime: number) => {
     if (room) {
       sendMessage("video_sync", { action, currentTime, roomId: room.id });
+    }
+  }, [sendMessage, room]);
+
+  // New function to send periodic user progress updates
+  const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
+    if (room) {
+      sendMessage("user_progress", { currentTime, isPlaying, roomId: room.id });
     }
   }, [sendMessage, room]);
 
@@ -372,8 +397,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
 
         // Persist file handle to re-seed after refresh (when available)
         try {
-          if (handle && torrent?.infoHash) {
-            await saveSeedHandle({ infoHash: torrent.infoHash, roomId: room.id, name: file.name, handle });
+          if (handle && torrent?.infoHash && currentRoomId) {
+            await saveSeedHandle({ infoHash: torrent.infoHash, roomId: currentRoomId, name: file.name, handle });
             console.log('Saved seed handle for auto re-seed:', torrent.infoHash);
           }
         } catch (e) {
@@ -413,11 +438,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
     videos,
     currentVideo,
     lastSync,
+    userProgresses,
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,
     sendWSMessage,
     syncVideo,
+    sendUserProgress,
     shareVideo,
   };
 }

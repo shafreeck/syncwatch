@@ -136,6 +136,14 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       roomId: z.string(),
     }),
   }),
+  z.object({
+    type: z.literal("user_progress"),
+    data: z.object({
+      currentTime: z.number(),
+      isPlaying: z.boolean(),
+      roomId: z.string(),
+    }),
+  }),
 ]);
 
 export type WSMessage = z.infer<typeof wsMessageSchema>;

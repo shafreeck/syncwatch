@@ -34,11 +34,13 @@ export default function Home() {
     videos,
     currentVideo,
     lastSync,
+    userProgresses,
     joinRoom,
     leaveRoom,
     sendMessage,
     sendWSMessage,
     syncVideo,
+    sendUserProgress,
     shareVideo,
   } = useWebSocket(registerTorrent);
 
@@ -229,6 +231,7 @@ export default function Home() {
             <VideoPlayer
               currentVideo={currentVideo}
               onVideoSync={syncVideo}
+              onUserProgress={sendUserProgress}
               isConnected={isConnected}
               lastSync={lastSync}
               statsByInfoHash={statsByInfoHash}
@@ -306,6 +309,7 @@ export default function Home() {
             <ChatSidebar
               users={users}
               messages={messages}
+              userProgresses={userProgresses}
               currentUser={currentUser}
               onSendMessage={sendMessage}
               roomId={roomId}

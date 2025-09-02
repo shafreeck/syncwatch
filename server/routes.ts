@@ -250,6 +250,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }, socket);
             }
             break;
+            
+          case "user_progress":
+            if (socket.roomId && socket.userId) {
+              // Broadcast user's playback progress to other users in the room
+              broadcastToRoom(socket.roomId, {
+                type: "user_progress",
+                data: { 
+                  userId: socket.userId,
+                  currentTime: message.data?.currentTime,
+                  isPlaying: message.data?.isPlaying
+                }
+              }, socket);
+            }
+            break;
 
           case "video_upload":
           case "video_share":

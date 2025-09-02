@@ -8,12 +8,13 @@ import { useWebTorrent } from "@/hooks/use-webtorrent";
 interface VideoPlayerProps {
   currentVideo?: any;
   onVideoSync: (action: string, currentTime: number) => void;
+  onUserProgress?: (currentTime: number, isPlaying: boolean) => void;
   isConnected: boolean;
   lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
   statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -35,8 +36,14 @@ export default function VideoPlayer({ currentVideo, onVideoSync, isConnected, la
     if (!video) return;
 
     const updateTime = () => {
-      setCurrentTime(video.currentTime);
-      setProgress((video.currentTime / video.duration) * 100 || 0);
+      const newTime = video.currentTime;
+      setCurrentTime(newTime);
+      setProgress((newTime / video.duration) * 100 || 0);
+      
+      // Send periodic user progress updates (every ~2 seconds during playback)
+      if (onUserProgress && !video.paused && Math.floor(newTime) % 2 === 0) {
+        onUserProgress(newTime, !video.paused);
+      }
     };
 
     const updateDuration = () => {
