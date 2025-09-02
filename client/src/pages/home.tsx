@@ -58,8 +58,19 @@ export default function Home() {
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
     try {
-      // Prefer URL roomId if present, so invite links don't require typing the code
-      const targetRoomId = roomId || roomCode;
+      // 首先尝试通过房间代码查找房间
+      let targetRoomId = roomId; // 优先使用URL中的roomId
+      
+      if (!targetRoomId) {
+        // 如果没有URL roomId，通过房间代码查找
+        const response = await fetch(`/api/rooms/code/${roomCode}`);
+        if (!response.ok) {
+          throw new Error("Room not found");
+        }
+        const room = await response.json();
+        targetRoomId = room.id;
+      }
+      
       await joinRoom(targetRoomId, displayName);
       setUsername(displayName);
       // persist name for frictionless re-joins
@@ -76,7 +87,7 @@ export default function Home() {
     } catch (error) {
       toast({
         title: "Connection failed",
-        description: "Failed to join room. Please try again.",
+        description: "Room not found or connection failed. Please check the room code.",
         variant: "destructive",
       });
     }
@@ -114,13 +125,13 @@ export default function Home() {
     }
   }, [roomId, isConnected, room, joinRoom]);
 
-  const handleCreateRoom = async (roomName: string, displayName: string) => {
+  const handleCreateRoom = async (roomName: string, displayName: string, roomCode?: string) => {
     try {
       // Create room via API
       const response = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: roomName, hostId: "temp" }),
+        body: JSON.stringify({ name: roomName, hostId: "temp", roomCode }),
       });
       
       if (!response.ok) throw new Error("Failed to create room");
@@ -137,7 +148,7 @@ export default function Home() {
       
       toast({
         title: "Room created",
-        description: `Created room: ${roomName}`,
+        description: roomCode ? `Created room: ${roomName} (Code: ${roomCode})` : `Created room: ${roomName}`,
       });
     } catch (error) {
       toast({

@@ -8,6 +8,7 @@ export const rooms = sqliteTable("rooms", {
   id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   name: text("name").notNull(),
   hostId: text("host_id").notNull(),
+  roomCode: text("room_code").unique(), // 可选的房间代码
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   isActive: integer("is_active", { mode: "boolean" }).default(true),
 });

@@ -9,7 +9,7 @@ interface RoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   onJoinRoom: (roomCode: string, username: string) => void;
-  onCreateRoom: (roomName: string, username: string) => void;
+  onCreateRoom: (roomName: string, username: string, roomCode?: string) => void;
 }
 
 export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }: RoomModalProps) {
@@ -17,6 +17,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
   const [joinUsername, setJoinUsername] = useState("");
   const [createRoomName, setCreateRoomName] = useState("");
   const [createUsername, setCreateUsername] = useState("");
+  const [createRoomCode, setCreateRoomCode] = useState("");
   const [activeTab, setActiveTab] = useState("join");
 
   const handleJoin = () => {
@@ -27,7 +28,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
 
   const handleCreate = () => {
     if (createRoomName.trim() && createUsername.trim()) {
-      onCreateRoom(createRoomName.trim(), createUsername.trim());
+      onCreateRoom(createRoomName.trim(), createUsername.trim(), createRoomCode.trim() || undefined);
     }
   };
 
@@ -38,8 +39,8 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" data-testid="dialog-room-modal">
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="sm:max-w-md [&>button]:hidden" data-testid="dialog-room-modal">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Join or Create Room</DialogTitle>
         </DialogHeader>
@@ -67,6 +68,8 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
               <Label htmlFor="join-username">Your Name</Label>
               <Input
                 id="join-username"
+                type="text"
+                autoComplete="name"
                 placeholder="Enter your display name"
                 value={joinUsername}
                 onChange={(e) => setJoinUsername(e.target.value)}
@@ -99,9 +102,23 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
             </div>
             
             <div className="space-y-2">
+              <Label htmlFor="create-room-code">Room Code (Optional)</Label>
+              <Input
+                id="create-room-code"
+                placeholder="Enter custom room code (leave empty for auto-generated)"
+                value={createRoomCode}
+                onChange={(e) => setCreateRoomCode(e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, handleCreate)}
+                data-testid="input-create-room-code"
+              />
+            </div>
+            
+            <div className="space-y-2">
               <Label htmlFor="create-username">Your Name</Label>
               <Input
                 id="create-username"
+                type="text"
+                autoComplete="name"
                 placeholder="Enter your display name"
                 value={createUsername}
                 onChange={(e) => setCreateUsername(e.target.value)}

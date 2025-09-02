@@ -19,7 +19,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const room = await storage.createRoom(roomData);
       res.json(room);
     } catch (error) {
+      console.error("Create room error:", error);
       res.status(400).json({ error: "Invalid room data" });
+    }
+  });
+
+  // 通过房间代码查找房间
+  app.get("/api/rooms/code/:code", async (req, res) => {
+    try {
+      const room = await storage.getRoomByCode(req.params.code);
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      res.json(room);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch room" });
     }
   });
 

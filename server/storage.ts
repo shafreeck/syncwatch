@@ -8,6 +8,7 @@ export interface IStorage {
   // Room operations
   createRoom(room: InsertRoom): Promise<Room>;
   getRoom(id: string): Promise<Room | undefined>;
+  getRoomByCode(roomCode: string): Promise<Room | undefined>;
   updateRoom(id: string, updates: Partial<Room>): Promise<Room | undefined>;
   deleteRoom(id: string): Promise<boolean>;
 
@@ -48,6 +49,7 @@ export class MemStorage implements IStorage {
     const room: Room = {
       ...insertRoom,
       id,
+      roomCode: insertRoom.roomCode || null,
       createdAt: new Date(),
       isActive: true,
     };
@@ -57,6 +59,10 @@ export class MemStorage implements IStorage {
 
   async getRoom(id: string): Promise<Room | undefined> {
     return this.rooms.get(id);
+  }
+
+  async getRoomByCode(roomCode: string): Promise<Room | undefined> {
+    return Array.from(this.rooms.values()).find(room => room.roomCode === roomCode);
   }
 
   async updateRoom(id: string, updates: Partial<Room>): Promise<Room | undefined> {
@@ -205,6 +211,11 @@ export class DatabaseStorage implements IStorage {
 
   async getRoom(id: string): Promise<Room | undefined> {
     const [room] = await db.select().from(rooms).where(eq(rooms.id, id));
+    return room || undefined;
+  }
+
+  async getRoomByCode(roomCode: string): Promise<Room | undefined> {
+    const [room] = await db.select().from(rooms).where(eq(rooms.roomCode, roomCode));
     return room || undefined;
   }
 
