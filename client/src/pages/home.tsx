@@ -248,6 +248,7 @@ export default function Home() {
               shareSpeed={shareSpeed}
               peers={peers}
               statsByInfoHash={statsByInfoHash}
+              currentUser={currentUser}
               onDeleteVideo={async (video) => {
                 if (!room) return;
                 

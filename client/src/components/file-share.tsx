@@ -24,6 +24,7 @@ interface Video {
   uploadedAt?: Date;
   magnetUri?: string;
   infoHash?: string;
+  uploadedBy?: string;
 }
 
 interface FileShareProps {
@@ -34,9 +35,10 @@ interface FileShareProps {
   shareSpeed?: number;
   peers?: number;
   statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
+  currentUser?: { id: string; username: string } | null;
 }
 
-export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {} }: FileShareProps) {
+export default function FileShare({ onVideoShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -306,9 +308,12 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
     return isCurrentlySeeding || hasActiveStats;
   };
 
-  // Helper to check if video needs warning message
+  // Helper to check if video needs warning message (only for videos uploaded by current user)
   const needsWarning = (video: Video) => {
-    return video.infoHash && !statsByInfoHash[video.infoHash];
+    return video.infoHash && 
+           !statsByInfoHash[video.infoHash] && 
+           currentUser && 
+           video.uploadedBy === currentUser.id;
   };
 
   return (
