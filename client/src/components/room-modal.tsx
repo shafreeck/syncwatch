@@ -56,6 +56,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
               <Label htmlFor="join-room-code">Room Code</Label>
               <Input
                 id="join-room-code"
+                type="password"
                 placeholder="Enter room code (e.g., abc123)"
                 value={joinRoomCode}
                 onChange={(e) => setJoinRoomCode(e.target.value)}
@@ -102,18 +103,6 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="create-room-code">Room Code (Optional)</Label>
-              <Input
-                id="create-room-code"
-                placeholder="Enter custom room code (leave empty for auto-generated)"
-                value={createRoomCode}
-                onChange={(e) => setCreateRoomCode(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, handleCreate)}
-                data-testid="input-create-room-code"
-              />
-            </div>
-            
-            <div className="space-y-2">
               <Label htmlFor="create-username">Your Name</Label>
               <Input
                 id="create-username"
@@ -124,6 +113,19 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
                 onChange={(e) => setCreateUsername(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleCreate)}
                 data-testid="input-create-username"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="create-room-code">Room Code (Optional)</Label>
+              <Input
+                id="create-room-code"
+                type="password"
+                placeholder="Enter custom room code (leave empty for auto-generated)"
+                value={createRoomCode}
+                onChange={(e) => setCreateRoomCode(e.target.value)}
+                onKeyPress={(e) => handleKeyPress(e, handleCreate)}
+                data-testid="input-create-room-code"
               />
             </div>
             

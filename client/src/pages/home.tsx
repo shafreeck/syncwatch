@@ -58,11 +58,23 @@ export default function Home() {
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
     try {
-      // 首先尝试通过房间代码查找房间
-      let targetRoomId = roomId; // 优先使用URL中的roomId
+      // 优先使用URL中的roomId
+      let targetRoomId = roomId;
       
-      if (!targetRoomId) {
-        // 如果没有URL roomId，通过房间代码查找
+      if (targetRoomId) {
+        // 如果有URL roomId，验证房间代码（如果提供的话）
+        const response = await fetch(`/api/rooms/${targetRoomId}`);
+        if (!response.ok) {
+          throw new Error("Room not found");
+        }
+        const room = await response.json();
+        
+        // 如果房间设置了密码，验证输入的代码
+        if (room.roomCode && room.roomCode !== roomCode) {
+          throw new Error("Invalid room code");
+        }
+      } else {
+        // 如果没有URL roomId，通过房间代码查找房间
         const response = await fetch(`/api/rooms/code/${roomCode}`);
         if (!response.ok) {
           throw new Error("Room not found");
@@ -82,12 +94,14 @@ export default function Home() {
       
       toast({
         title: "Connected successfully",
-        description: `Joined room: ${roomCode}`,
+        description: `Joined room successfully`,
       });
     } catch (error) {
       toast({
         title: "Connection failed",
-        description: "Room not found or connection failed. Please check the room code.",
+        description: error instanceof Error && error.message === "Invalid room code" 
+          ? "Incorrect room code. Please check and try again." 
+          : "Room not found or connection failed.",
         variant: "destructive",
       });
     }
