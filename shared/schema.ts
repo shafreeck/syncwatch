@@ -1,12 +1,8 @@
 import { sql } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { pgTable, varchar, timestamp, boolean, text as pgText } from "drizzle-orm/pg-core";
 import { randomUUID } from "crypto";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-
-// Determine which schema to use based on environment
-const usePostgres = process.env.DATABASE_URL?.startsWith('postgres');
 
 export const rooms = sqliteTable("rooms", {
   id: text("id").primaryKey().$defaultFn(() => randomUUID()),

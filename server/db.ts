@@ -1,30 +1,13 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { drizzle as drizzleSQLite } from 'drizzle-orm/better-sqlite3';
-import { Pool } from 'pg';
 import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from "@shared/schema";
 
-// Check if we should use PostgreSQL (for production/Render) or SQLite (for development)
-const usePostgres = process.env.DATABASE_URL?.startsWith('postgres');
+// Allow overriding path via env; default to local file
+const dbFile = process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('postgres')
+  ? process.env.DATABASE_URL.replace(/^file:/, '')
+  : 'sqlite.db';
 
-let db: ReturnType<typeof drizzle> | ReturnType<typeof drizzleSQLite>;
-
-if (usePostgres && process.env.DATABASE_URL) {
-  // PostgreSQL for production (Render)
-  console.log('Using PostgreSQL database for production');
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-  });
-  db = drizzle(pool, { schema });
-} else {
-  // SQLite for development
-  console.log('Using SQLite database for development');
-  const dbFile = process.env.DATABASE_URL?.replace(/^file:/, '') || 'sqlite.db';
-  const sqlite = new Database(dbFile);
-  ensureSchema(sqlite); // Only run schema setup for SQLite
-  db = drizzleSQLite(sqlite, { schema });
-}
+const sqlite = new Database(dbFile);
 
 // Ensure required tables exist when running on a fresh environment (e.g., Render)
 // This is a minimal bootstrap to avoid manual migration steps on ephemeral disks.
@@ -113,4 +96,24 @@ function ensureSchema(db: Database.Database) {
   }
 }
 
-export { db };
+// Enhanced schema migration function that handles column additions safely
+function ensureSchemaWithMigration(db: Database.Database) {
+  try {
+    // Check if we need to add room_code column to existing rooms table
+    const tableInfo = db.prepare("PRAGMA table_info(rooms)").all() as any[];
+    const hasRoomCode = tableInfo.some(col => col.name === 'room_code');
+    
+    if (!hasRoomCode && tableInfo.length > 0) {
+      console.log('Adding room_code column to existing rooms table...');
+      db.prepare('ALTER TABLE rooms ADD COLUMN room_code TEXT').run();
+    }
+  } catch (e) {
+    console.log('rooms table does not exist yet, will create with full schema');
+  }
+
+  // Now ensure all tables exist with full schema
+  ensureSchema(db);
+}
+
+ensureSchemaWithMigration(sqlite);
+export const db = drizzle(sqlite, { schema });
