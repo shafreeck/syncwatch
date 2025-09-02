@@ -240,14 +240,41 @@ export default function Home() {
               shareSpeed={shareSpeed}
               peers={peers}
               statsByInfoHash={statsByInfoHash}
-              onDeleteVideo={(video) => {
+              onDeleteVideo={async (video) => {
                 if (!room) return;
-                console.log(`🗑️ Sending video_delete request:`, { videoId: video.id, roomId: room.id });
-                sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
-                toast({
-                  title: "Requesting delete",
-                  description: `${video.name}`,
-                });
+                
+                // Ensure WebSocket is properly connected to the room before deleting
+                if (!isConnected) {
+                  toast({
+                    title: "Connection issue",
+                    description: "Please wait for connection to establish",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                
+                // If not properly joined via WebSocket, attempt to join first
+                if (room && username) {
+                  console.log(`🔄 Ensuring WebSocket room connection before delete...`);
+                  await joinRoom(room.id, username);
+                  
+                  // Give a brief moment for join to complete
+                  setTimeout(() => {
+                    console.log(`🗑️ Sending video_delete request:`, { videoId: video.id, roomId: room.id });
+                    sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
+                    toast({
+                      title: "Requesting delete",
+                      description: `${video.name}`,
+                    });
+                  }, 500);
+                } else {
+                  console.log(`🗑️ Sending video_delete request:`, { videoId: video.id, roomId: room.id });
+                  sendWSMessage("video_delete", { videoId: video.id, roomId: room.id });
+                  toast({
+                    title: "Requesting delete",
+                    description: `${video.name}`,
+                  });
+                }
               }}
               onSelectVideo={(video) => {
                 if (video.magnetUri && room) {

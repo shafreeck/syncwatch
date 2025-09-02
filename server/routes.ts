@@ -108,6 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         switch (message.type) {
           case "join_room":
             const { roomId, username } = message.data;
+            console.log(`🚪 Join room request:`, { roomId, username });
             
             // Verify room exists
             const room = await storage.getRoom(roomId);

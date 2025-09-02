@@ -253,6 +253,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   }, [socket]);
 
   const joinRoom = useCallback(async (roomId: string, username: string) => {
+    console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
     sendMessage("join_room", { roomId, username });
   }, [sendMessage]);
 
