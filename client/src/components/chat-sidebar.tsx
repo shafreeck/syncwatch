@@ -152,29 +152,39 @@ export default function ChatSidebar({
                     )}
                   </div>
                   
-                  {/* User playback progress */}
-                  {(() => {
-                    const progress = getUserProgress(user.id);
-                    if (!progress) return null;
-                    
-                    return (
-                      <div className="flex items-center space-x-2 min-w-[60px]">
-                        <span className={`text-xs ${progress.isPlaying ? 'text-green-500' : 'text-gray-500'}`}>
-                          {progress.isPlaying ? '▶' : '⏸'}
-                        </span>
-                        {/* Thin progress bar */}
-                        <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full transition-all duration-300 ${progress.isPlaying ? 'bg-green-500' : 'bg-gray-400'} ${progress.isStale ? 'opacity-50' : ''}`}
-                            style={{ 
-                              width: `${videoDuration > 0 ? Math.min(100, Math.max(0, (progress.currentTime / videoDuration) * 100)) : 0}%`
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })()}
                 </div>
+                
+                {/* User playback progress bar below name */}
+                {(() => {
+                  const progress = getUserProgress(user.id);
+                  if (!progress) return null;
+                  
+                  const progressPercent = videoDuration > 0 ? Math.min(100, Math.max(0, (progress.currentTime / videoDuration) * 100)) : 0;
+                  const isStale = progress.isStale;
+                  const isPlaying = progress.isPlaying;
+                  
+                  // Different colors for different states
+                  let barColor = 'bg-gray-400'; // Default/paused
+                  if (isPlaying && !isStale) {
+                    barColor = 'bg-green-500'; // Playing
+                  } else if (isStale) {
+                    barColor = 'bg-red-400'; // Stale/offline
+                  }
+                  
+                  const tooltipText = isStale ? 'Offline' : (isPlaying ? 'Playing' : 'Paused');
+                  
+                  return (
+                    <div 
+                      className="mt-1.5 w-full h-0.5 bg-secondary rounded-full overflow-hidden cursor-help"
+                      title={tooltipText}
+                    >
+                      <div 
+                        className={`h-full transition-all duration-300 ${barColor} ${isStale ? 'opacity-60' : ''}`}
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           ))}
