@@ -269,7 +269,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       default:
         console.log("Unknown message type:", message.type);
     }
-  }, [currentVideo, videos, room, toast]);
+  }, [currentVideo, videos, room, currentUser, toast]);
 
   // Keep a ref of the latest handler so ws.onmessage always calls up-to-date logic
   useEffect(() => {
