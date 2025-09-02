@@ -372,30 +372,35 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                     <p className="text-xs text-muted-foreground">
                       {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
                     </p>
-                    {/* P2P status row */}
-                    {isVideoBeingSeeded(video) && video.infoHash && statsByInfoHash[video.infoHash] ? (
-                      <div className="mt-1 text-[11px] text-muted-foreground flex items-center gap-3">
-                        <span className="text-green-500">Seeding</span>
-                        <span>Peers: {statsByInfoHash[video.infoHash].peers}</span>
-                        <span>Send: {formatSpeed(statsByInfoHash[video.infoHash].uploadMBps)}</span>
-                        <span>Recv: {formatSpeed(statsByInfoHash[video.infoHash].downloadMBps)}</span>
+                    {/* Combined P2P and seeding status */}
+                    {isVideoBeingSeeded(video) ? (
+                      <div className="mt-1 space-y-1">
+                        {/* Seeding progress for current uploading file */}
+                        {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
+                          <div>
+                            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                              <span>Seeding progress</span>
+                              <span className="font-mono text-primary">{seedingProgress.toFixed(1)}%</span>
+                            </div>
+                            <div className="h-1.5 w-48 bg-secondary rounded overflow-hidden mt-1">
+                              <div
+                                className="h-full bg-primary transition-all"
+                                style={{ width: `${Math.min(100, Math.max(0, seedingProgress))}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {/* P2P network status */}
+                        {video.infoHash && statsByInfoHash[video.infoHash] && (
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                            <span className="text-green-500 font-medium">Seeding</span>
+                            <span>Peers: <span className="text-blue-400">{statsByInfoHash[video.infoHash].peers}</span></span>
+                            <span>↑ <span className="text-green-400">{formatSpeed(statsByInfoHash[video.infoHash].uploadMBps)}</span></span>
+                            <span>↓ <span className="text-yellow-400">{formatSpeed(statsByInfoHash[video.infoHash].downloadMBps)}</span></span>
+                          </div>
+                        )}
                       </div>
                     ) : null}
-                    {/* Inline seeding progress for the current uploading file */}
-                    {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
-                      <div className="mt-1">
-                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                          <span>Seeding progress</span>
-                          <span className="font-mono">{seedingProgress.toFixed(1)}%</span>
-                        </div>
-                        <div className="h-1.5 w-48 bg-secondary rounded overflow-hidden">
-                          <div
-                            className="h-full bg-primary transition-all"
-                            style={{ width: `${Math.min(100, Math.max(0, seedingProgress))}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
                 
