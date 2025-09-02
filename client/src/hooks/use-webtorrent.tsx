@@ -206,11 +206,29 @@ export function useWebTorrent() {
       );
 
       if (videoFile && videoElement) {
-        console.log('Setting up progressive video streaming via BrowserServer...');
-        try { videoFile.select(); } catch {}
-        try { (videoFile as any).streamTo(videoElement); } catch (e) { console.error('streamTo failed:', e); }
+        console.log('Setting up progressive video streaming via appendTo...');
+        try { 
+          videoFile.select(); 
+          // Use appendTo for better streaming support and buffering
+          (videoFile as any).appendTo(videoElement, {
+            autoplay: false,
+            controls: false
+          });
+          console.log('Video file appendTo setup complete');
+        } catch (e) { 
+          console.error('appendTo failed, falling back to blob URL:', e);
+          // Fallback to blob URL if appendTo fails
+          const blob = new Blob([videoFile as any], { type: 'video/mp4' });
+          const url = URL.createObjectURL(blob);
+          videoElement.src = url;
+        }
+        
         videoElement.addEventListener('loadedmetadata', () => {
-          videoElement.play().catch(() => {});
+          console.log('Video metadata loaded, duration:', videoElement.duration);
+        }, { once: true });
+        
+        videoElement.addEventListener('canplay', () => {
+          console.log('Video can start playing');
         }, { once: true });
       }
 
