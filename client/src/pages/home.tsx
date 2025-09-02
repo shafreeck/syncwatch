@@ -112,7 +112,7 @@ export default function Home() {
     // If already in a room with the same id, do nothing
     if (room && room.id === roomId) return;
 
-    // When socket is connected, try to join automatically using saved name
+    // When socket is connected, check if room requires password
     if (isConnected) {
       // Skip if we very recently joined this same room (avoid duplicate join)
       try {
@@ -124,19 +124,54 @@ export default function Home() {
           }
         }
       } catch {}
-      let saved = '';
-      try { saved = localStorage.getItem('syncwatch:username') || ''; } catch {}
-      if (saved) {
-        joinRoom(roomId, saved);
-        setUsername(saved);
-        setShowRoomModal(false);
-        try { sessionStorage.setItem('syncwatch:last-join', JSON.stringify({ roomId, at: Date.now() })); } catch {}
-      } else {
-        // No saved name – show modal to ask for display name
-        setShowRoomModal(true);
-      }
+
+      // Check if room requires password first
+      const checkRoomAndJoin = async () => {
+        try {
+          const response = await fetch(`/api/rooms/${roomId}`);
+          if (!response.ok) {
+            toast({
+              title: "Room not found",
+              description: "The room you're trying to join doesn't exist",
+              variant: "destructive",
+            });
+            navigate('/');
+            return;
+          }
+          
+          const roomData = await response.json();
+          
+          // If room has password, always show modal for password input
+          if (roomData.roomCode) {
+            setShowRoomModal(true);
+            return;
+          }
+          
+          // No password required, try to auto-join using saved username
+          let saved = '';
+          try { saved = localStorage.getItem('syncwatch:username') || ''; } catch {}
+          if (saved) {
+            joinRoom(roomId, saved);
+            setUsername(saved);
+            setShowRoomModal(false);
+            try { sessionStorage.setItem('syncwatch:last-join', JSON.stringify({ roomId, at: Date.now() })); } catch {}
+          } else {
+            // No saved name – show modal to ask for display name
+            setShowRoomModal(true);
+          }
+        } catch (error) {
+          toast({
+            title: "Connection failed",
+            description: "Unable to connect to the room",
+            variant: "destructive",
+          });
+          navigate('/');
+        }
+      };
+      
+      checkRoomAndJoin();
     }
-  }, [roomId, isConnected, room, joinRoom]);
+  }, [roomId, isConnected, room, joinRoom, navigate, toast]);
 
   const handleCreateRoom = async (roomName: string, displayName: string, roomCode?: string) => {
     try {
