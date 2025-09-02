@@ -134,9 +134,25 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   }, [lastSync]);
   
   const handleSyncToHost = () => {
-    if (lastSync && onSyncToHost) {
-      onSyncToHost(lastSync.currentTime);
-      setShowSyncNotification(false);
+    // 获取房间中最快的进度作为同步目标
+    if (!currentUser) return;
+    
+    const allUserIds = Object.keys(userProgresses).filter(id => id !== currentUser.id);
+    const activeProgresses = allUserIds
+      .map(id => {
+        const progress = userProgresses[id];
+        if (!progress) return null;
+        const isStale = Date.now() - progress.lastUpdate > 10000;
+        return isStale ? null : progress;
+      })
+      .filter(p => p && p.isPlaying);
+    
+    if (activeProgresses.length > 0) {
+      const maxTime = Math.max(...activeProgresses.map(p => p!.currentTime));
+      if (onSyncToHost) {
+        onSyncToHost(maxTime);
+        setShowSyncNotification(false);
+      }
     }
   };
 
@@ -216,12 +232,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
   // 智能同步状态检测
   const getSyncStatus = () => {
-    if (!isConnected) return { status: 'Offline', color: 'text-gray-400', dotColor: 'bg-gray-400' };
-    if (!currentUser || !isPlaying) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    if (!isConnected) return { status: 'Offline', color: 'text-gray-400', dotColor: 'bg-gray-400', timeBehind: 0 };
+    if (!currentUser || !isPlaying) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400', timeBehind: 0 };
     
     // 获取当前用户的进度
     const currentUserProgress = userProgresses[currentUser.id];
-    if (!currentUserProgress) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    if (!currentUserProgress) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400', timeBehind: 0 };
     
     // 获取所有活跃用户的进度（不包括当前用户）
     const allUserIds = Object.keys(userProgresses).filter(id => id !== currentUser.id);
@@ -236,7 +252,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       .map(p => p!.currentTime);
     
     if (activeProgresses.length === 0) {
-      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400', timeBehind: 0 };
     }
     
     const maxProgress = Math.max(...activeProgresses);
@@ -244,13 +260,27 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     
     // 同步状态判断逻辑（与用户进度条相同）
     if (timeBehind <= 3) {
-      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400', timeBehind };
     } else if (timeBehind >= 10) {
-      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-red-400', dotColor: 'bg-red-400' };
+      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-red-400', dotColor: 'bg-red-400', timeBehind };
     } else {
-      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-yellow-400', dotColor: 'bg-yellow-400' };
+      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-yellow-400', dotColor: 'bg-yellow-400', timeBehind };
     }
   };
+
+  // 基于智能同步状态显示同步通知
+  useEffect(() => {
+    if (!isPlaying || !currentUser) return;
+    
+    const syncStatus = getSyncStatus();
+    const shouldShowNotification = syncStatus.timeBehind > 5; // 落后5秒以上显示通知
+    
+    if (shouldShowNotification && !showSyncNotification) {
+      setShowSyncNotification(true);
+    } else if (!shouldShowNotification && showSyncNotification) {
+      setShowSyncNotification(false);
+    }
+  }, [currentTime, userProgresses, isPlaying, currentUser, showSyncNotification]);
 
   return (
     <Card className="overflow-hidden shadow-2xl">
