@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload, Sync } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Share, Download, Upload, RotateCcw } from "lucide-react";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 
 interface VideoPlayerProps {
@@ -303,7 +303,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                 onClick={handleSyncToHost}
                 className="flex items-center gap-1"
               >
-                <Sync className="w-3 h-3" />
+                <RotateCcw className="w-3 h-3" />
                 Sync
               </Button>
             </div>
