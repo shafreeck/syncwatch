@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+# Local runtime/cache files
+.local/
+sqlite.db
