@@ -362,16 +362,16 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
         {/* Sync notification */}
         {showSyncNotification && (
-          <div className="absolute top-4 right-4 z-50 bg-background/90 border rounded-lg p-3 shadow-lg">
+          <div className="absolute top-4 right-4 z-50 bg-black/80 backdrop-blur-md border border-white/20 rounded-lg p-3 shadow-xl">
             <div className="flex items-center space-x-3">
               <div className="text-sm">
-                <p className="font-medium">You're behind</p>
-                <p className="text-muted-foreground text-xs">Catch up to the group?</p>
+                <p className="font-medium text-white">You're behind</p>
+                <p className="text-gray-300 text-xs">Catch up to the group?</p>
               </div>
               <Button 
                 size="sm" 
                 onClick={handleSyncToHost}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <RotateCcw className="w-3 h-3" />
                 Sync
