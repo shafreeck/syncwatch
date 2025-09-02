@@ -63,3 +63,19 @@ export async function removeSeed(infoHash: string): Promise<void> {
   } catch {}
 }
 
+export async function getSeedByInfoHash(infoHash: string): Promise<SeedEntry | null> {
+  try {
+    const db = await openDB();
+    return await new Promise<SeedEntry | null>((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readonly');
+      const store = tx.objectStore(STORE);
+      const req = store.get(infoHash);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.warn('Failed to get seed by infoHash:', e);
+    return null;
+  }
+}
+
