@@ -306,6 +306,11 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
     return isCurrentlySeeding || hasActiveStats;
   };
 
+  // Helper to check if video needs warning message
+  const needsWarning = (video: Video) => {
+    return video.infoHash && !statsByInfoHash[video.infoHash];
+  };
+
   return (
     <>
     <Card className="p-6">
@@ -350,7 +355,7 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
         />
       </div>
 
-      {/* Recent Files */}
+      {/* Recent Files with improved layout */}
       {videos.length > 0 && (
         <div className="mt-4">
           <h4 className="text-sm font-medium text-muted-foreground mb-2">
@@ -360,62 +365,74 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
             {videos.map((video) => (
               <div
                 key={video.id}
-                className="group flex items-center justify-between p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="group grid grid-cols-12 gap-4 items-center p-3 hover:bg-secondary rounded-lg transition-colors"
                 data-testid={`video-item-${video.id}`}
               >
-                <div className="flex items-center space-x-3 flex-1">
+                {/* Left side - Video info (7 columns) */}
+                <div className="col-span-7 flex items-center space-x-3">
                   <FileVideo className="w-4 h-4 text-primary flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium" data-testid={`text-video-name-${video.id}`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" data-testid={`text-video-name-${video.id}`}>
                       {video.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
                     </p>
-                    {/* Combined P2P and seeding status */}
-                    {isVideoBeingSeeded(video) ? (
-                      <div className="mt-1 space-y-1">
-                        {/* Seeding progress for current uploading file */}
-                        {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
-                          <div>
-                            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                              <span>Seeding progress</span>
-                              <span className="font-mono text-primary">{seedingProgress.toFixed(1)}%</span>
-                            </div>
-                            <div className="h-1.5 w-48 bg-secondary rounded overflow-hidden mt-1">
-                              <div
-                                className="h-full bg-primary transition-all"
-                                style={{ width: `${Math.min(100, Math.max(0, seedingProgress))}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        {/* P2P network status */}
-                        {video.infoHash && statsByInfoHash[video.infoHash] && (
-                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                            <span className="text-green-500 font-medium">Seeding</span>
-                            <span>Peers: <span className="text-blue-400">{statsByInfoHash[video.infoHash].peers}</span></span>
-                            <span>↑ <span className="text-green-400">{formatSpeed(statsByInfoHash[video.infoHash].uploadMBps)}</span></span>
-                            <span>↓ <span className="text-yellow-400">{formatSpeed(statsByInfoHash[video.infoHash].downloadMBps)}</span></span>
-                          </div>
-                        )}
+                    {/* Only show minimal seeding progress for current upload */}
+                    {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
+                      <div className="mt-1">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                          <span>Seeding</span>
+                          <span className="font-mono text-primary">{seedingProgress.toFixed(1)}%</span>
+                        </div>
+                        <div className="h-1.5 w-24 bg-secondary rounded overflow-hidden mt-1">
+                          <div
+                            className="h-full bg-primary transition-all"
+                            style={{ width: `${Math.min(100, Math.max(0, seedingProgress))}%` }}
+                          />
+                        </div>
                       </div>
-                    ) : null}
+                    )}
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  {/* Warning message for non-seeding videos - clickable */}
-                  {!isVideoBeingSeeded(video) && (
-                    <div 
-                      className="flex items-center gap-1 px-2 py-1 rounded cursor-pointer hover:bg-orange-50/10 hover:text-orange-400 transition-colors text-orange-500/80 text-[11px]" 
-                      onClick={() => handleReshareFromDB(video)}
+                {/* Center - P2P Statistics (3 columns) */}
+                <div className="col-span-3">
+                  {video.infoHash && statsByInfoHash[video.infoHash] ? (
+                    <div className="text-center space-y-1">
+                      <div className="text-xs text-green-500 font-medium">Seeding</div>
+                      <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground">
+                        <div className="text-center">
+                          <div className="text-blue-400 font-mono text-xs">{statsByInfoHash[video.infoHash].peers}</div>
+                          <div className="text-[9px]">Peers</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-green-400 font-mono text-xs">↑{formatSpeed(statsByInfoHash[video.infoHash].uploadMBps || 0)}</div>
+                          <div className="text-[9px]">Up</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-yellow-400 font-mono text-xs">↓{formatSpeed(statsByInfoHash[video.infoHash].downloadMBps || 0)}</div>
+                          <div className="text-[9px]">Down</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : needsWarning(video) ? (
+                    <button
+                      className="flex flex-col items-center gap-1 px-2 py-1 rounded cursor-pointer hover:bg-orange-50/10 hover:text-orange-400 transition-colors text-orange-500/80 text-[10px]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleReshareFromDB(video);
+                      }}
                       data-testid={`button-reshare-${video.id}`}
                     >
                       <AlertCircle className="w-3 h-3" />
-                      <span>Not sharing on this device. Click to re-share.</span>
-                    </div>
-                  )}
+                      <span className="text-center">Click to re-share</span>
+                    </button>
+                  ) : null}
+                </div>
+                
+                {/* Right side - Action buttons (2 columns) */}
+                <div className="col-span-2 flex items-center justify-end space-x-1">
                   {onDeleteVideo && (
                     <TooltipProvider delayDuration={200}>
                       <Dialog>
@@ -425,11 +442,11 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="opacity-60 group-hover:opacity-100 hover:bg-red-50/5 hover:text-red-500"
+                                className="h-7 w-7 opacity-60 group-hover:opacity-100 hover:bg-red-50/5 hover:text-red-500"
                                 data-testid={`button-delete-video-${video.id}`}
                                 aria-label="Delete video"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3" />
                               </Button>
                             </DialogTrigger>
                           </TooltipTrigger>
@@ -463,6 +480,7 @@ export default function FileShare({ onVideoShare, videos, onSelectVideo, onDelet
                     variant="outline"
                     size="sm"
                     onClick={() => onSelectVideo(video)}
+                    className="h-7 text-xs px-3"
                     data-testid={`button-select-video-${video.id}`}
                   >
                     <Play className="w-3 h-3 mr-1" />
