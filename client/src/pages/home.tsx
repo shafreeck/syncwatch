@@ -240,6 +240,8 @@ export default function Home() {
               isConnected={isConnected}
               lastSync={lastSync}
               statsByInfoHash={statsByInfoHash}
+              userProgresses={userProgresses}
+              currentUser={currentUser}
             />
             
             <FileShare

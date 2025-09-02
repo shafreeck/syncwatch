@@ -13,9 +13,11 @@ interface VideoPlayerProps {
   isConnected: boolean;
   lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
   statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
+  userProgresses?: Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>;
+  currentUser?: { id: string; username: string } | null;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {} }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -212,6 +214,44 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  // 智能同步状态检测
+  const getSyncStatus = () => {
+    if (!isConnected) return { status: 'Offline', color: 'text-gray-400', dotColor: 'bg-gray-400' };
+    if (!currentUser || !isPlaying) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    
+    // 获取当前用户的进度
+    const currentUserProgress = userProgresses[currentUser.id];
+    if (!currentUserProgress) return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    
+    // 获取所有活跃用户的进度（不包括当前用户）
+    const allUserIds = Object.keys(userProgresses).filter(id => id !== currentUser.id);
+    const activeProgresses = allUserIds
+      .map(id => {
+        const progress = userProgresses[id];
+        if (!progress) return null;
+        const isStale = Date.now() - progress.lastUpdate > 10000;
+        return isStale ? null : progress;
+      })
+      .filter(p => p && p.isPlaying)
+      .map(p => p!.currentTime);
+    
+    if (activeProgresses.length === 0) {
+      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    }
+    
+    const maxProgress = Math.max(...activeProgresses);
+    const timeBehind = maxProgress - currentTime;
+    
+    // 同步状态判断逻辑（与用户进度条相同）
+    if (timeBehind <= 3) {
+      return { status: 'Synced', color: 'text-green-400', dotColor: 'bg-green-400' };
+    } else if (timeBehind >= 10) {
+      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-red-400', dotColor: 'bg-red-400' };
+    } else {
+      return { status: `${Math.round(timeBehind)}s behind`, color: 'text-yellow-400', dotColor: 'bg-yellow-400' };
+    }
+  };
+
   return (
     <Card className="overflow-hidden shadow-2xl">
       {/* WebTorrent Status Bar */}
@@ -242,12 +282,15 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                     <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
                   </div>
                 )}
-                {isConnected && (
-                  <div className="text-green-400 flex items-center space-x-1" data-testid="text-sync-status">
-                    <div className="w-2 h-2 bg-green-400 rounded-full" />
-                    <span>Synced</span>
-                  </div>
-                )}
+                {(() => {
+                  const syncStatus = getSyncStatus();
+                  return (
+                    <div className={`${syncStatus.color} flex items-center space-x-1`} data-testid="text-sync-status">
+                      <div className={`w-2 h-2 ${syncStatus.dotColor} rounded-full`} />
+                      <span>{syncStatus.status}</span>
+                    </div>
+                  );
+                })()}
               </>
             );
           })()}
