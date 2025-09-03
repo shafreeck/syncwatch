@@ -722,8 +722,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
       });
       
+      // Add timeout for magnet link loading
+      const loadingTimeout = setTimeout(() => {
+        console.warn("⏰ Magnet link loading timeout (30s) - this may be normal for P2P networks");
+        toast({
+          title: "Magnet loading slow",
+          description: "This magnet link is taking longer than usual. Check if it has active seeders.",
+          variant: "default",
+        });
+      }, 30000);
+
       // Add magnet URI to client with additional trackers
-      client.add(magnetUri, {
+      const torrent = client.add(magnetUri, {
         announce: [
           // WebSocket trackers for browser support
           'wss://tracker.openwebtorrent.com',
@@ -735,8 +745,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           'udp://9.rarbg.to:2710',
           'udp://exodus.desync.com:6969'
         ]
-      }, (torrent: any) => {
-        console.log("Magnet torrent loaded:", {
+      });
+
+      torrent.on('ready', () => {
+        clearTimeout(loadingTimeout);
+        console.log("🎉 Magnet torrent ready!");
+        console.log("📁 Magnet torrent loaded:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
           name: torrent.name,
@@ -771,15 +785,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
         
-        // Send torrent info to room via WebSocket immediately
-        console.log("🔔 Sending video_share message for magnet:", {
-          name: videoFile.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          size: torrent.length.toString(),
-          roomId: currentRoomId,
-        });
-        
         sendWSMessage("video_share", {
           name: videoFile.name,
           magnetUri: torrent.magnetURI,
@@ -797,10 +802,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           registerTorrent(torrent);
         }
         
-        console.log("Magnet link is now being shared via P2P");
+        console.log("✅ Magnet link successfully shared via P2P");
         toast({
           title: "Magnet loaded",
           description: `${videoFile.name} is now available for streaming`,
+        });
+      });
+
+      // Handle torrent errors
+      torrent.on('error', (err: any) => {
+        clearTimeout(loadingTimeout);
+        console.error('❌ Torrent error:', err);
+        // Remove failed placeholder
+        setVideos(prev => prev.filter(v => v.id !== tempId));
+        toast({
+          title: "Magnet link failed",
+          description: "This magnet link failed to load. Check if it has active seeders.",
+          variant: "destructive",
         });
       });
       
