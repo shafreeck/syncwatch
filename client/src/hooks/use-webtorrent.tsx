@@ -355,12 +355,49 @@ export function useWebTorrent() {
           } catch (e) {
             console.error("❌ StreamTo failed for existing torrent:", e);
           }
+        } else if (!videoFile && torrent.files.length === 0) {
+          // **新逻辑**: 如果 torrent 存在但文件列表为空，等待 metadata
+          console.log("⏳ Torrent found but no files yet, waiting for metadata...");
+          
+          const handleReady = () => {
+            console.log("🎉 Torrent metadata ready, retrying video setup...");
+            const videoFile = torrent.files.find(
+              (file: WebTorrentNS.TorrentFile) =>
+                file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+            );
+            
+            if (videoFile && videoElement) {
+              console.log("📽️ Setting up streaming for ready torrent:", videoFile.name);
+              try {
+                videoFile.select();
+                (videoFile as any).streamTo(videoElement);
+                console.log("✅ StreamTo setup successful after waiting:", videoFile.name);
+                
+                videoElement.addEventListener("loadedmetadata", () => {
+                  console.log("🎬 Video metadata loaded, ready to play!");
+                  videoElement.play().catch((e) => {
+                    console.warn("Autoplay failed (browser policy):", e);
+                  });
+                }, { once: true });
+              } catch (e) {
+                console.error("❌ StreamTo failed after waiting:", e);
+              }
+            }
+          };
+          
+          if (torrent.ready) {
+            handleReady();
+          } else {
+            torrent.on('ready', handleReady);
+          }
         } else {
           console.error("❌ Cannot setup streaming:", {
             hasVideoFile: !!videoFile,
             hasVideoElement: !!videoElement,
             videoFileName: videoFile?.name,
-            torrentName: torrent.name
+            torrentName: torrent.name,
+            filesCount: torrent.files.length,
+            ready: torrent.ready
           });
         }
 
