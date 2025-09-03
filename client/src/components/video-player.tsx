@@ -5,6 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { RotateCcw, Share, Download, Upload } from "lucide-react";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 
+// Type declaration for video.js
+declare global {
+  interface Window {
+    videojs: any;
+  }
+}
+
 interface VideoPlayerProps {
   currentVideo?: any;
   onVideoSync: (action: string, currentTime: number) => void;
@@ -19,6 +26,7 @@ interface VideoPlayerProps {
 
 export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoJsPlayerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -35,6 +43,31 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     loadTorrent,
   } = useWebTorrent();
 
+  // Initialize video.js player
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    // Initialize video.js player
+    if (window.videojs && !videoJsPlayerRef.current) {
+      videoJsPlayerRef.current = window.videojs(video, {
+        fluid: true,
+        responsive: true,
+        playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        plugins: {}
+      });
+      console.log('🎬 Video.js player initialized');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (videoJsPlayerRef.current) {
+        videoJsPlayerRef.current.dispose();
+        videoJsPlayerRef.current = null;
+      }
+    };
+  }, []);
+  
   // Set up video element event listeners
   useEffect(() => {
     const video = videoRef.current;
@@ -104,9 +137,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     // **CLEANUP**: If currentVideo is null or invalid, clear the player
     if (!currentVideo || !currentVideo.magnetUri) {
       console.log("🧹 Clearing video player - no current video or magnetUri");
-      video.pause();
-      video.src = "";
-      video.load(); // Reset video element
+      if (videoJsPlayerRef.current) {
+        videoJsPlayerRef.current.pause();
+        videoJsPlayerRef.current.src('');
+      }
       setIsPlaying(false);
       setCurrentTime(0);
       setDuration(0);
@@ -114,7 +148,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     }
     
     console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
-    loadTorrent(currentVideo.magnetUri, video);
+    // For video.js, we need to pass the actual video element, not the wrapper
+    const actualVideoElement = document.querySelector('#webtorrent-player_html5_api') || video;
+    loadTorrent(currentVideo.magnetUri, actualVideoElement as HTMLVideoElement);
   }, [currentVideo, loadTorrent]);
 
   // Apply incoming sync messages (best-effort)
@@ -335,7 +371,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       <div className="relative bg-black aspect-video">
         <video
           ref={videoRef}
-          className="w-full h-full"
+          id="webtorrent-player"
+          className="video-js vjs-default-skin w-full h-full"
+          data-setup="{}"
           controls
           onPlay={() => {
             setIsPlaying(true);
