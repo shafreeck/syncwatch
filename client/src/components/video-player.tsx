@@ -192,6 +192,8 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         eventInfoHash: event.detail.infoHash,
         match: currentVideo?.infoHash === event.detail.infoHash
       });
+      console.log("🔍 Full currentVideo:", currentVideo);
+      console.log("🔍 Full event.detail:", event.detail);
       
       // 如果当前视频的 infoHash 匹配，重新尝试加载
       if (currentVideo && currentVideo.infoHash === event.detail.infoHash) {
