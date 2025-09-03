@@ -375,11 +375,12 @@ export function useWebTorrent() {
               (videoFile as any).streamTo(videoElement);
               console.log("✅ StreamTo setup successful for:", videoFile.name);
               
-              // **FIX DECODE STALLING**: Force video element to be ready for streaming
+              // **GENTLE READINESS CHECK**: Log status but don't force reload
               setTimeout(() => {
-                if (videoElement.readyState < 2) { // HAVE_CURRENT_DATA
-                  console.log("🔄 Video not ready, triggering load...");
-                  videoElement.load(); // Force reload if stuck
+                if (videoElement.readyState < 2) {
+                  console.log("🔍 Video still loading, readyState:", videoElement.readyState);
+                } else {
+                  console.log("✅ Video ready for playback");
                 }
               }, 1000);
               
@@ -415,53 +416,35 @@ export function useWebTorrent() {
               lastBufferTime = videoElement.currentTime;
               console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
               
-              // **DECODE RECOVERY**: Handle different types of stalls
+              // **SIMPLIFIED RECOVERY**: Only gentle data prioritization, no forced restarts
               setTimeout(() => {
-                if (videoElement.currentTime === lastBufferTime) {
-                  console.log("🚨 Video stuck - implementing multi-layered recovery...");
+                if (videoElement.currentTime === lastBufferTime && stallCount <= 3) {
+                  console.log("📥 Gentle buffering assistance - prioritizing next pieces...");
                   
-                  // **Layer 1**: Video element is stuck in decoding
-                  if (videoElement.readyState < 3 && stallCount > 1) {
-                    console.log("🔧 ReadyState issue detected, forcing video reload...");
-                    const currentTime = videoElement.currentTime;
-                    videoElement.load();
-                    setTimeout(() => {
-                      videoElement.currentTime = currentTime;
-                    }, 100);
-                  }
-                  
-                  // **Layer 2**: Data priority (only if data is the issue)
-                  if (torrent.pieces && videoElement.duration && stallCount > 2) {
+                  // Only help with data prioritization, don't force restarts
+                  if (torrent.pieces && videoElement.duration) {
                     const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
-                    const nextPieces = Math.min(10, torrent.pieces.length - currentPiece);
+                    const nextPieces = Math.min(5, torrent.pieces.length - currentPiece);
                     
-                    console.log(`📥 Re-prioritizing pieces ${currentPiece} to ${currentPiece + nextPieces}`);
                     for (let i = currentPiece; i < currentPiece + nextPieces; i++) {
                       try {
                         videoFile.select(i, i + 1, 0);
                       } catch {}
                     }
                   }
-                  
-                  // **Layer 3**: Nuclear option - recreate stream connection
-                  if (stallCount > 5) {
-                    console.log("💥 Nuclear recovery: Re-establishing stream...");
-                    try {
-                      const currentTime = videoElement.currentTime;
-                      (videoFile as any).streamTo(videoElement);
-                      setTimeout(() => {
-                        videoElement.currentTime = currentTime;
-                      }, 200);
-                    } catch {}
-                  }
                 }
-              }, 1500); // Quick response
+              }, 2000); // Less aggressive timing
             });
 
             videoElement.addEventListener("canplay", () => {
               stallCount = 0; // Reset stall counter
               console.log(`✅ Ready to play at ${videoElement.currentTime.toFixed(1)}s`);
-            });
+              
+              // **RESTORE AUTOPLAY**: Automatically start playing when video is ready
+              videoElement.play().catch((e) => {
+                console.warn("Autoplay failed (browser policy):", e);
+              });
+            }, { once: true }); // Only auto-play once per load
 
             videoElement.addEventListener("canplaythrough", () => {
               console.log(`🎯 Smooth playback possible at ${videoElement.currentTime.toFixed(1)}s`);
@@ -489,38 +472,17 @@ export function useWebTorrent() {
               }
             });
 
-            // **WATCHDOG**: Monitor for long-term freezing 
-            let watchdogInterval = setInterval(() => {
-              if (videoElement.paused) return; // Don't interfere when user pauses
-              
-              const currentReadyState = videoElement.readyState;
-              const isStuck = videoElement.currentTime === lastBufferTime && 
-                             Date.now() - (videoElement as any).lastTimeUpdate > 5000;
-              
-              if (isStuck && currentReadyState < 4) { // Not HAVE_ENOUGH_DATA
-                console.log("🚨 WATCHDOG: Video frozen for >5s, forcing recovery...");
-                
-                // Mark current time update
-                (videoElement as any).lastTimeUpdate = Date.now();
-                
-                // Force reload and restore position
-                const restoreTime = videoElement.currentTime;
-                videoElement.load();
-                
-                setTimeout(() => {
-                  videoElement.currentTime = restoreTime;
-                  console.log(`🔄 Restored to ${restoreTime.toFixed(1)}s`);
-                }, 300);
+            // **MINIMAL MONITORING**: Just log status, no aggressive intervention
+            let lastReportedTime = 0;
+            const statusInterval = setInterval(() => {
+              if (!videoElement.paused && videoElement.currentTime === lastReportedTime) {
+                console.log(`📊 Buffering at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
               }
-            }, 3000);
+              lastReportedTime = videoElement.currentTime;
+            }, 5000); // Just periodic status reporting
 
-            // Cleanup watchdog when component unmounts
-            const cleanupWatchdog = () => clearInterval(watchdogInterval);
-            
-            // Track time updates for watchdog
-            videoElement.addEventListener("timeupdate", () => {
-              (videoElement as any).lastTimeUpdate = Date.now();
-            });
+            // Cleanup interval when component unmounts
+            const cleanupStatus = () => clearInterval(statusInterval);
           }
 
           // **THROTTLED PROGRESS TRACKING**: Update only once per second
