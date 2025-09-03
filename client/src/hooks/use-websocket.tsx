@@ -738,6 +738,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       
       // **CORRECT LOGIC**: Use callback to get metadata, then rely on existing streamTo logic
       const torrent = client.add(magnetUri, (torrent: any) => {
+        // Clear the timeout since we successfully got metadata
+        clearTimeout(loadingTimeout);
+        
         console.log("🎉 Magnet metadata ready! Now we have real video info:");
         console.log("📁 Video details:", {
           name: torrent.name,
