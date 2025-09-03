@@ -248,14 +248,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             console.log("Setting current video from videos list:", fresh);
           } else {
             // If video not found in current videos list, create it from message data
+            // Extract infoHash from magnetUri if available
+            const magnetUri = message.data.magnetUri || "";
+            const infoHashMatch = magnetUri.match(/xt=urn:btih:([a-f0-9]{40})/i);
+            const extractedInfoHash = infoHashMatch ? infoHashMatch[1] : undefined;
+            
             const videoFromMessage = {
               id: message.data.videoId,
-              magnetUri: message.data.magnetUri,
-              name: "Selected Video",
-              size: undefined,
-              infoHash: undefined,
+              magnetUri: magnetUri,
+              name: message.data.name || "Selected Video",
+              size: message.data.size,
+              infoHash: message.data.infoHash || extractedInfoHash,
               roomId: room?.id || "",
-              uploadedBy: "",
+              uploadedBy: message.data.uploadedBy || "",
               uploadedAt: new Date()
             };
             setCurrentVideo(videoFromMessage);
