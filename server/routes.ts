@@ -189,9 +189,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Check if this user should be the host (first user in the room or room creator)
             const existingUsers = await storage.getUsersByRoom(roomId);
-            const isHost = existingUsers.length === 0; // First user becomes host
             
-            const user = await storage.createUser({ username, roomId, isHost });
+            // Try to find existing user with same username in this room
+            let user = existingUsers.find(u => u.username === username);
+            
+            if (user) {
+              // Reuse existing user ID for same username
+              console.log(`🔄 Reusing existing user ID for ${username}: ${user.id}`);
+            } else {
+              // Create new user if username doesn't exist in room
+              const isHost = existingUsers.length === 0; // First user becomes host
+              user = await storage.createUser({ username, roomId, isHost });
+              console.log(`👤 Created new user for ${username}: ${user.id}`);
+            }
 
             socket.userId = user.id;
             socket.roomId = roomId;
