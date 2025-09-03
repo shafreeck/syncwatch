@@ -407,62 +407,63 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
 
-      // Start direct seeding of existing video (no new video creation)
+      // **RESUME SEEDING**: 照抄 onVideoShare 的逻辑，但只做更新，不创建新条目
       setIsUploading(true);
       setCurrentFileName(file.name);
       setSeedingProgress(0);
       setShowProgressModal(true);
-      console.log("🚀 Starting direct resume seeding for existing video:", video.name);
+      console.log("🚀 Resume seeding for existing video:", video.name);
 
-      // Use existing global WebTorrent client
-      const globalClient = (window as any).__webtorrentClient;
+      // 使用跟 onVideoShare 相同的 WebTorrent 逻辑
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      const client = new WebTorrent();
+
+      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
-      if (!globalClient) {
-        throw new Error("WebTorrent client not available");
-      }
+      console.log("Resume seeding: Creating torrent from file...");
+      setSeedingProgress(1);
       
-      // Check if already seeding this file
-      const existingTorrent = globalClient.torrents.find((t: any) => 
-        t.name === file.name || (video.infoHash && t.infoHash === video.infoHash)
-      );
-      
-      if (existingTorrent) {
-        console.log("📊 File already being seeded, updating UI");
-        setSeedingProgress(100);
-        setTimeout(() => {
-          setIsUploading(false);
-          setShowProgressModal(false);
-          toast({
-            title: "Already seeding",
-            description: `${file.name} is already being shared`,
-          });
-        }, 1000);
-        return;
-      }
-      
-      // Start seeding the file directly with global client
-      globalClient.seed(file, (torrent: any) => {
-        console.log("✅ Direct seeding started:", torrent.name, torrent.infoHash);
+      // Create torrent from the file (照抄 onVideoShare)
+      client.seed(file, async (torrent: any) => {
+        console.log("Resume seeding: Torrent created:", {
+          magnetURI: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          name: file.name,
+          length: torrent.length
+        });
         
-        // Update progress to 100% since file is already available locally
-        setSeedingProgress(100);
+        // Set up progress tracking (照抄 onVideoShare)
+        console.log("📊 Resume seeding: Tracking seeding readiness...");
+        setSeedingProgress(10);
         
-        // Close modal after a moment
-        setTimeout(() => {
-          setIsUploading(false);
-          setShowProgressModal(false);
+        const markReady = () => {
+          setSeedingProgress(100);
+          console.log("🎯 Resume seeding: Torrent ready (progress 100%)");
           
-          toast({
-            title: "Seeding resumed",
-            description: `${file.name} is now being shared again`,
-          });
-        }, 1000);
+          // Close modal after ready
+          setTimeout(() => {
+            setIsUploading(false);
+            setShowProgressModal(false);
+            
+            toast({
+              title: "Seeding resumed",
+              description: `${file.name} is now being shared again`,
+            });
+          }, 1000);
+        };
         
-        console.log("🎯 Resume seeding completed without creating new video entry");
+        if (torrent.ready) {
+          markReady();
+        } else {
+          torrent.on('ready', markReady);
+        }
+        
+        console.log("✅ Resume seeding completed - video is now being shared via P2P");
       });
       
-      torrent.on("error", (err: any) => {
-        console.error("Direct seeding error:", err);
+      client.on("error", (err: any) => {
+        console.error("Resume seeding error:", err);
         setIsUploading(false);
         setShowProgressModal(false);
         throw err;
