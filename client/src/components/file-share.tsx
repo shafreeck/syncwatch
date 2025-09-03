@@ -515,14 +515,49 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
           console.log("✅ Torrent add call completed, waiting for events...");
           
           // 添加超时保护，避免无限等待
+          let isCompleted = false;
           const timeoutId = setTimeout(() => {
-            console.log("⏰ Torrent ready timeout - taking 30+ seconds");
-            toast({
-              title: "Seeding taking longer than expected",
-              description: "The torrent is still connecting. You can minimize this and check later.",
-              variant: "default",
-            });
-          }, 30000); // 30秒超时
+            if (!isCompleted) {
+              console.log("⏰ Torrent ready timeout - trying fallback approach");
+              
+              // **降级策略**: 如果 ready 事件未触发，仍然尝试通知播放器
+              if (newTorrent.infoHash) {
+                console.log("🔄 Fallback: Using torrent with infoHash only");
+                
+                // 注册统计跟踪
+                if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+                  (window as any).__registerTorrent(newTorrent);
+                }
+                
+                // 触发事件通知播放器
+                window.dispatchEvent(new CustomEvent('webtorrent-seeding-started', {
+                  detail: { infoHash: newTorrent.infoHash, name: video.name }
+                }));
+                
+                setSeedingProgress(100);
+                isCompleted = true;
+                
+                setTimeout(() => {
+                  setShowProgressModal(false);
+                  setSeedingProgress(0);
+                  setCurrentFileName("");
+                  setIsUploading(false);
+                  
+                  toast({
+                    title: "Seeding started (fallback)",
+                    description: `${video.name} added to client, may take time to find peers`,
+                  });
+                }, 1000);
+              } else {
+                console.log("❌ Fallback failed - no infoHash available");
+                toast({
+                  title: "Seeding taking longer than expected",
+                  description: "The torrent is still connecting. You can minimize this and check later.",
+                  variant: "default",
+                });
+              }
+            }
+          }, 15000); // 15秒超时，更短的等待时间
           
           // 添加更多事件监听来调试
           newTorrent.on('infoHash', () => {
