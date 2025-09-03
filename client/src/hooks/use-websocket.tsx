@@ -163,12 +163,35 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("Received new video:", message.data.video);
         setVideos(prev => {
           const v = message.data.video as any;
-          // Deduplicate by infoHash (fallback to id)
-          const existsIdx = prev.findIndex(x => (x as any).infoHash && v.infoHash ? (x as any).infoHash === v.infoHash : x.id === v.id);
+          
+          // **ENHANCED DEDUPLICATION**: Handle placeholders correctly
+          const existsIdx = prev.findIndex(x => {
+            // 1. Match by infoHash if both have it
+            if ((x as any).infoHash && v.infoHash && (x as any).infoHash === v.infoHash) {
+              return true;
+            }
+            // 2. Match placeholder with same magnetUri (for temp -> real conversion)
+            if ((x as any).magnetUri === v.magnetUri) {
+              return true;
+            }
+            // 3. Match by ID
+            if (x.id === v.id) {
+              return true;
+            }
+            // 4. **NEW**: Match temp placeholder by processing the same content
+            if (x.id.startsWith('temp-magnet-') && v.infoHash && (x as any).processingStep === 'Loading magnet...') {
+              // This is likely the real video for a placeholder that was loading the same content
+              // We'll replace it completely
+              return true;
+            }
+            return false;
+          });
+          
           let newList: any[];
           if (existsIdx >= 0) {
+            console.log(`🔄 Replacing existing/placeholder video at index ${existsIdx} with new video:`, v.name);
             newList = [...prev];
-            newList[existsIdx] = { ...prev[existsIdx], ...v };
+            newList[existsIdx] = v; // Replace completely, don't merge
           } else {
             newList = [v, ...prev];
           }
