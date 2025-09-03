@@ -414,18 +414,18 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       setShowProgressModal(true);
       console.log("🚀 Resume seeding for existing video:", video.name);
 
-      // 使用现有的全局单例客户端
-      const globalClient = (window as any).__webtorrentClient;
-      
-      if (!globalClient) {
-        throw new Error("WebTorrent global client not available");
-      }
+      // **完全照抄 onVideoShare 的客户端创建逻辑**
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      const client = new WebTorrent();
+
+      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
       console.log("Resume seeding: Creating torrent from file...");
       setSeedingProgress(1);
       
-      // 使用全局客户端创建 torrent
-      globalClient.seed(file, async (torrent: any) => {
+      // Create torrent from the file (完全照抄 onVideoShare)
+      client.seed(file, async (torrent: any) => {
         console.log("Resume seeding: Torrent created:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
