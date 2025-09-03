@@ -427,6 +427,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     ...(magnetUri && { magnetUri })
                   });
                   
+                  // Clean up duplicates: if we just set a real infoHash, remove other videos with same infoHash
+                  if (infoHash && !infoHash.startsWith('temp-')) {
+                    const allVideos = await storage.getVideosByRoom(socket.roomId);
+                    const duplicates = allVideos.filter(v => v.id !== targetVideoId && v.infoHash === infoHash);
+                    for (const dup of duplicates) {
+                      console.log(`🧹 Removing duplicate video: ${dup.id} (same infoHash: ${infoHash})`);
+                      await storage.deleteVideo(dup.id);
+                    }
+                  }
+                  
                   // Broadcast update to all users in room
                   broadcastToRoom(socket.roomId, {
                     type: "video_status_updated",
