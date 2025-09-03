@@ -736,13 +736,40 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
       
-      // **SAFE APPROACH**: Minimal event handling with timeout protection
-      const torrent = client.add(magnetUri);
+      // **CORRECT LOGIC**: Use callback to get metadata, then rely on existing streamTo logic
+      const torrent = client.add(magnetUri, (torrent: any) => {
+        console.log("🎉 Magnet metadata ready! Now we have real video info:");
+        console.log("📁 Video details:", {
+          name: torrent.name,
+          length: torrent.length,
+          infoHash: torrent.infoHash,
+          files: torrent.files?.length
+        });
+        
+        // Find video file
+        const videoFile = torrent.files.find((file: any) => 
+          file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
+        );
+        
+        if (videoFile && currentRoomId) {
+          console.log("🔄 Sending real video data to room...");
+          
+          sendWSMessage("video_share", {
+            name: videoFile.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
+            size: torrent.length.toString(),
+            roomId: currentRoomId,
+          });
+          
+          // Remove placeholder
+          setVideos(prev => prev.filter(v => v.id !== tempId));
+          
+          console.log("✅ Real video info sent - when user clicks Select, streamTo will work!");
+        }
+      });
       
-      console.log("🎯 Torrent object created, adding minimal safe handling...");
-      
-      // **ABSOLUTELY NOTHING**: Just add and immediately forget
-      console.log("✅ Magnet URI added - zero event handling to prevent blocking");
+      console.log("🎯 Torrent object created with callback - waiting for metadata...");
       
     } catch (error) {
       console.error("Failed to load magnet link:", error);
