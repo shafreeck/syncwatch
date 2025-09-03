@@ -242,11 +242,20 @@ export function useWebTorrent() {
         return;
       }
       
-      // Remove torrents that are not actively being used for playback
-      // This helps free up memory and storage space
-      if (torrent !== currentTorrent.current) {
-        torrentsToRemove.push(torrent);
+      // Keep the current playback torrent
+      if (torrent === currentTorrent.current) {
+        return;
       }
+      
+      // **CRITICAL FIX**: Keep seeding torrents - don't remove torrents that have files ready for upload
+      // These are torrents created by user file uploads that are actively seeding
+      if (torrent.ready && torrent.files && torrent.files.length > 0) {
+        console.log(`⚠️ Keeping seeding torrent: ${torrent.name} (ready: ${torrent.ready}, files: ${torrent.files.length})`);
+        return;
+      }
+      
+      // Only remove torrents that are loading metadata or empty
+      torrentsToRemove.push(torrent);
     });
     
     torrentsToRemove.forEach((torrent) => {
