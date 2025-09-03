@@ -749,25 +749,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
       });
       
-      // Add timeout for magnet link loading (extended to 2 minutes)
+      // Add timeout for magnet link loading
       const loadingTimeout = setTimeout(() => {
-        console.warn("⏰ Magnet link loading timeout (2 minutes) - this may be normal for P2P networks");
+        console.warn("⏰ Magnet link loading timeout (30s) - this may be normal for P2P networks");
         toast({
-          title: "Still searching for peers",
-          description: "This magnet link is taking longer than usual. P2P networks can be slow to discover content.",
+          title: "Magnet loading slow",
+          description: "This magnet link is taking longer than usual. Check if it has active seeders.",
           variant: "default",
         });
-      }, 120000); // 2 minutes instead of 30 seconds
+      }, 30000);
 
       // Add magnet URI to client - use simple approach
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
-      console.log("🔍 Current client torrents before adding:", client.torrents.map((t: any) => ({
-        name: t.name, 
-        infoHash: t.infoHash,
-        numPeers: t.numPeers,
-        ready: t.ready
-      })));
       
       // **CORRECT LOGIC**: Use callback to get metadata, then rely on existing streamTo logic
       const torrent = client.add(magnetUri, (torrent: any) => {
@@ -780,14 +774,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           length: torrent.length,
           infoHash: torrent.infoHash,
           files: torrent.files?.length
-        });
-        
-        console.log("🔍 Torrent status:", {
-          ready: torrent.ready,
-          done: torrent.done,
-          numPeers: torrent.numPeers,
-          downloaded: torrent.downloaded,
-          uploaded: torrent.uploaded
         });
         
         // Find video file
@@ -820,30 +806,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       
       console.log("🎯 Torrent object created with callback - waiting for metadata...");
-      
-      // Add error handling for the torrent
-      torrent.on('error', (err: any) => {
-        clearTimeout(loadingTimeout);
-        console.error("❌ Torrent error:", err);
-        toast({
-          title: "Magnet link error",
-          description: `Failed to load magnet: ${err.message}`,
-          variant: "destructive",
-        });
-      });
-      
-      // Add timeout specifically for this torrent
-      setTimeout(() => {
-        if (!torrent.ready) {
-          console.warn("⚠️ Torrent still not ready after 60 seconds - checking status...");
-          console.log("🔍 Torrent debug info:", {
-            infoHash: torrent.infoHash,
-            ready: torrent.ready,
-            numPeers: torrent.numPeers,
-            magnetURI: torrent.magnetURI
-          });
-        }
-      }, 60000);
       
     } catch (error) {
       console.error("Failed to load magnet link:", error);
