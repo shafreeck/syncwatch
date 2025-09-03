@@ -1,0 +1,58 @@
+🧲 Magnet link share using GLOBAL client (no duplicates)
+use-websocket.tsx:706 ✅ Using global WebTorrent client (preventing duplicate instances)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:711 Loading magnet link...
+file-share.tsx:292 Magnet share initialized
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:78 WebSocket disconnected 1006 
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+use-websocket.tsx:86 Reconnecting... (1/5)
+use-websocket.tsx:60 WebSocket connected
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
