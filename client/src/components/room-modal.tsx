@@ -23,7 +23,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
   const [activeTab, setActiveTab] = useState("join");
 
   const handleJoin = () => {
-    if (joinRoomCode.trim() && joinUsername.trim()) {
+    if (joinUsername.trim()) {
       onJoinRoom(joinRoomCode.trim(), joinUsername.trim());
     }
   };
