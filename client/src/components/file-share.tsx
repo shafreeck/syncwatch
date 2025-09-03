@@ -457,7 +457,40 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       
       console.log("Resume seeding: Using existing global client for seeding only");
       
-      // **只做种，不创建新视频条目**
+      // **关键检查**: 先看看是否已经有这个 torrent
+      const existingTorrent = client.torrents.find((t: any) => 
+        t.infoHash === video.infoHash || t.name === file.name
+      );
+      
+      if (existingTorrent) {
+        console.log("🎯 Found existing torrent for resume seeding:", existingTorrent.name);
+        
+        // **直接使用现有 torrent，注册统计**
+        if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+          console.log("📊 Registering existing torrent for P2P statistics tracking");
+          (window as any).__registerTorrent(existingTorrent);
+        }
+        
+        setSeedingProgress(100);
+        console.log("✅ Resume seeding: Using existing torrent - video is already being seeded");
+        
+        // 立即完成
+        setTimeout(() => {
+          setShowProgressModal(false);
+          setSeedingProgress(0);
+          setCurrentFileName("");
+          setIsUploading(false);
+          
+          toast({
+            title: "Seeding resumed",
+            description: `${file.name} is already being shared`,
+          });
+        }, 1000);
+        return;
+      }
+      
+      // **只有没有现有 torrent 时才创建新的**
+      console.log("Creating new torrent for resume seeding...");
       const torrent = client.seed(file, (torrent: any) => {
         console.log("Resume seeding: Torrent created for existing video:", {
           magnetURI: torrent.magnetURI,
