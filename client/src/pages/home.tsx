@@ -5,6 +5,7 @@ import ChatSidebar from "@/components/chat-sidebar";
 import RoomModal from "@/components/room-modal";
 import FileShare from "@/components/file-share";
 import RoomSettingsModal from "@/components/room-settings-modal";
+import { StorageMonitor } from "@/components/storage-monitor";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 import { Card } from "@/components/ui/card";
@@ -221,27 +222,6 @@ export default function Home() {
     });
   };
 
-  const handleStorageCleanup = () => {
-    if (cleanupUnusedTorrents) {
-      const currentVideoHash = currentVideo?.infoHash;
-      cleanupUnusedTorrents(currentVideoHash);
-      toast({
-        title: "Storage cleaned",
-        description: "Unused video files have been removed from cache",
-      });
-    }
-  };
-
-  const getStorageInfo = () => {
-    if (!client) return { activeVideos: 0, totalSize: "Unknown" };
-    
-    const torrents = client.torrents || [];
-    const activeVideos = torrents.length;
-    const totalDownloaded = torrents.reduce((sum: number, t: any) => sum + (t.downloaded || 0), 0);
-    const totalSizeMB = (totalDownloaded / (1024 * 1024)).toFixed(1);
-    
-    return { activeVideos, totalSize: `${totalSizeMB} MB` };
-  };
 
   if (showRoomModal) {
     return (
@@ -427,55 +407,21 @@ export default function Home() {
 
       {/* Storage Management Panel */}
       {showSettings && (
-        <div className="fixed top-16 right-4 z-50 bg-card border border-border rounded-lg p-4 shadow-lg min-w-[280px]">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="fixed top-16 right-4 z-50 bg-background border border-border rounded-lg shadow-lg max-w-md max-h-[80vh] overflow-y-auto">
+          <div className="p-2">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium">存储管理</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowSettings(false)}
                 className="h-6 w-6 p-0"
+                data-testid="button-close-storage"
               >
                 ×
               </Button>
             </div>
-            
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">活跃视频:</span>
-                <span>{getStorageInfo().activeVideos} 个</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">缓存大小:</span>
-                <span>{getStorageInfo().totalSize}</span>
-              </div>
-            </div>
-            
-            <div className="border-t pt-3">
-              <Button
-                onClick={handleStorageCleanup}
-                variant="outline"
-                size="sm"
-                className="w-full"
-                data-testid="button-cleanup-storage"
-              >
-                清理未使用的视频
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                清理当前未播放的视频缓存，释放磁盘空间
-              </p>
-            </div>
-            
-            <div className="border-t pt-3">
-              <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>存储说明:</strong></p>
-                <p>• WebTorrent使用浏览器的IndexedDB存储视频片段</p>
-                <p>• 只下载播放需要的部分，不是完整文件</p>
-                <p>• 停止播放时，数据会保留用于再次观看</p>
-                <p>• 定期清理可以节省磁盘空间</p>
-              </div>
-            </div>
+            <StorageMonitor />
           </div>
         </div>
       )}
