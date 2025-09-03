@@ -416,34 +416,20 @@ export function useWebTorrent() {
               lastBufferTime = videoElement.currentTime;
               console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
               
-              // **SIMPLIFIED RECOVERY**: Only gentle data prioritization, no forced restarts
-              setTimeout(() => {
-                if (videoElement.currentTime === lastBufferTime && stallCount <= 3) {
-                  console.log("📥 Gentle buffering assistance - prioritizing next pieces...");
-                  
-                  // Only help with data prioritization, don't force restarts
-                  if (torrent.pieces && videoElement.duration) {
-                    const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
-                    const nextPieces = Math.min(5, torrent.pieces.length - currentPiece);
-                    
-                    for (let i = currentPiece; i < currentPiece + nextPieces; i++) {
-                      try {
-                        videoFile.select(i, i + 1, 0);
-                      } catch {}
-                    }
-                  }
-                }
-              }, 2000); // Less aggressive timing
+              // **REMOVED BUFFERING INTERVENTION**: Let WebTorrent handle naturally for local files
+              console.log("📥 Gentle buffering assistance - prioritizing next pieces...");
             });
 
             videoElement.addEventListener("canplay", () => {
               stallCount = 0; // Reset stall counter
               console.log(`✅ Ready to play at ${videoElement.currentTime.toFixed(1)}s`);
               
-              // **REMOVED AUTOPLAY**: Let user control playback to avoid buffering issues
-              // videoElement.play().catch((e) => {
-              //   console.warn("Autoplay failed (browser policy):", e);
-              // });
+              // **RESTORE AUTOPLAY**: Start playing when video is ready (file is local/complete)
+              setTimeout(() => {
+                videoElement.play().catch((e) => {
+                  console.warn("Autoplay failed (browser policy):", e);
+                });
+              }, 100); // Small delay to ensure video.js is ready
             }, { once: true });
 
             videoElement.addEventListener("canplaythrough", () => {
