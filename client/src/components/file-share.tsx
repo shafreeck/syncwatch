@@ -510,10 +510,38 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         console.log("🧲 Re-adding torrent from magnet:", video.magnetUri);
         
         try {
+          console.log("🎯 Adding torrent to client...");
           const newTorrent = client.add(video.magnetUri);
+          console.log("✅ Torrent add call completed, waiting for events...");
+          
+          // 添加超时保护，避免无限等待
+          const timeoutId = setTimeout(() => {
+            console.log("⏰ Torrent ready timeout - taking 30+ seconds");
+            toast({
+              title: "Seeding taking longer than expected",
+              description: "The torrent is still connecting. You can minimize this and check later.",
+              variant: "default",
+            });
+          }, 30000); // 30秒超时
+          
+          // 添加更多事件监听来调试
+          newTorrent.on('infoHash', () => {
+            console.log("📋 Torrent infoHash event:", newTorrent.infoHash);
+          });
+          
+          newTorrent.on('metadata', () => {
+            console.log("📄 Torrent metadata event - files available");
+          });
           
           newTorrent.on('ready', () => {
+            clearTimeout(timeoutId); // 清除超时
             console.log("✅ Resume seeding: Torrent re-added successfully:", video.name);
+            console.log("📊 Torrent details:", {
+              infoHash: newTorrent.infoHash,
+              name: newTorrent.name,
+              files: newTorrent.files?.length || 0,
+              length: newTorrent.length
+            });
             
             // 注册统计跟踪
             if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
@@ -542,7 +570,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
             }, 1000);
           });
           
-          newTorrent.on('error', (err) => {
+          newTorrent.on('error', (err: any) => {
             console.error("❌ Resume seeding failed:", err);
             setIsUploading(false);
             setShowProgressModal(false);
