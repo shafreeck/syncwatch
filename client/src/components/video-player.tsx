@@ -148,9 +148,32 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     }
     
     console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
-    // For video.js, we need to pass the actual video element, not the wrapper
-    const actualVideoElement = document.querySelector('#webtorrent-player_html5_api') || video;
-    loadTorrent(currentVideo.magnetUri, actualVideoElement as HTMLVideoElement);
+    
+    // **CRITICAL FIX**: For video.js, we MUST use the internal video element
+    // Wait for video.js to initialize if it hasn't yet
+    const loadVideoWithRetry = () => {
+      let actualVideoElement = document.querySelector('#webtorrent-player_html5_api') as HTMLVideoElement;
+      
+      if (!actualVideoElement && videoJsPlayerRef.current) {
+        // Try to get the tech element directly from video.js
+        try {
+          actualVideoElement = videoJsPlayerRef.current.tech().el() as HTMLVideoElement;
+        } catch (e) {
+          console.warn('Could not get video.js tech element:', e);
+        }
+      }
+      
+      if (!actualVideoElement) {
+        console.log('⏳ video.js not ready yet, retrying in 100ms...');
+        setTimeout(loadVideoWithRetry, 100);
+        return;
+      }
+      
+      console.log('✅ Using video.js internal element for streamTo:', actualVideoElement.id);
+      loadTorrent(currentVideo.magnetUri, actualVideoElement);
+    };
+    
+    loadVideoWithRetry();
   }, [currentVideo, loadTorrent]);
 
   // Apply incoming sync messages (best-effort)

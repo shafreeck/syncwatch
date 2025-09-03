@@ -794,7 +794,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         if (t.magnetURI === magnetUri) {
           t.on('error', (err: any) => {
             console.error('Torrent error:', err);
-            clearTimeout(timeout);
             toast({
               title: "Torrent error",
               description: "Failed to load torrent data from peers.",
