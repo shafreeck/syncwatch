@@ -550,7 +550,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                 placeholder="magnet:?xt=urn:btih:..."
                 value={magnetUri}
                 onChange={(e) => setMagnetUri(e.target.value)}
-                disabled={isUploading}
+                disabled={false} // Allow magnet input even during file upload
                 data-testid="input-magnet-uri"
               />
               <div className="text-xs text-muted-foreground space-y-1">
@@ -565,11 +565,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
             </div>
             <Button
               onClick={handleMagnetSubmit}
-              disabled={!magnetUri.trim() || isUploading}
+              disabled={!magnetUri.trim()}
               className="w-full"
               data-testid="button-magnet-submit"
             >
-              {isUploading ? "Loading..." : "Start Download & Share"}
+              Start Download & Share
             </Button>
           </div>
         </TabsContent>

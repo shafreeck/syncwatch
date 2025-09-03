@@ -267,7 +267,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         // Handle video status updates (processing -> ready -> error)
         console.log("Video status update received:", message.data);
         {
-          const { videoId, status, processingStep, size, infoHash } = message.data || {};
+          const { videoId, status, processingStep, size, infoHash, magnetUri } = message.data || {};
           setVideos(prev => prev.map(video => 
             video.id === videoId 
               ? { 
@@ -275,7 +275,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
                   status, 
                   processingStep, 
                   ...(size && { size }),
-                  ...(infoHash && { infoHash })
+                  ...(infoHash && { infoHash }),
+                  ...(magnetUri && { magnetUri })
                 } 
               : video
           ));
@@ -408,6 +409,20 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     
     console.log("Starting P2P video sharing for:", file.name);
     
+    // **NEW**: Create immediate placeholder for instant feedback
+    const placeholderVideoId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Send placeholder video immediately
+    sendWSMessage("video_share", {
+      name: file.name,
+      magnetUri: "", // Empty initially
+      infoHash: placeholderVideoId, // Use temp ID as placeholder
+      size: file.size.toString(),
+      roomId: currentRoomId,
+      status: "processing",
+      processingStep: "Preparing file..."
+    });
+    
     try {
       // Use the same simplest logic as the test page (official tutorial) via centralized loader
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
@@ -448,18 +463,20 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           }
         }
         
-        // Send torrent info to room via WebSocket
+        // Update placeholder with real torrent info
         if (!currentRoomId) {
           console.error("No room ID available for video share");
           return;
         }
         
-        sendWSMessage("video_share", {
-          name: file.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
+        // **NEW**: Update the placeholder with real torrent data
+        sendWSMessage("video_status_update", {
+          videoId: placeholderVideoId, // Update the placeholder we created
+          status: "ready",
+          processingStep: "Ready for streaming",
           size: torrent.length.toString(),
-          roomId: currentRoomId,
+          infoHash: torrent.infoHash,
+          magnetUri: torrent.magnetURI
         });
 
         // Persist file handle to re-seed after refresh (when available)

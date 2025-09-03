@@ -368,7 +368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case "video_status_update":
             if (socket.userId && socket.roomId) {
               console.log(`🔄 Video status update:`, message.data);
-              const { videoId, status, processingStep, size, infoHash } = message.data;
+              const { videoId, status, processingStep, size, infoHash, magnetUri } = message.data;
               
               try {
                 let targetVideoId = videoId;
@@ -389,13 +389,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     status, 
                     processingStep,
                     ...(size && { size }),
-                    ...(infoHash && { infoHash })
+                    ...(infoHash && { infoHash }),
+                    ...(magnetUri && { magnetUri })
                   });
                   
                   // Broadcast update to all users in room
                   broadcastToRoom(socket.roomId, {
                     type: "video_status_updated",
-                    data: { videoId: targetVideoId, status, processingStep, size, infoHash }
+                    data: { videoId: targetVideoId, status, processingStep, size, infoHash, magnetUri }
                   });
                   
                   console.log(`✅ Video ${targetVideoId} status updated to: ${status}`);
