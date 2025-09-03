@@ -732,23 +732,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
       }, 30000);
 
-      // Add magnet URI to client with additional trackers
+      // Add magnet URI to client - use simple approach
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
       
-      const torrent = client.add(magnetUri, {
-        announce: [
-          // WebSocket trackers for browser support
-          'wss://tracker.openwebtorrent.com',
-          'wss://tracker.btorrent.xyz',
-          'wss://tracker.webtorrent.dev',
-          // Additional UDP trackers (DHT will handle these)
-          'udp://tracker.opentrackr.org:1337',
-          'udp://tracker.leechers-paradise.org:6969',
-          'udp://9.rarbg.to:2710',
-          'udp://exodus.desync.com:6969'
-        ]
-      });
+      // **SIMPLIFIED**: Don't override trackers, let the magnet link use its own trackers
+      const torrent = client.add(magnetUri);
       
       console.log("🎯 Torrent object created, waiting for events...");
       
