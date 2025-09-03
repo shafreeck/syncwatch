@@ -89,11 +89,21 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      console.log("🚫 Video player: video element not available");
+      return;
+    }
+    
+    console.log("🎬 Video player currentVideo changed:", {
+      hasCurrentVideo: !!currentVideo,
+      currentVideoName: currentVideo?.name,
+      currentVideoMagnetUri: currentVideo?.magnetUri,
+      currentVideoId: currentVideo?.id
+    });
     
     // **CLEANUP**: If currentVideo is null or invalid, clear the player
     if (!currentVideo || !currentVideo.magnetUri) {
-      console.log("🧹 Clearing video player - no current video");
+      console.log("🧹 Clearing video player - no current video or magnetUri");
       video.pause();
       video.src = "";
       video.load(); // Reset video element
@@ -103,7 +113,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       return;
     }
     
-    console.log("Loading video via torrent:", currentVideo.name);
+    console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
     loadTorrent(currentVideo.magnetUri, video);
   }, [currentVideo, loadTorrent]);
 
