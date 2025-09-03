@@ -329,146 +329,27 @@ export function useWebTorrent() {
             console.log(
               "Setting up progressive video streaming via BrowserServer...",
             );
+            // **OFFICIAL WEBTORRENT PATTERN**: Keep it simple like the official tutorial
             try {
               videoFile.select();
+              console.log("🎬 Setting up streaming for:", videoFile.name);
               
-              // **IMPROVED BUFFERING**: Set higher priority for better streaming
-              console.log("🎬 Setting up optimized streaming for:", videoFile.name);
-              
-              // **AGGRESSIVE BUFFERING**: Download enough pieces to prevent stalling
-              if (torrent.pieces) {
-                // Calculate optimal buffer size (aim for ~5-10% of total pieces)
-                const totalPieces = torrent.pieces.length;
-                const bufferSize = Math.max(20, Math.min(50, Math.floor(totalPieces * 0.08)));
-                
-                console.log(`📊 Total pieces: ${totalPieces}, Buffer size: ${bufferSize}`);
-                
-                // Priority download first pieces for immediate playback
-                for (let i = 0; i < bufferSize; i++) {
-                  try {
-                    videoFile.select(i, i + 1, 0); // Max priority for beginning
-                  } catch {}
-                }
-                
-                // Also prioritize some pieces in the middle and end for seeking
-                const midStart = Math.floor(totalPieces * 0.3);
-                const endStart = Math.floor(totalPieces * 0.9);
-                
-                for (let i = 0; i < 5; i++) {
-                  try {
-                    if (midStart + i < totalPieces) videoFile.select(midStart + i, midStart + i + 1, 1);
-                    if (endStart + i < totalPieces) videoFile.select(endStart + i, endStart + i + 1, 1);
-                  } catch {}
-                }
-              }
-              
-            } catch (e) {
-              console.warn("Advanced buffering setup failed:", e);
-            }
-            
-            // **CRITICAL**: Configure video element for optimal streaming BEFORE streamTo
-            videoElement.preload = "metadata"; // Better than "auto" for streaming
-            videoElement.crossOrigin = "anonymous";
-            
-            try {
-              // **CORRECT**: Use streamTo (appendTo is deprecated)
               (videoFile as any).streamTo(videoElement);
               console.log("✅ StreamTo setup successful for:", videoFile.name);
               
-              // **GENTLE READINESS CHECK**: Log status but don't force reload
-              setTimeout(() => {
-                if (videoElement.readyState < 2) {
-                  console.log("🔍 Video still loading, readyState:", videoElement.readyState);
-                } else {
-                  console.log("✅ Video ready for playback");
-                }
-              }, 1000);
-              
-            } catch (e) {
-              console.error("❌ StreamTo failed for", videoFile.name, ":", e);
-              if (videoFile.name.toLowerCase().includes(".mkv")) {
-                console.warn("⚠️ MKV format detected - audio may not work due to codec limitations");
-              }
-            }
-
-            // **ENHANCED BUFFERING & AUDIO MONITORING**
-            let stallCount = 0;
-            let lastBufferTime = 0;
-            
-            videoElement.addEventListener("loadedmetadata", () => {
-              console.log("🎬 Video metadata loaded:", {
-                duration: videoElement.duration,
-                hasAudio: videoElement.audioTracks?.length > 0 || !videoElement.muted,
-                videoTracks: videoElement.videoTracks?.length || 'unknown',
-                format: videoFile.name.split('.').pop()
-              });
-              
-              // **MKV AUDIO FIX**: Force unmute for MKV files
-              if (videoFile.name.toLowerCase().includes(".mkv")) {
-                videoElement.muted = false;
-                videoElement.volume = 1.0;
-                console.log("🔊 Force enabled audio for MKV file");
-              }
-            }, { once: true });
-
-            videoElement.addEventListener("waiting", () => {
-              stallCount++;
-              lastBufferTime = videoElement.currentTime;
-              console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
-              
-              // **REMOVED BUFFERING INTERVENTION**: Let WebTorrent handle naturally for local files
-              console.log("📥 Gentle buffering assistance - prioritizing next pieces...");
-            });
-
-            videoElement.addEventListener("canplay", () => {
-              stallCount = 0; // Reset stall counter
-              console.log(`✅ Ready to play at ${videoElement.currentTime.toFixed(1)}s`);
-              
-              // **RESTORE AUTOPLAY**: Start playing when video is ready (file is local/complete)
-              setTimeout(() => {
+              // **AUTOPLAY AFTER METADATA**: Following official pattern
+              videoElement.addEventListener("loadedmetadata", () => {
+                console.log("🎬 Video metadata loaded, ready to play!");
+                
+                // Auto-play after metadata is loaded (like official example)
                 videoElement.play().catch((e) => {
                   console.warn("Autoplay failed (browser policy):", e);
                 });
-              }, 100); // Small delay to ensure video.js is ready
-            }, { once: true });
-
-            videoElement.addEventListener("canplaythrough", () => {
-              console.log(`🎯 Smooth playback possible at ${videoElement.currentTime.toFixed(1)}s`);
-            });
-
-            videoElement.addEventListener("stalled", () => {
-              console.warn(`🐌 Network stalled at ${videoElement.currentTime.toFixed(1)}s`);
-            });
-
-            videoElement.addEventListener("suspend", () => {
-              console.log(`⏸️ Download suspended at ${videoElement.currentTime.toFixed(1)}s`);
-            });
-
-            videoElement.addEventListener("error", (e) => {
-              console.error("❌ Video error:", {
-                error: videoElement.error,
-                currentTime: videoElement.currentTime,
-                networkState: videoElement.networkState,
-                readyState: videoElement.readyState,
-                file: videoFile.name
-              });
+              }, { once: true });
               
-              if (videoFile.name.toLowerCase().includes(".mkv")) {
-                console.error("⚠️ MKV limitations: TrueHD/Atmos audio not supported in browsers");
-              }
-            });
-
-            // **MINIMAL MONITORING**: Just log status, no aggressive intervention
-            let lastReportedTime = 0;
-            const statusInterval = setInterval(() => {
-              if (!videoElement.paused && videoElement.currentTime === lastReportedTime) {
-                console.log(`📊 Buffering at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
-              }
-              lastReportedTime = videoElement.currentTime;
-            }, 5000); // Just periodic status reporting
-
-            // Cleanup interval when component unmounts
-            const cleanupStatus = () => clearInterval(statusInterval);
+            } catch (e) {
+              console.error("❌ StreamTo failed for", videoFile.name, ":", e);
+            }
           }
 
           // **THROTTLED PROGRESS TRACKING**: Update only once per second
