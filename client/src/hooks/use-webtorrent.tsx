@@ -247,12 +247,17 @@ export function useWebTorrent() {
         return;
       }
       
-      // Keep seeding torrents (uploaded by user)
-      if (torrent.ready && torrent.files && torrent.files.length > 0) {
+      // Keep seeding torrents (uploaded by user) - be more lenient  
+      if (torrent.files && torrent.files.length > 0) {
         return;
       }
       
-      // Only remove empty or broken torrents
+      // Keep torrents that are still loading (could be uploads or magnet links)
+      if (!torrent.ready) {
+        return;
+      }
+      
+      // Only remove truly empty/broken torrents
       torrentsToRemove.push(torrent);
     });
     
