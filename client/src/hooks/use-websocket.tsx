@@ -741,38 +741,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       
       console.log("🎯 Torrent object created, adding minimal safe handling...");
       
-      // **ABSOLUTE MINIMAL**: No checks, no event handling, just add and forget
-      console.log("✅ Torrent added to client - no further processing to prevent blocking");
-
-      // Handle torrent errors
-      torrent.on('error', (err: any) => {
-        clearTimeout(loadingTimeout);
-        console.error('❌ Torrent error:', err);
-        // Remove failed placeholder
-        setVideos(prev => prev.filter(v => v.id !== tempId));
-        toast({
-          title: "Magnet link failed",
-          description: "This magnet link failed to load. Check if it has active seeders.",
-          variant: "destructive",
-        });
-      });
-      
-      // Listen for torrent errors
-      client.torrents.forEach((t: any) => {
-        if (t.magnetURI === magnetUri) {
-          t.on('error', (err: any) => {
-            console.error('Torrent error:', err);
-            toast({
-              title: "Torrent error",
-              description: "Failed to load torrent data from peers.",
-              variant: "destructive",
-            });
-          });
-        }
-      });
-      
-      // For magnet links, we don't need to wait for download completion
-      // The video will stream directly from P2P network
+      // **ABSOLUTELY NOTHING**: Just add and immediately forget
+      console.log("✅ Magnet URI added - zero event handling to prevent blocking");
       
     } catch (error) {
       console.error("Failed to load magnet link:", error);
