@@ -270,19 +270,26 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         {
           const { videoId, name, status, processingStep, size, infoHash, magnetUri } = message.data || {};
           console.log(`🔄 Updating video ${videoId} with:`, { name, magnetUri, infoHash, size });
-          setVideos(prev => prev.map(video => 
-            video.id === videoId 
-              ? { 
-                  ...video, 
-                  ...(name && { name }),
-                  ...(magnetUri && { magnetUri }),
-                  ...(infoHash && { infoHash }),
-                  ...(size && { size }),
-                  ...(status !== undefined && { status: status || 'ready' }),
-                  processingStep, // Always update, even if undefined to clear it
-                } 
-              : video
-          ));
+          
+          setVideos(prev => prev.map(video => {
+            // **CRITICAL FIX**: Match by either real ID or by temporary magnetUri
+            const isMatch = video.id === videoId || 
+                           (videoId.startsWith('temp-magnet') && video.magnetUri === videoId);
+            
+            if (isMatch) {
+              console.log(`✅ Found matching video to update:`, video.id);
+              return {
+                ...video, 
+                ...(name && { name }),
+                ...(magnetUri && { magnetUri }),
+                ...(infoHash && { infoHash }),
+                ...(size && { size }),
+                ...(status !== undefined && { status: status || 'ready' }),
+                processingStep, // Always update, even if undefined to clear it
+              };
+            }
+            return video;
+          }));
         }
         break;
 
