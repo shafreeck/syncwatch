@@ -414,59 +414,28 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       setShowProgressModal(true);
       console.log("🚀 Resume seeding for existing video:", video.name);
 
-      // **完全照抄 onVideoShare 的客户端创建逻辑**
-      const getWebTorrent = (await import('@/lib/wt-esm')).default;
-      const WebTorrent = await getWebTorrent();
-      const client = new WebTorrent();
-
-      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      // **使用统一的客户端**: 直接调用 onVideoShare，它内部使用统一客户端
+      console.log("Resume seeding: Using unified client via onVideoShare...");
       
-      console.log("Resume seeding: Creating torrent from file...");
-      setSeedingProgress(1);
-      
-      // Create torrent from the file (完全照抄 onVideoShare)
-      client.seed(file, async (torrent: any) => {
-        console.log("Resume seeding: Torrent created:", {
-          magnetURI: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          name: file.name,
-          length: torrent.length
-        });
-        
-        // Set up progress tracking (照抄 onVideoShare)
-        console.log("📊 Resume seeding: Tracking seeding readiness...");
-        setSeedingProgress(10);
-        
-        const markReady = () => {
-          setSeedingProgress(100);
-          console.log("🎯 Resume seeding: Torrent ready (progress 100%)");
-          
-          // Close modal after ready
-          setTimeout(() => {
-            setIsUploading(false);
-            setShowProgressModal(false);
-            
-            toast({
-              title: "Seeding resumed",
-              description: `${file.name} is now being shared again`,
-            });
-          }, 1000);
-        };
-        
-        if (torrent.ready) {
-          markReady();
-        } else {
-          torrent.on('ready', markReady);
-        }
-        
-        // **添加统计信息追踪** - 照抄 onVideoShare 的逻辑
-        if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
-          console.log("📊 Registering torrent for P2P statistics tracking");
-          (window as any).__registerTorrent(torrent);
-        }
-        
-        console.log("✅ Resume seeding completed - video is now being shared via P2P");
+      // 直接使用 onVideoShare，它会用统一的客户端来处理 seeding
+      await onVideoShare(file, (progress) => {
+        setSeedingProgress(progress);
       });
+      
+      console.log("Resume seeding: Completed using unified client");
+      
+      // Close progress modal after completion
+      setTimeout(() => {
+        setShowProgressModal(false);
+        setSeedingProgress(0);
+        setCurrentFileName("");
+        setIsUploading(false);
+        
+        toast({
+          title: "Seeding resumed",
+          description: `${file.name} is now being shared again`,
+        });
+      }, 1000);
       
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
