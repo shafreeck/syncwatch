@@ -463,12 +463,15 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       })));
       console.log("🔍 Resume client === window client?", client === (window as any).__webtorrentClient);
       
-      // **关键检查**: 先看看是否已经有这个 torrent
+      // **关键检查**: 先看看是否已经有这个 torrent，并且有实际的文件内容
       const existingTorrent = client.torrents.find((t: any) => 
         t.infoHash === video.infoHash || t.name === file.name
       );
       
-      if (existingTorrent) {
+      // 检查 torrent 是否有实际文件内容（可以做种）
+      const hasFileContent = existingTorrent && existingTorrent.files && existingTorrent.files.length > 0;
+      
+      if (existingTorrent && hasFileContent) {
         console.log("🎯 Found existing torrent for resume seeding:", existingTorrent.name);
         
         // **直接使用现有 torrent，注册统计**
