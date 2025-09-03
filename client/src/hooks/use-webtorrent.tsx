@@ -346,6 +346,13 @@ export function useWebTorrent() {
           } catch (e) {
             console.error("❌ StreamTo failed for existing torrent:", e);
           }
+        } else {
+          console.error("❌ Cannot setup streaming:", {
+            hasVideoFile: !!videoFile,
+            hasVideoElement: !!videoElement,
+            videoFileName: videoFile?.name,
+            torrentName: torrent.name
+          });
         }
 
         currentTorrent.current = torrent;
