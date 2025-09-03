@@ -341,6 +341,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                 const currentStats = currentVideo?.infoHash ? statsByInfoHash[currentVideo.infoHash] : null;
                 const currentProgress = currentStats?.progress || downloadProgress;
                 const currentUploadSpeed = currentStats?.uploadMBps || shareSpeed;
+                const currentDownloadSpeed = currentStats?.downloadMBps || 0;
                 const currentPeers = currentStats?.peers || peers;
                 
                 return (
@@ -355,10 +356,16 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                         <span>Recv: {Math.round(currentProgress)}%</span>
                       </div>
                     )}
+                    {currentDownloadSpeed > 0 && (
+                      <div className="text-yellow-400 flex items-center space-x-1" data-testid="text-download-speed">
+                        <Download className="w-3 h-3" />
+                        <span>↓ {currentDownloadSpeed.toFixed(1)} MB/s</span>
+                      </div>
+                    )}
                     {currentUploadSpeed > 0 && (
                       <div className="text-blue-400 flex items-center space-x-1" data-testid="text-upload-speed">
                         <Upload className="w-3 h-3" />
-                        <span>Send: {currentUploadSpeed.toFixed(1)} MB/s</span>
+                        <span>↑ {currentUploadSpeed.toFixed(1)} MB/s</span>
                       </div>
                     )}
                     {(() => {
