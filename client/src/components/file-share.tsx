@@ -456,6 +456,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       }
       
       console.log("Resume seeding: Using existing global client for seeding only");
+      console.log("🔍 Resume client torrents:", client.torrents.map((t: any) => ({
+        name: t.name,
+        infoHash: t.infoHash,
+        numPeers: t.numPeers
+      })));
+      console.log("🔍 Resume client === window client?", client === (window as any).__webtorrentClient);
       
       // **关键检查**: 先看看是否已经有这个 torrent
       const existingTorrent = client.torrents.find((t: any) => 
