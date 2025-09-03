@@ -183,8 +183,9 @@ export function useWebTorrent() {
               })();
               if (!canRead) {
                 console.log(
-                  "Auto re-seed: permission not granted for",
-                  s.infoHash,
+                  "⚠️ Auto re-seed: permission not granted for",
+                  s.name || s.infoHash,
+                  "- file access permission lost after refresh"
                 );
                 continue;
               }
