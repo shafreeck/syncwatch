@@ -489,50 +489,19 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
       
-      // **只有没有现有 torrent 时才创建新的**
-      console.log("Creating new torrent for resume seeding...");
-      const torrent = client.seed(file, (torrent: any) => {
-        console.log("Resume seeding: Torrent created for existing video:", {
-          magnetURI: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          name: file.name
-        });
-        
-        // **关键**: 注册 torrent 到统计系统，这样 isVideoBeingSeeded 才能识别
-        if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
-          console.log("📊 Registering resumed torrent for P2P statistics tracking");
-          (window as any).__registerTorrent(torrent);
-        }
-        
-        setSeedingProgress(100);
-        console.log("✅ Resume seeding: Completed - existing video is now being seeded");
-        
-        // 延迟关闭进度弹窗
-        setTimeout(() => {
-          setShowProgressModal(false);
-          setSeedingProgress(0);
-          setCurrentFileName("");
-          setIsUploading(false);
-          
-          toast({
-            title: "Seeding resumed",
-            description: `${file.name} is now being shared again`,
-          });
-        }, 1500);
-      });
+      // **重要**: 如果没有现有 torrent，说明客户端重启了，不应该创建新的
+      console.log("⚠️ No existing torrent found for resume seeding - client was restarted");
+      console.log("💡 User should re-upload the file or wait for auto re-seeding");
       
-      // 添加错误处理
-      torrent.on('error', (err: any) => {
-        console.error("Resume seeding error:", err);
-        toast({
-          title: "Seeding failed",
-          description: "Failed to resume seeding. Please try again.",
-          variant: "destructive",
-        });
-        setIsUploading(false);
-        setShowProgressModal(false);
-        setSeedingProgress(0);
-        setCurrentFileName("");
+      setIsUploading(false);
+      setShowProgressModal(false);
+      setSeedingProgress(0);
+      setCurrentFileName("");
+      
+      toast({
+        title: "Resume seeding not available",
+        description: "Please re-upload the file or refresh the page to auto-seed",
+        variant: "destructive",
       });
       
     } catch (error) {
