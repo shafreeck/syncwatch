@@ -53,6 +53,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       videoJsPlayerRef.current = window.videojs(video, {
         errorDisplay: false, // Hide video.js error messages
         playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        children: {
+          loadingSpinner: true // Explicitly enable loading spinner
+        },
         plugins: {}
       });
       console.log('🎬 Video.js player initialized');
@@ -90,18 +93,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
     const handleCanPlay = () => {
       console.log('Video ready to play');
-      // Hide video.js loading spinner when video is ready to play
-      if (videoJsPlayerRef.current && videoJsPlayerRef.current.loadingSpinner) {
-        videoJsPlayerRef.current.loadingSpinner.hide();
-      }
     };
     
     const handleLoadedData = () => {
       console.log('Video data loaded - can start playback');
-      // Hide video.js loading spinner when data is loaded
-      if (videoJsPlayerRef.current && videoJsPlayerRef.current.loadingSpinner) {
-        videoJsPlayerRef.current.loadingSpinner.hide();
-      }
     };
     
     const handleError = (e: any) => {
@@ -157,11 +152,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     }
     
     console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
-    
-    // Show video.js loading spinner when starting to load video
-    if (videoJsPlayerRef.current && videoJsPlayerRef.current.loadingSpinner) {
-      videoJsPlayerRef.current.loadingSpinner.show();
-    }
     
     // **CRITICAL FIX**: For video.js, we MUST use the internal video element
     // Wait for video.js to initialize if it hasn't yet
