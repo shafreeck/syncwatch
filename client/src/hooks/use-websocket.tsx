@@ -749,19 +749,25 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
       });
       
-      // Add timeout for magnet link loading
+      // Add timeout for magnet link loading (extended to 2 minutes)
       const loadingTimeout = setTimeout(() => {
-        console.warn("⏰ Magnet link loading timeout (30s) - this may be normal for P2P networks");
+        console.warn("⏰ Magnet link loading timeout (2 minutes) - this may be normal for P2P networks");
         toast({
-          title: "Magnet loading slow",
-          description: "This magnet link is taking longer than usual. Check if it has active seeders.",
+          title: "Still searching for peers",
+          description: "This magnet link is taking longer than usual. P2P networks can be slow to discover content.",
           variant: "default",
         });
-      }, 30000);
+      }, 120000); // 2 minutes instead of 30 seconds
 
       // Add magnet URI to client - use simple approach
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
+      console.log("🔍 Current client torrents before adding:", client.torrents.map((t: any) => ({
+        name: t.name, 
+        infoHash: t.infoHash,
+        numPeers: t.numPeers,
+        ready: t.ready
+      })));
       
       // **CORRECT LOGIC**: Use callback to get metadata, then rely on existing streamTo logic
       const torrent = client.add(magnetUri, (torrent: any) => {
