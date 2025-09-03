@@ -407,19 +407,66 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
 
-      // Start re-sharing with progress tracking
+      // Start direct seeding of existing video (no new video creation)
       setIsUploading(true);
       setCurrentFileName(file.name);
       setSeedingProgress(0);
       setShowProgressModal(true);
-      console.log("Re-sharing from IndexDB:", file.name);
+      console.log("🚀 Starting direct resume seeding for existing video:", video.name);
 
-      await onVideoShare(file, (progress: number) => {
-        setSeedingProgress(progress);
-        console.log(`📈 Re-seeding progress: ${progress.toFixed(1)}%`);
-      }, handle);
-
-      console.log("Re-share initialized successfully");
+      // Use existing global WebTorrent client
+      const globalClient = (window as any).__webtorrentClient;
+      
+      if (!globalClient) {
+        throw new Error("WebTorrent client not available");
+      }
+      
+      // Check if already seeding this file
+      const existingTorrent = globalClient.torrents.find((t: any) => 
+        t.name === file.name || (video.infoHash && t.infoHash === video.infoHash)
+      );
+      
+      if (existingTorrent) {
+        console.log("📊 File already being seeded, updating UI");
+        setSeedingProgress(100);
+        setTimeout(() => {
+          setIsUploading(false);
+          setShowProgressModal(false);
+          toast({
+            title: "Already seeding",
+            description: `${file.name} is already being shared`,
+          });
+        }, 1000);
+        return;
+      }
+      
+      // Start seeding the file directly with global client
+      globalClient.seed(file, (torrent: any) => {
+        console.log("✅ Direct seeding started:", torrent.name, torrent.infoHash);
+        
+        // Update progress to 100% since file is already available locally
+        setSeedingProgress(100);
+        
+        // Close modal after a moment
+        setTimeout(() => {
+          setIsUploading(false);
+          setShowProgressModal(false);
+          
+          toast({
+            title: "Seeding resumed",
+            description: `${file.name} is now being shared again`,
+          });
+        }, 1000);
+        
+        console.log("🎯 Resume seeding completed without creating new video entry");
+      });
+      
+      torrent.on("error", (err: any) => {
+        console.error("Direct seeding error:", err);
+        setIsUploading(false);
+        setShowProgressModal(false);
+        throw err;
+      });
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
       toast({
