@@ -319,6 +319,13 @@ export function useWebTorrent() {
       
       if (existingTorrent) {
         console.log("🎯 Found existing torrent, using directly:", existingTorrent.name);
+        console.log("🔍 Torrent details:", {
+          infoHash: existingTorrent.infoHash,
+          magnetURI: existingTorrent.magnetURI,
+          numPeers: existingTorrent.numPeers,
+          progress: existingTorrent.progress,
+          ready: existingTorrent.ready
+        });
         // Use existing torrent directly for streaming
         const torrent = existingTorrent;
         setIsSeeding(true);
@@ -361,6 +368,13 @@ export function useWebTorrent() {
 
       // If torrent doesn't exist (e.g., local file case), add it
       console.log("Adding torrent for streaming:", magnetUri);
+      console.log("🔍 Target infoHash for streaming:", targetInfoHash);
+      console.log("🔍 Current client torrents:", wt.torrents.map((t: any) => ({
+        name: t.name,
+        infoHash: t.infoHash,
+        numPeers: t.numPeers
+      })));
+      
       const WSS = [
         "wss://tracker.btorrent.xyz",
         "wss://tracker.openwebtorrent.com",
