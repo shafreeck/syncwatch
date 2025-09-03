@@ -33,7 +33,7 @@ interface Video {
   uploadedAt: Date;
 }
 
-export function useWebSocket(registerTorrent?: (torrent: any) => void) {
+export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWebTorrentClient?: any) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [room, setRoom] = useState<Room | null>(null);
@@ -586,7 +586,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
   }, [sendWSMessage, room, toast, registerTorrent]);
 
   const shareMagnetLink = useCallback(async (magnetUri: string) => {
-    console.log('Magnet link share attempt - room state:', room);
+    console.log('🧲 Magnet link share using GLOBAL client (no duplicates)');
     
     // Get room ID from either state or URL
     const currentPath = window.location.pathname;
@@ -603,28 +603,21 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       return;
     }
     
-    console.log("Starting P2P magnet link sharing:", magnetUri);
-    
-    try {
-      const getWebTorrent = (await import('@/lib/wt-esm')).default;
-      const WebTorrent = await getWebTorrent();
-      // Use default WebTorrent configuration for magnet links (enable DHT, PEX, etc.)
-      console.log("Creating WebTorrent client with DHT enabled for magnet links");
-      const client = new WebTorrent({
-        // Enable DHT for magnet link resolution - this is crucial!
-        dht: true,
-        // Enable peer exchange
-        utPex: true,
-        // Add WebSocket trackers for better connectivity
-        tracker: {
-          announce: [
-            'wss://tracker.openwebtorrent.com',
-            'wss://tracker.btorrent.xyz', 
-            'wss://tracker.webtorrent.dev'
-          ]
-        }
+    // **CRITICAL FIX**: Use the global WebTorrent client instead of creating a new one
+    if (!globalWebTorrentClient) {
+      console.error("❌ Global WebTorrent client not available");
+      toast({
+        title: "Client not ready",
+        description: "Please wait for WebTorrent to initialize",
+        variant: "destructive",
       });
+      return;
+    }
 
+    const client = globalWebTorrentClient;
+    console.log("✅ Using global WebTorrent client (preventing duplicate instances)");
+
+    try {
       await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
       
       console.log("Loading magnet link...");
@@ -747,7 +740,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void) {
       });
       throw error;
     }
-  }, [sendWSMessage, room, toast, registerTorrent]);
+  }, [sendWSMessage, room, toast, registerTorrent, globalWebTorrentClient]);
 
   useEffect(() => {
     connect();

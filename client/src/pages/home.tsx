@@ -48,7 +48,7 @@ export default function Home() {
     shareVideo,
     shareTorrentFile,
     shareMagnetLink,
-  } = useWebSocket(registerTorrent);
+  } = useWebSocket(registerTorrent, client);
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)
