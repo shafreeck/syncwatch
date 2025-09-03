@@ -245,15 +245,26 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         const hasVisitedBefore = localStorage.getItem('visited-rooms') !== null;
         const isPageRefresh = hasVisitedBefore && !sessionStorage.getItem('user-manually-selected-video');
         
+        console.log("🔍 Video selection logic check:", {
+          hasVisitedBefore,
+          sessionStorageKey: sessionStorage.getItem('user-manually-selected-video'),
+          isPageRefresh,
+          messageData: message.data
+        });
+        
         if (isPageRefresh) {
           console.log("🔄 Ignoring server video selection - existing user refreshed page, keeping player clear");
           sessionStorage.setItem('user-manually-selected-video', 'true');
+          // **关键**: 确保当前视频也被清空
+          setCurrentVideo(null);
           break;
         } else if (!hasVisitedBefore) {
           console.log("👋 New user joining room - accepting server video selection");
           // 标记用户已经访问过，为将来的刷新做准备
           localStorage.setItem('visited-rooms', 'true');
           sessionStorage.setItem('user-manually-selected-video', 'true');
+        } else {
+          console.log("✅ Normal video selection - processing");
         }
         
         {
