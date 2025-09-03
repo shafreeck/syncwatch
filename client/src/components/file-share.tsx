@@ -421,17 +421,44 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
       const WebTorrent = await getWebTorrent();
       
-      // **关键**: 检查是否已有全局客户端实例
+      // **关键**: 获取或等待全局客户端实例
       let client = (window as any).__webtorrentClient;
       if (!client) {
-        console.log("No global client found, this should not happen during resume");
-        return;
+        console.log("No global client found, waiting for initialization...");
+        // 等待客户端初始化
+        try {
+          await new Promise((resolve, reject) => {
+            let attempts = 0;
+            const checkClient = () => {
+              attempts++;
+              if ((window as any).__webtorrentClient) {
+                resolve((window as any).__webtorrentClient);
+              } else if (attempts > 50) { // 5秒超时
+                reject(new Error("Client initialization timeout"));
+              } else {
+                setTimeout(checkClient, 100);
+              }
+            };
+            checkClient();
+          });
+          client = (window as any).__webtorrentClient;
+        } catch (error) {
+          console.error("Failed to get WebTorrent client:", error);
+          toast({
+            title: "Client not ready",
+            description: "Please wait for the page to fully load and try again",
+            variant: "destructive",
+          });
+          setIsUploading(false);
+          setShowProgressModal(false);
+          return;
+        }
       }
       
       console.log("Resume seeding: Using existing global client for seeding only");
       
       // **只做种，不创建新视频条目**
-      client.seed(file, (torrent: any) => {
+      const torrent = client.seed(file, (torrent: any) => {
         console.log("Resume seeding: Torrent created for existing video:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -439,21 +466,35 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         });
         
         setSeedingProgress(100);
-        console.log("Resume seeding: Completed - existing video is now being seeded");
+        console.log("✅ Resume seeding: Completed - existing video is now being seeded");
+        
+        // 延迟关闭进度弹窗
+        setTimeout(() => {
+          setShowProgressModal(false);
+          setSeedingProgress(0);
+          setCurrentFileName("");
+          setIsUploading(false);
+          
+          toast({
+            title: "Seeding resumed",
+            description: `${file.name} is now being shared again`,
+          });
+        }, 1500);
       });
       
-      // Close progress modal after completion
-      setTimeout(() => {
+      // 添加错误处理
+      torrent.on('error', (err: any) => {
+        console.error("Resume seeding error:", err);
+        toast({
+          title: "Seeding failed",
+          description: "Failed to resume seeding. Please try again.",
+          variant: "destructive",
+        });
+        setIsUploading(false);
         setShowProgressModal(false);
         setSeedingProgress(0);
         setCurrentFileName("");
-        setIsUploading(false);
-        
-        toast({
-          title: "Seeding resumed",
-          description: `${file.name} is now being shared again`,
-        });
-      }, 1000);
+      });
       
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
