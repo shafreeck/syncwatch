@@ -248,19 +248,27 @@ export function useStorageManager() {
           const cacheNames = await caches.keys();
           console.log('🗂️ 检查所有缓存:', cacheNames);
           
-          // 清理所有缓存（因为不确定具体命名规则）
+          // 只清理可能的 WebTorrent 相关缓存
           for (const cacheName of cacheNames) {
             try {
               const cache = await caches.open(cacheName);
               const requests = await cache.keys();
               console.log(`📦 缓存 ${cacheName} 包含 ${requests.length} 个条目`);
               
-              // 删除这个缓存
-              await caches.delete(cacheName);
-              console.log(`✅ 删除缓存: ${cacheName} (${requests.length} 个条目)`);
-              cleanedSomething = true;
+              // 只删除明确相关的缓存
+              if (cacheName.includes('webtorrent') || 
+                  cacheName.includes('torrent') ||
+                  cacheName.includes('video') ||
+                  cacheName.includes('chunk') ||
+                  cacheName.includes('replit')) { // 包含当前域名的缓存
+                await caches.delete(cacheName);
+                console.log(`✅ 删除缓存: ${cacheName} (${requests.length} 个条目)`);
+                cleanedSomething = true;
+              } else {
+                console.log(`⏭️ 跳过缓存: ${cacheName} (不相关)`);
+              }
             } catch (err) {
-              console.warn(`删除缓存 ${cacheName} 失败:`, err);
+              console.warn(`处理缓存 ${cacheName} 失败:`, err);
             }
           }
         }
@@ -292,11 +300,25 @@ export function useStorageManager() {
                 totalSize += file.size;
                 console.log(`📄 文件: ${name}, 大小: ${(file.size / (1024*1024)).toFixed(1)} MB`);
                 
-                // 删除所有文件（假设都是缓存）
-                filesToDelete.push(name);
+                // 只删除明确的视频文件或大文件
+                if (file.size > 50 * 1024 * 1024 || // 大于50MB的文件
+                    name.includes('.mp4') || name.includes('.mkv') || 
+                    name.includes('.avi') || name.includes('.webm') ||
+                    name.includes('torrent') || name.includes('chunk') ||
+                    name.length > 40) { // 可能是hash命名的文件
+                  filesToDelete.push(name);
+                } else {
+                  console.log(`⏭️ 跳过文件: ${name} (太小或不相关)`);
+                }
               } else if (handle.kind === 'directory') {
                 console.log(`📁 目录: ${name}`);
-                filesToDelete.push(name);
+                // 只删除明确相关的目录
+                if (name.includes('torrent') || name.includes('cache') || 
+                    name.includes('video') || name.includes('chunk')) {
+                  filesToDelete.push(name);
+                } else {
+                  console.log(`⏭️ 跳过目录: ${name} (不相关)`);
+                }
               }
             } catch (err) {
               console.warn(`处理 ${name} 失败:`, err);
