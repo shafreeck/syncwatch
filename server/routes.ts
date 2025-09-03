@@ -329,9 +329,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   size: message.data.size,
                   roomId: roomId,
                   uploadedBy: socket.userId,
-                  // **NEW**: Set initial processing status
-                  status: message.data.status || 'processing',
-                  processingStep: message.data.processingStep || 'Loading torrent...',
+                  // **NEW**: Set initial status as ready for normal video shares
+                  status: message.data.status || 'ready',
+                  processingStep: message.data.processingStep,
                 });
                 console.log(`✅ Video created:`, video);
 

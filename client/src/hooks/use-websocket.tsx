@@ -273,7 +273,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
               ? { 
                   ...video, 
                   ...(name && { name }),
-                  ...(status !== undefined && { status }),
+                  ...(status !== undefined && { status: status || 'ready' }),
                   processingStep, // Always update, even if undefined to clear it
                   ...(size && { size }),
                   ...(infoHash && { infoHash }),
