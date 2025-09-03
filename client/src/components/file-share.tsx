@@ -34,6 +34,7 @@ interface FileShareProps {
   onVideoShare: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
   onTorrentShare?: (torrentFile: File) => Promise<void>;
   onMagnetShare?: (magnetUri: string) => Promise<void>;
+  onSeedFile?: (file: File) => Promise<any>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
   onDeleteVideo?: (video: Video) => void;
@@ -43,7 +44,7 @@ interface FileShareProps {
   currentUser?: { id: string; username: string } | null;
 }
 
-export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
+export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, onSeedFile, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -400,19 +401,26 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
 
-      // Start re-sharing with progress tracking
-      setIsUploading(true);
-      setCurrentFileName(file.name);
-      setSeedingProgress(0);
-      setShowProgressModal(true);
-      console.log("Re-sharing from IndexDB:", file.name);
+      // Resume seeding directly (no new video creation) 
+      console.log("🔄 Resuming seeding from IndexDB:", file.name);
 
-      await onVideoShare(file, (progress: number) => {
-        setSeedingProgress(progress);
-        console.log(`📈 Re-seeding progress: ${progress.toFixed(1)}%`);
-      }, handle);
-
-      console.log("Re-share initialized successfully");
+      // Use the onSeedFile function passed from parent component
+      if (!onSeedFile) {
+        throw new Error("Seeding function not available");
+      }
+      
+      try {
+        const torrent = await onSeedFile(file);
+        console.log("✅ Resumed seeding:", torrent.name, torrent.infoHash);
+        
+        toast({
+          title: "Seeding resumed",
+          description: `${file.name} is now being shared again`,
+        });
+      } catch (error) {
+        console.error("Failed to resume seeding:", error);
+        throw error;
+      }
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
       toast({
