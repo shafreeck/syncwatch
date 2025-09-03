@@ -269,16 +269,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("Video status update received:", message.data);
         {
           const { videoId, name, status, processingStep, size, infoHash, magnetUri } = message.data || {};
+          console.log(`🔄 Updating video ${videoId} with:`, { name, magnetUri, infoHash, size });
           setVideos(prev => prev.map(video => 
             video.id === videoId 
               ? { 
                   ...video, 
                   ...(name && { name }),
+                  ...(magnetUri && { magnetUri }),
+                  ...(infoHash && { infoHash }),
+                  ...(size && { size }),
                   ...(status !== undefined && { status: status || 'ready' }),
                   processingStep, // Always update, even if undefined to clear it
-                  ...(size && { size }),
-                  ...(infoHash && { infoHash }),
-                  ...(magnetUri && { magnetUri })
                 } 
               : video
           ));

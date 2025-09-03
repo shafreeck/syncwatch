@@ -75,3 +75,14 @@
     }
   }
 }
+
+/* Video.js centering fix */
+.video-js .vjs-tech {
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+.video-js video {
+  object-fit: contain !important;
+  object-position: center !important;
+}
