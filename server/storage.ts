@@ -199,11 +199,39 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUserWithId(user: User): Promise<User> {
-    const [createdUser] = await db
-      .insert(users)
-      .values(user)
-      .returning();
-    return createdUser;
+    // Use upsert logic: try to update first, if no rows affected, insert
+    try {
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          username: user.username,
+          roomId: user.roomId,
+          isHost: user.isHost,
+          joinedAt: user.joinedAt
+        })
+        .where(eq(users.id, user.id))
+        .returning();
+      
+      if (updatedUser) {
+        console.log(`🔄 Updated existing user: ${user.id}`);
+        return updatedUser;
+      }
+    } catch (error) {
+      console.log(`⚠️ Update failed, trying insert: ${error}`);
+    }
+    
+    // If update didn't work, try insert
+    try {
+      const [createdUser] = await db
+        .insert(users)
+        .values(user)
+        .returning();
+      console.log(`✅ Created new user: ${user.id}`);
+      return createdUser;
+    } catch (error) {
+      console.error(`❌ Both update and insert failed for user ${user.id}:`, error);
+      throw error;
+    }
   }
 
   async getUsersByRoom(roomId: string): Promise<User[]> {
