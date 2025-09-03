@@ -195,8 +195,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       console.log("🔍 Full currentVideo:", currentVideo);
       console.log("🔍 Full event.detail:", event.detail);
       
-      // 如果当前视频的 infoHash 匹配，重新尝试加载
-      if (currentVideo && currentVideo.infoHash === event.detail.infoHash) {
+      // 如果当前视频的 infoHash 匹配，或者文件名匹配，重新尝试加载
+      const infoHashMatch = currentVideo && currentVideo.infoHash === event.detail.infoHash;
+      const nameMatch = currentVideo && event.detail.name && currentVideo.name === event.detail.name;
+      
+      if (currentVideo && (infoHashMatch || nameMatch)) {
+        console.log("✅ Video match found:", { infoHashMatch, nameMatch });
         console.log("🎯 Re-attempting video load after seeding started...");
         
         // **关键**: 延迟一下，让 resume seeding 的注册完成
