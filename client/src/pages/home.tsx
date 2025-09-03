@@ -366,6 +366,9 @@ export default function Home() {
                 if (video.magnetUri && room) {
                   console.log("Selecting video locally:", video);
                   
+                  // **标记为用户手动选择**，这样后续的 video_selected 消息会被处理
+                  sessionStorage.setItem('user-manually-selected-video', 'true');
+                  
                   sendWSMessage("video_select", {
                     videoId: video.id,
                     magnetUri: video.magnetUri,

@@ -240,6 +240,15 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         // Handle video selection - always set a fresh object to force re-load
         console.log("Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
+        
+        // **新逻辑**: 检查是否刚刚刷新页面，如果是则忽略服务器的自动选择
+        const isPageRefresh = !sessionStorage.getItem('user-manually-selected-video');
+        if (isPageRefresh) {
+          console.log("🔄 Ignoring server video selection - page was refreshed, keeping player clear");
+          sessionStorage.setItem('user-manually-selected-video', 'true');
+          break;
+        }
+        
         {
           const selectedVideo = videos.find(v => v.id === message.data.videoId);
           if (selectedVideo) {
