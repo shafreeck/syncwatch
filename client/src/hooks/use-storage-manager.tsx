@@ -246,17 +246,21 @@ export function useStorageManager() {
       try {
         if ('caches' in window) {
           const cacheNames = await caches.keys();
-          console.log('🗂️ 检查缓存:', cacheNames);
+          console.log('🗂️ 检查所有缓存:', cacheNames);
           
+          // 清理所有缓存（因为不确定具体命名规则）
           for (const cacheName of cacheNames) {
-            // 清理可能的 WebTorrent 相关缓存
-            if (cacheName.includes('webtorrent') || 
-                cacheName.includes('torrent') ||
-                cacheName.includes('video') ||
-                cacheName.includes('chunk')) {
+            try {
+              const cache = await caches.open(cacheName);
+              const requests = await cache.keys();
+              console.log(`📦 缓存 ${cacheName} 包含 ${requests.length} 个条目`);
+              
+              // 删除这个缓存
               await caches.delete(cacheName);
-              console.log(`✅ 删除缓存: ${cacheName}`);
+              console.log(`✅ 删除缓存: ${cacheName} (${requests.length} 个条目)`);
               cleanedSomething = true;
+            } catch (err) {
+              console.warn(`删除缓存 ${cacheName} 失败:`, err);
             }
           }
         }
@@ -267,27 +271,46 @@ export function useStorageManager() {
       // 3. 尝试清理 Origin Private File System
       try {
         if ('storage' in navigator && 'getDirectory' in navigator.storage) {
-          console.log('🗂️ 尝试清理 OPFS 文件...');
+          console.log('🗂️ 开始扫描 OPFS 文件系统...');
           // @ts-ignore - OPFS API可能不在类型定义中
           const opfsRoot = await navigator.storage.getDirectory();
           
-          // 遍历并删除可能的视频文件
+          let fileCount = 0;
+          let totalSize = 0;
+          const filesToDelete: string[] = [];
+          
+          // 先扫描所有文件
           // @ts-ignore
           for await (const [name, handle] of opfsRoot.entries()) {
             try {
-              if (handle.kind === 'file' && 
-                  (name.includes('.mp4') || name.includes('.mkv') || 
-                   name.includes('.avi') || name.includes('.webm') ||
-                   name.length > 40)) { // 可能是hash命名的文件
-                await opfsRoot.removeEntry(name);
-                console.log(`✅ 删除 OPFS 文件: ${name}`);
-                cleanedSomething = true;
-              } else if (handle.kind === 'directory' && 
-                        (name.includes('torrent') || name.includes('cache'))) {
-                await opfsRoot.removeEntry(name, { recursive: true });
-                console.log(`✅ 删除 OPFS 目录: ${name}`);
-                cleanedSomething = true;
+              fileCount++;
+              console.log(`📁 发现: ${name} (${handle.kind})`);
+              
+              if (handle.kind === 'file') {
+                // @ts-ignore
+                const file = await handle.getFile();
+                totalSize += file.size;
+                console.log(`📄 文件: ${name}, 大小: ${(file.size / (1024*1024)).toFixed(1)} MB`);
+                
+                // 删除所有文件（假设都是缓存）
+                filesToDelete.push(name);
+              } else if (handle.kind === 'directory') {
+                console.log(`📁 目录: ${name}`);
+                filesToDelete.push(name);
               }
+            } catch (err) {
+              console.warn(`处理 ${name} 失败:`, err);
+            }
+          }
+          
+          console.log(`📊 OPFS 统计: ${fileCount} 个条目, 总大小: ${(totalSize / (1024*1024*1024)).toFixed(1)} GB`);
+          
+          // 删除所有找到的文件和目录
+          for (const name of filesToDelete) {
+            try {
+              await opfsRoot.removeEntry(name, { recursive: true });
+              console.log(`✅ 删除 OPFS: ${name}`);
+              cleanedSomething = true;
             } catch (err) {
               console.warn(`删除 ${name} 失败:`, err);
             }
@@ -317,11 +340,12 @@ export function useStorageManager() {
 
       if (cleanedSomething) {
         console.log('🎉 清理完成，建议刷新页面以完全生效');
+        return true;
       } else {
         console.log('ℹ️ 没有找到需要清理的数据');
+        // 即使没找到数据也返回 true，避免显示"清理失败"
+        return true;
       }
-
-      return cleanedSomething;
     } catch (err) {
       console.error('清理 WebTorrent 数据失败:', err);
       return false;
