@@ -169,6 +169,13 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         return;
       }
       
+      // **CRITICAL**: Check if this video element already has a stream
+      if (actualVideoElement.src && actualVideoElement.src.startsWith('blob:')) {
+        console.log('⚠️ Video element already has blob source, clearing before new stream');
+        actualVideoElement.src = '';
+        actualVideoElement.load(); // Reset the element
+      }
+      
       console.log('✅ Using video.js internal element for streamTo:', actualVideoElement.id);
       loadTorrent(currentVideo.magnetUri, actualVideoElement);
     };
@@ -396,6 +403,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           ref={videoRef}
           id="webtorrent-player"
           className="video-js vjs-default-skin w-full h-full"
+          style={{ objectFit: 'contain', objectPosition: 'center' }}
           data-setup="{}"
           controls
           onPlay={() => {
