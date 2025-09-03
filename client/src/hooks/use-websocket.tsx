@@ -241,17 +241,22 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
         
-        // **新逻辑**: 区分页面刷新 vs 新用户进入房间
-        const hasVisitedBefore = localStorage.getItem('visited-rooms') !== null;
-        const hasUserSelectedVideo = sessionStorage.getItem('user-manually-selected-video') !== null;
+        // **新逻辑**: 区分页面刷新 vs 重新进入房间
+        const currentRoomId = room?.id;
+        const lastRoomId = sessionStorage.getItem('last-room-id');
         const isPageJustLoaded = !sessionStorage.getItem('page-loaded');
         
-        // 页面刷新的判断：访问过 + 页面刚加载 + 用户还没手动选择过
-        const isPageRefresh = hasVisitedBefore && isPageJustLoaded;
+        // 页面刷新的判断：在同一个房间 + 页面刚加载
+        const isPageRefresh = currentRoomId && lastRoomId === currentRoomId && isPageJustLoaded;
+        
+        // 记录当前房间ID
+        if (currentRoomId) {
+          sessionStorage.setItem('last-room-id', currentRoomId);
+        }
         
         console.log("🔍 Video selection logic check:", {
-          hasVisitedBefore,
-          hasUserSelectedVideo,
+          currentRoomId,
+          lastRoomId,
           isPageJustLoaded,
           isPageRefresh,
           messageData: message.data
