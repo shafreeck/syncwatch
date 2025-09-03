@@ -305,6 +305,45 @@ export function useWebTorrent() {
         currentTorrent.current = null;
       }
 
+      // **CRITICAL FIX**: Check if torrent already exists before adding
+      const existingTorrent = wt.torrents.find((t: any) => t.magnetURI === magnetUri || t.infoHash === targetInfoHash);
+      
+      if (existingTorrent) {
+        console.log("🎯 Torrent already exists, using existing one:", existingTorrent.name);
+        // Use existing torrent directly
+        const torrent = existingTorrent;
+        setIsSeeding(true);
+        registerTorrent(torrent);
+
+        // Find video file and set up streaming
+        const videoFile = torrent.files.find(
+          (file: WebTorrentNS.TorrentFile) =>
+            file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+        );
+
+        if (videoFile && videoElement) {
+          console.log("Setting up streaming for existing torrent:", videoFile.name);
+          try {
+            videoFile.select();
+            (videoFile as any).streamTo(videoElement);
+            console.log("✅ StreamTo setup successful for existing torrent:", videoFile.name);
+            
+            videoElement.addEventListener("loadedmetadata", () => {
+              console.log("🎬 Video metadata loaded, ready to play!");
+              videoElement.play().catch((e) => {
+                console.warn("Autoplay failed (browser policy):", e);
+              });
+            }, { once: true });
+          } catch (e) {
+            console.error("❌ StreamTo failed for existing torrent:", e);
+          }
+        }
+
+        currentTorrent.current = torrent;
+        return;
+      }
+
+      // If torrent doesn't exist, add it
       console.log("Adding new torrent:", magnetUri);
       const WSS = [
         "wss://tracker.btorrent.xyz",
