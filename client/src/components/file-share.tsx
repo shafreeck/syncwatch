@@ -441,9 +441,9 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       return false;
     }
     
-    // Don't show warning for magnet link videos (only for videos that started as magnet links)
-    // We check if the original video was shared via magnet link by looking for temp-magnet prefix
-    if (video.magnetUri && video.magnetUri.startsWith('magnet:') && video.id.includes('temp-magnet')) {
+    // Don't show warning for magnet link videos (they were shared via magnet link input)
+    // We identify magnet link videos by checking if the video ID contains 'temp-magnet'
+    if (video.id.includes('temp-magnet')) {
       return false;
     }
     
