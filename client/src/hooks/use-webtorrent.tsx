@@ -358,6 +358,13 @@ export function useWebTorrent() {
         } else if (!videoFile && torrent.files.length === 0) {
           // **新逻辑**: 如果 torrent 存在但文件列表为空，等待 metadata
           console.log("⏳ Torrent found but no files yet, waiting for metadata...");
+          console.log("🔍 Torrent state:", {
+            ready: torrent.ready,
+            numPeers: torrent.numPeers,
+            downloaded: torrent.downloaded,
+            uploadedBy: torrent.name,
+            created: torrent.created
+          });
           
           const handleReady = () => {
             console.log("🎉 Torrent metadata ready, retrying video setup...");
@@ -382,13 +389,48 @@ export function useWebTorrent() {
               } catch (e) {
                 console.error("❌ StreamTo failed after waiting:", e);
               }
+            } else {
+              console.error("❌ Still no video file after ready:", {
+                hasVideoFile: !!videoFile,
+                hasVideoElement: !!videoElement,
+                filesCount: torrent.files.length,
+                fileNames: torrent.files.map((f: any) => f.name)
+              });
             }
           };
           
+          // 添加更多事件监听来调试
+          torrent.on('metadata', () => {
+            console.log("📄 Torrent metadata event fired");
+          });
+          
+          torrent.on('infoHash', () => {
+            console.log("🔖 Torrent infoHash event fired");
+          });
+          
+          torrent.on('error', (err: any) => {
+            console.error("❌ Torrent error:", err);
+          });
+          
           if (torrent.ready) {
+            console.log("🚀 Torrent is already ready, calling handler immediately");
             handleReady();
           } else {
+            console.log("⏰ Setting up ready event listener...");
             torrent.on('ready', handleReady);
+            
+            // 添加超时保护
+            setTimeout(() => {
+              if (!torrent.ready) {
+                console.warn("⚠️ Torrent metadata timeout after 30 seconds");
+                console.log("🔍 Torrent timeout state:", {
+                  ready: torrent.ready,
+                  numPeers: torrent.numPeers,
+                  downloaded: torrent.downloaded,
+                  filesCount: torrent.files.length
+                });
+              }
+            }, 30000);
           }
         } else {
           console.error("❌ Cannot setup streaming:", {
