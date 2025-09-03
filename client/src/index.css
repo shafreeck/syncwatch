@@ -76,17 +76,6 @@
   }
 }
 
-/* Video.js styling fixes */
-.video-js .vjs-error-display {
-  display: none !important;
-}
-
-/* Ensure video controls are always visible */
-.video-js .vjs-control-bar {
-  display: flex !important;
-  opacity: 1 !important;
-}
-
 /* Video centering - use more specific selectors */
 .video-js .vjs-tech,
 .video-js video,
