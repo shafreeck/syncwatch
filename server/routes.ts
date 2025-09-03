@@ -329,6 +329,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   size: message.data.size,
                   roomId: roomId,
                   uploadedBy: socket.userId,
+                  // **NEW**: Set initial processing status
+                  status: message.data.status || 'processing',
+                  processingStep: message.data.processingStep || 'Loading torrent...',
                 });
                 console.log(`✅ Video created:`, video);
 
@@ -358,6 +361,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   magnetUri: message.data.magnetUri
                 }
               });
+            }
+            break;
+
+          // **NEW**: Update video processing status
+          case "video_status_update":
+            if (socket.userId && socket.roomId) {
+              console.log(`🔄 Video status update:`, message.data);
+              const { videoId, status, processingStep, size, infoHash } = message.data;
+              
+              try {
+                // Update video in storage
+                await storage.updateVideo(videoId, { 
+                  status, 
+                  processingStep,
+                  ...(size && { size }),
+                  ...(infoHash && { infoHash })
+                });
+                
+                // Broadcast update to all users in room
+                broadcastToRoom(socket.roomId, {
+                  type: "video_status_updated",
+                  data: { videoId, status, processingStep, size, infoHash }
+                });
+                
+                console.log(`✅ Video ${videoId} status updated to: ${status}`);
+              } catch (error) {
+                console.error(`❌ Failed to update video status:`, error);
+              }
             }
             break;
 

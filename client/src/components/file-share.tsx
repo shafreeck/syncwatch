@@ -218,13 +218,23 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     try {
       if (onTorrentShare) {
         setIsUploading(true);
-        console.log("Starting torrent share...");
+        
+        // **INSTANT FEEDBACK**: Show torrent file name immediately
+        const torrentFileName = file.name.replace('.torrent', '');
+        
+        console.log("🚀 Adding torrent placeholder:", torrentFileName);
+        
+        toast({
+          title: "Processing torrent file",
+          description: `Loading "${torrentFileName}"...`,
+        });
+        
+        // **ASYNC PROCESSING**: The actual processing happens in background
         await onTorrentShare(file);
         console.log("Torrent share initialized");
         
-        // For torrent files, we don't show progress modal since it streams directly
         toast({
-          title: "Torrent file loaded",
+          title: "Torrent file ready",
           description: "Video is now available for streaming",
         });
       }
@@ -264,14 +274,26 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     try {
       if (onMagnetShare) {
         setIsUploading(true);
-        console.log("Starting magnet share...");
+        
+        // **INSTANT FEEDBACK**: Extract filename from magnet URI for immediate display
+        const nameMatch = uri.match(/[&?]dn=([^&]+)/i);
+        const fileName = nameMatch ? decodeURIComponent(nameMatch[1]) : "Loading torrent...";
+        
+        console.log("🚀 Adding magnet placeholder:", fileName);
+        
+        // Show immediate feedback to user
+        toast({
+          title: "Processing magnet link",
+          description: `Loading "${fileName}"...`,
+        });
+        
+        // **ASYNC PROCESSING**: The actual processing happens in background
         await onMagnetShare(uri);
         console.log("Magnet share initialized");
         setMagnetUri(""); // Clear input after successful share
         
-        // For magnet links, we don't show progress modal since it streams directly
         toast({
-          title: "Magnet link added",
+          title: "Magnet link ready",
           description: "Video is now available for streaming",
         });
       }
@@ -573,9 +595,24 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                     <p className="text-sm font-medium truncate" data-testid={`text-video-name-${video.id}`} title={video.name}>
                       {video.name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(video.size)} • {formatSharedTime(video.uploadedAt)}
+                      </p>
+                      {/* **NEW**: Show processing status */}
+                      {(video as any).status === 'processing' && (
+                        <div className="flex items-center gap-1 text-[10px] text-amber-500">
+                          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                          <span>{(video as any).processingStep || 'Loading...'}</span>
+                        </div>
+                      )}
+                      {(video as any).status === 'error' && (
+                        <div className="flex items-center gap-1 text-[10px] text-red-500">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span>Failed</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 

@@ -38,6 +38,9 @@ export const videos = sqliteTable("videos", {
   roomId: text("room_id").notNull(),
   uploadedBy: text("uploaded_by").notNull(),
   uploadedAt: integer("uploaded_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  // **NEW**: Processing status for immediate feedback
+  status: text("status", { enum: ["processing", "ready", "error"] }).default("processing"),
+  processingStep: text("processing_step"), // e.g., "Loading torrent", "Getting metadata", "Ready"
 });
 
 // Insert schemas

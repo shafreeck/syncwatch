@@ -27,6 +27,7 @@ export interface IStorage {
   createVideo(video: InsertVideo): Promise<Video>;
   getVideosByRoom(roomId: string): Promise<Video[]>;
   getVideo(id: string): Promise<Video | undefined>;
+  updateVideo(id: string, updates: Partial<Video>): Promise<Video | null>;
   deleteVideo(id: string): Promise<boolean>;
 }
 
@@ -156,6 +157,15 @@ export class MemStorage implements IStorage {
     return this.videos.get(id);
   }
 
+  async updateVideo(id: string, updates: Partial<Video>): Promise<Video | null> {
+    const video = this.videos.get(id);
+    if (!video) return null;
+    
+    const updatedVideo = { ...video, ...updates };
+    this.videos.set(id, updatedVideo);
+    return updatedVideo;
+  }
+
   async deleteVideo(id: string): Promise<boolean> {
     return this.videos.delete(id);
   }
@@ -263,6 +273,20 @@ export class DatabaseStorage implements IStorage {
   async getVideo(id: string): Promise<Video | undefined> {
     const [video] = await db.select().from(videos).where(eq(videos.id, id));
     return video || undefined;
+  }
+
+  async updateVideo(id: string, updates: Partial<Video>): Promise<Video | null> {
+    try {
+      const [updatedVideo] = await db
+        .update(videos)
+        .set(updates)
+        .where(eq(videos.id, id))
+        .returning();
+      return updatedVideo || null;
+    } catch (error) {
+      console.error("Error updating video:", error);
+      return null;
+    }
   }
 
   async deleteVideo(id: string): Promise<boolean> {
