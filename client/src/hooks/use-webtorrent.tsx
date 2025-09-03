@@ -335,19 +335,30 @@ export function useWebTorrent() {
               // **IMPROVED BUFFERING**: Set higher priority for better streaming
               console.log("🎬 Setting up optimized streaming for:", videoFile.name);
               
-              // Prioritize first and last pieces for faster start and seeking
+              // **AGGRESSIVE BUFFERING**: Download enough pieces to prevent stalling
               if (torrent.pieces) {
-                const firstPieces = Math.min(10, Math.floor(torrent.pieces.length * 0.05));
-                const lastPieces = Math.min(10, Math.floor(torrent.pieces.length * 0.05));
+                // Calculate optimal buffer size (aim for ~5-10% of total pieces)
+                const totalPieces = torrent.pieces.length;
+                const bufferSize = Math.max(20, Math.min(50, Math.floor(totalPieces * 0.08)));
                 
-                // Download first pieces (for immediate playback)
-                for (let i = 0; i < firstPieces; i++) {
-                  videoFile.select(i, i + 1, 0); // High priority
+                console.log(`📊 Total pieces: ${totalPieces}, Buffer size: ${bufferSize}`);
+                
+                // Priority download first pieces for immediate playback
+                for (let i = 0; i < bufferSize; i++) {
+                  try {
+                    videoFile.select(i, i + 1, 0); // Max priority for beginning
+                  } catch {}
                 }
                 
-                // Download last pieces (for seeking)
-                for (let i = torrent.pieces.length - lastPieces; i < torrent.pieces.length; i++) {
-                  videoFile.select(i, i + 1, 1); // Medium priority  
+                // Also prioritize some pieces in the middle and end for seeking
+                const midStart = Math.floor(totalPieces * 0.3);
+                const endStart = Math.floor(totalPieces * 0.9);
+                
+                for (let i = 0; i < 5; i++) {
+                  try {
+                    if (midStart + i < totalPieces) videoFile.select(midStart + i, midStart + i + 1, 1);
+                    if (endStart + i < totalPieces) videoFile.select(endStart + i, endStart + i + 1, 1);
+                  } catch {}
                 }
               }
               
@@ -356,24 +367,11 @@ export function useWebTorrent() {
             }
             
             try {
-              // **CRITICAL**: Use appendTo for better streaming support
-              if (typeof (videoFile as any).appendTo === 'function') {
-                console.log("✅ Using appendTo for progressive streaming");
-                (videoFile as any).appendTo(videoElement, {
-                  autoplay: false,
-                  controls: true,
-                  muted: false, // Try to enable audio
-                });
-              } else if (typeof (videoFile as any).streamTo === 'function') {
-                console.log("⚠️ Fallback to streamTo");
-                (videoFile as any).streamTo(videoElement);
-              } else {
-                console.error("❌ Neither appendTo nor streamTo available");
-              }
-              
-              console.log("✅ Streaming setup successful for:", videoFile.name);
+              // **CORRECT**: Use streamTo (appendTo is deprecated)
+              (videoFile as any).streamTo(videoElement);
+              console.log("✅ StreamTo setup successful for:", videoFile.name);
             } catch (e) {
-              console.error("❌ Streaming setup failed for", videoFile.name, ":", e);
+              console.error("❌ StreamTo failed for", videoFile.name, ":", e);
               if (videoFile.name.toLowerCase().includes(".mkv")) {
                 console.warn("⚠️ MKV format detected - audio may not work due to codec limitations");
               }
@@ -404,19 +402,31 @@ export function useWebTorrent() {
               lastBufferTime = videoElement.currentTime;
               console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s`);
               
-              // **ANTI-STALL**: If stuck for too long, try to trigger more downloads
+              // **ENHANCED ANTI-STALL**: Multiple strategies to prevent video freezing
               setTimeout(() => {
                 if (videoElement.currentTime === lastBufferTime && stallCount > 2) {
-                  console.log("🚨 Video seems stuck, triggering priority download...");
-                  const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
-                  // Download next few pieces with high priority
-                  for (let i = currentPiece; i < Math.min(currentPiece + 5, torrent.pieces.length); i++) {
-                    try {
-                      videoFile.select(i, i + 1, 0);
-                    } catch {}
+                  console.log("🚨 Video stuck, implementing recovery strategies...");
+                  
+                  // Strategy 1: Select current and upcoming pieces with max priority
+                  if (torrent.pieces && videoElement.duration) {
+                    const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
+                    const nextPieces = Math.min(15, torrent.pieces.length - currentPiece); // More pieces
+                    
+                    console.log(`📥 Requesting pieces ${currentPiece} to ${currentPiece + nextPieces}`);
+                    for (let i = currentPiece; i < currentPiece + nextPieces; i++) {
+                      try {
+                        videoFile.select(i, i + 1, 0); // Max priority
+                      } catch {}
+                    }
                   }
+                  
+                  // Strategy 2: Force re-selection of the entire video file
+                  try {
+                    console.log("🔄 Re-selecting video file to prioritize download");
+                    videoFile.select();
+                  } catch {}
                 }
-              }, 3000);
+              }, 2000); // Faster response time
             });
 
             videoElement.addEventListener("canplay", () => {
