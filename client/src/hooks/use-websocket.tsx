@@ -734,6 +734,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
       // Add magnet URI to client with additional trackers
       console.log("🔗 Adding magnet URI to WebTorrent client...");
+      console.log("📝 Magnet URI:", magnetUri);
+      
       const torrent = client.add(magnetUri, {
         announce: [
           // WebSocket trackers for browser support
@@ -746,6 +748,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           'udp://9.rarbg.to:2710',
           'udp://exodus.desync.com:6969'
         ]
+      });
+      
+      console.log("🎯 Torrent object created, waiting for events...");
+      
+      // Add basic diagnostic logs (no state updates)
+      torrent.on('infoHash', () => {
+        console.log("📄 [DIAGNOSTIC] Got torrent info hash:", torrent.infoHash);
+      });
+
+      torrent.on('metadata', () => {
+        console.log("📋 [DIAGNOSTIC] Got torrent metadata - files:", torrent.files?.length || 0);
       });
 
       // **MINIMAL EVENTS**: Only use essential events, avoid interfering with player
