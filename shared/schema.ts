@@ -81,6 +81,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     data: z.object({
       roomId: z.string(),
       username: z.string(),
+      persistentUserId: z.string().optional(),
     }),
   }),
   z.object({

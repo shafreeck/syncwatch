@@ -340,9 +340,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
-    // Store the username temporarily to identify current user when room state is received
-    setCurrentUser({ id: '', username, isHost: false, joinedAt: new Date() } as User);
-    sendMessage("join_room", { roomId, username });
+    
+    // Get or create persistent user ID for this browser/username combination
+    const persistentUserIdKey = `syncwatch:userId:${username}`;
+    let persistentUserId = localStorage.getItem(persistentUserIdKey);
+    
+    if (!persistentUserId) {
+      // Generate new persistent ID for this username on this browser
+      persistentUserId = crypto.randomUUID();
+      localStorage.setItem(persistentUserIdKey, persistentUserId);
+      console.log(`🆔 Generated new persistent user ID for ${username}: ${persistentUserId}`);
+    } else {
+      console.log(`🔄 Using existing persistent user ID for ${username}: ${persistentUserId}`);
+    }
+    
+    // Store the username with persistent ID to identify current user when room state is received
+    setCurrentUser({ id: persistentUserId, username, isHost: false, joinedAt: new Date() } as User);
+    sendMessage("join_room", { roomId, username, persistentUserId });
   }, [sendMessage]);
 
   const leaveRoom = useCallback(() => {

@@ -14,6 +14,7 @@ export interface IStorage {
 
   // User operations
   createUser(user: InsertUser): Promise<User>;
+  createUserWithId(user: User): Promise<User>;
   getUser(id: string): Promise<User | undefined>;
   getUsersByRoom(roomId: string): Promise<User[]>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
@@ -93,6 +94,11 @@ export class MemStorage implements IStorage {
     return user;
   }
 
+  async createUserWithId(user: User): Promise<User> {
+    this.users.set(user.id, user);
+    return user;
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -142,6 +148,8 @@ export class MemStorage implements IStorage {
       size: insertVideo.size || null,
       magnetUri: insertVideo.magnetUri,
       infoHash: insertVideo.infoHash,
+      status: insertVideo.status || "ready",
+      processingStep: insertVideo.processingStep || null,
     };
     this.videos.set(id, video);
     return video;
@@ -188,6 +196,14 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  async createUserWithId(user: User): Promise<User> {
+    const [createdUser] = await db
+      .insert(users)
+      .values(user)
+      .returning();
+    return createdUser;
   }
 
   async getUsersByRoom(roomId: string): Promise<User[]> {

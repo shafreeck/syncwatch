@@ -464,11 +464,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     console.log(`  magnetUri: ${video.magnetUri}`);
     console.log(`  🎯 FINAL needsWarning result: ${result}`);
     
-    // Temporary fix: Show button for all local files with saved handles, not just current user's uploads
-    // This is because user IDs change after refresh, making original uploader check unreliable
-    const hasHandleInDB = hasInfoHash && !video.id.includes('temp-magnet');
-    
-    return hasInfoHash && !hasStats && hasCurrentUser && hasHandleInDB;
+    return hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser;
   };
 
   const handleTabChange = (tab: string) => {

@@ -139,8 +139,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         switch (message.type) {
           case "join_room":
-            const { roomId, username } = message.data;
-            console.log(`🚪 Join room request:`, { roomId, username });
+            const { roomId, username, persistentUserId } = message.data;
+            console.log(`🚪 Join room request:`, { roomId, username, persistentUserId });
             
             // Verify room exists
             const room = await storage.getRoom(roomId);
@@ -191,7 +191,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const existingUsers = await storage.getUsersByRoom(roomId);
             const isHost = existingUsers.length === 0; // First user becomes host
             
-            const user = await storage.createUser({ username, roomId, isHost });
+            // Use persistent user ID if provided, otherwise create new user
+            let user;
+            if (persistentUserId) {
+              // Create user with the persistent ID from client
+              user = {
+                id: persistentUserId,
+                username,
+                roomId,
+                isHost,
+                joinedAt: new Date()
+              };
+              // Store in memory storage (we're not using the database createUser method)
+              await storage.createUserWithId(user);
+              console.log(`🔄 Using persistent user ID: ${persistentUserId} for ${username}`);
+            } else {
+              // Fallback to auto-generated ID
+              user = await storage.createUser({ username, roomId, isHost });
+              console.log(`🆔 Created new user ID: ${user.id} for ${username}`);
+            }
 
             socket.userId = user.id;
             socket.roomId = roomId;
