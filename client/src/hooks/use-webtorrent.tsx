@@ -242,11 +242,18 @@ export function useWebTorrent() {
         return;
       }
       
-      // Remove torrents that are not actively being used for playback
-      // This helps free up memory and storage space
-      if (torrent !== currentTorrent.current) {
-        torrentsToRemove.push(torrent);
+      // Keep the current playback torrent
+      if (torrent === currentTorrent.current) {
+        return;
       }
+      
+      // Keep seeding torrents (uploaded by user)
+      if (torrent.ready && torrent.files && torrent.files.length > 0) {
+        return;
+      }
+      
+      // Only remove empty or broken torrents
+      torrentsToRemove.push(torrent);
     });
     
     torrentsToRemove.forEach((torrent) => {
