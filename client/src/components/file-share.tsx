@@ -503,20 +503,85 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
       
-      // **重要**: 如果没有现有 torrent，说明客户端重启了，不应该创建新的
-      console.log("⚠️ No existing torrent found for resume seeding - client was restarted");
-      console.log("💡 User should re-upload the file or wait for auto re-seeding");
+      // **新逻辑**: 如果没有现有 torrent，从 magnet URI 重新添加
+      console.log("🔄 No existing torrent found - re-adding from stored magnet URI");
       
-      setIsUploading(false);
-      setShowProgressModal(false);
-      setSeedingProgress(0);
-      setCurrentFileName("");
-      
-      toast({
-        title: "Resume seeding not available",
-        description: "Please re-upload the file or refresh the page to auto-seed",
-        variant: "destructive",
-      });
+      if (video.magnetUri && video.magnetUri !== 'temp-magnet-' + Date.now()) {
+        console.log("🧲 Re-adding torrent from magnet:", video.magnetUri);
+        
+        try {
+          const newTorrent = client.add(video.magnetUri);
+          
+          newTorrent.on('ready', () => {
+            console.log("✅ Resume seeding: Torrent re-added successfully:", video.name);
+            
+            // 注册统计跟踪
+            if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+              console.log("📊 Registering re-added torrent for P2P statistics tracking");
+              (window as any).__registerTorrent(newTorrent);
+            }
+            
+            // 触发事件通知播放器
+            console.log("🔄 Triggering video player refresh to detect re-added torrent...");
+            window.dispatchEvent(new CustomEvent('webtorrent-seeding-started', {
+              detail: { infoHash: newTorrent.infoHash, name: newTorrent.name }
+            }));
+            
+            setSeedingProgress(100);
+            
+            setTimeout(() => {
+              setShowProgressModal(false);
+              setSeedingProgress(0);
+              setCurrentFileName("");
+              setIsUploading(false);
+              
+              toast({
+                title: "Seeding resumed",
+                description: `${video.name} is now being shared again`,
+              });
+            }, 1000);
+          });
+          
+          newTorrent.on('error', (err) => {
+            console.error("❌ Resume seeding failed:", err);
+            setIsUploading(false);
+            setShowProgressModal(false);
+            setSeedingProgress(0);
+            setCurrentFileName("");
+            
+            toast({
+              title: "Resume seeding failed",
+              description: "Failed to re-add torrent. Please try uploading again.",
+              variant: "destructive",
+            });
+          });
+          
+        } catch (error) {
+          console.error("❌ Error adding torrent:", error);
+          setIsUploading(false);
+          setShowProgressModal(false);
+          setSeedingProgress(0);
+          setCurrentFileName("");
+          
+          toast({
+            title: "Resume seeding failed",
+            description: "Failed to re-add torrent. Please try uploading again.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        console.log("⚠️ No valid magnet URI stored - cannot resume seeding");
+        setIsUploading(false);
+        setShowProgressModal(false);
+        setSeedingProgress(0);
+        setCurrentFileName("");
+        
+        toast({
+          title: "Resume seeding not available", 
+          description: "No valid magnet URI found. Please re-upload the file.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
