@@ -439,6 +439,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       return false;
     }
     
+    // Don't show warning for magnet link videos (they start with "magnet:")
+    if (video.magnetUri && video.magnetUri.startsWith('magnet:')) {
+      return false;
+    }
+    
     return video.infoHash && 
            !statsByInfoHash[video.infoHash] && 
            currentUser && 
