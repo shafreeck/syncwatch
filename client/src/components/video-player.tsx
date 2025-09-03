@@ -187,6 +187,11 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   useEffect(() => {
     const handleSeedingStarted = (event: CustomEvent) => {
       console.log("🔄 Seeding started event received:", event.detail);
+      console.log("🔍 infoHash comparison:", {
+        currentVideoInfoHash: currentVideo?.infoHash,
+        eventInfoHash: event.detail.infoHash,
+        match: currentVideo?.infoHash === event.detail.infoHash
+      });
       
       // 如果当前视频的 infoHash 匹配，重新尝试加载
       if (currentVideo && currentVideo.infoHash === event.detail.infoHash) {
