@@ -192,12 +192,16 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       if (currentVideo && currentVideo.infoHash === event.detail.infoHash) {
         console.log("🎯 Re-attempting video load after seeding started...");
         
-        if (loadTorrent && currentVideo.magnetUri) {
-          const actualVideoElement = document.querySelector('#webtorrent-player_html5_api') as HTMLVideoElement;
-          if (actualVideoElement) {
-            loadTorrent(currentVideo.magnetUri, actualVideoElement);
+        // **关键**: 延迟一下，让 resume seeding 的注册完成
+        setTimeout(() => {
+          if (loadTorrent && currentVideo.magnetUri) {
+            const actualVideoElement = document.querySelector('#webtorrent-player_html5_api') as HTMLVideoElement;
+            if (actualVideoElement) {
+              console.log("🔄 Retrying loadTorrent after seeding registration...");
+              loadTorrent(currentVideo.magnetUri, actualVideoElement);
+            }
           }
-        }
+        }, 100); // 100ms 延迟，确保注册完成
       }
     };
 
