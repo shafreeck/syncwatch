@@ -215,12 +215,20 @@ export function useStorageManager() {
   // 清理所有WebTorrent数据
   const cleanupAllWebTorrentData = useCallback(async (): Promise<boolean> => {
     try {
+      console.log('🧹 开始清理 WebTorrent 数据...');
+      let cleanedSomething = false;
+
+      // 1. 清理 IndexedDB 数据库
       const databases = await indexedDB.databases();
-      const webTorrentDbs = databases.filter(db => 
-        db.name?.includes('webtorrent') || 
-        db.name?.includes('torrent') ||
-        db.name?.includes('WebTorrent')
-      );
+      const webTorrentDbs = databases.filter(db => {
+        const name = db.name?.toLowerCase() || '';
+        return name.includes('webtorrent') || 
+               name.includes('torrent') ||
+               name.includes('wt-') ||
+               name.includes('chunk') ||
+               name.includes('file') ||
+               name.includes('cache');
+      });
 
       for (const db of webTorrentDbs) {
         if (db.name) {
@@ -229,13 +237,93 @@ export function useStorageManager() {
             deleteReq.onsuccess = () => resolve(undefined);
             deleteReq.onerror = () => reject(deleteReq.error);
           });
-          console.log(`✅ Deleted database: ${db.name}`);
+          console.log(`✅ 删除数据库: ${db.name}`);
+          cleanedSomething = true;
         }
       }
 
-      return true;
+      // 2. 清理 Cache API 缓存
+      try {
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          console.log('🗂️ 检查缓存:', cacheNames);
+          
+          for (const cacheName of cacheNames) {
+            // 清理可能的 WebTorrent 相关缓存
+            if (cacheName.includes('webtorrent') || 
+                cacheName.includes('torrent') ||
+                cacheName.includes('video') ||
+                cacheName.includes('chunk')) {
+              await caches.delete(cacheName);
+              console.log(`✅ 删除缓存: ${cacheName}`);
+              cleanedSomething = true;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('清理 Cache API 失败:', err);
+      }
+
+      // 3. 尝试清理 Origin Private File System
+      try {
+        if ('storage' in navigator && 'getDirectory' in navigator.storage) {
+          console.log('🗂️ 尝试清理 OPFS 文件...');
+          // @ts-ignore - OPFS API可能不在类型定义中
+          const opfsRoot = await navigator.storage.getDirectory();
+          
+          // 遍历并删除可能的视频文件
+          // @ts-ignore
+          for await (const [name, handle] of opfsRoot.entries()) {
+            try {
+              if (handle.kind === 'file' && 
+                  (name.includes('.mp4') || name.includes('.mkv') || 
+                   name.includes('.avi') || name.includes('.webm') ||
+                   name.length > 40)) { // 可能是hash命名的文件
+                await opfsRoot.removeEntry(name);
+                console.log(`✅ 删除 OPFS 文件: ${name}`);
+                cleanedSomething = true;
+              } else if (handle.kind === 'directory' && 
+                        (name.includes('torrent') || name.includes('cache'))) {
+                await opfsRoot.removeEntry(name, { recursive: true });
+                console.log(`✅ 删除 OPFS 目录: ${name}`);
+                cleanedSomething = true;
+              }
+            } catch (err) {
+              console.warn(`删除 ${name} 失败:`, err);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('清理 OPFS 失败:', err);
+      }
+
+      // 4. 清理 localStorage 和 sessionStorage 中的相关数据
+      try {
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.includes('webtorrent') || key.includes('torrent') || key.includes('video'))) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => {
+          localStorage.removeItem(key);
+          console.log(`✅ 删除 localStorage: ${key}`);
+        });
+        if (keysToRemove.length > 0) cleanedSomething = true;
+      } catch (err) {
+        console.warn('清理 localStorage 失败:', err);
+      }
+
+      if (cleanedSomething) {
+        console.log('🎉 清理完成，建议刷新页面以完全生效');
+      } else {
+        console.log('ℹ️ 没有找到需要清理的数据');
+      }
+
+      return cleanedSomething;
     } catch (err) {
-      console.error('Failed to cleanup WebTorrent data:', err);
+      console.error('清理 WebTorrent 数据失败:', err);
       return false;
     }
   }, []);
