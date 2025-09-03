@@ -324,7 +324,9 @@ export function useWebTorrent() {
           magnetURI: existingTorrent.magnetURI,
           numPeers: existingTorrent.numPeers,
           progress: existingTorrent.progress,
-          ready: existingTorrent.ready
+          ready: existingTorrent.ready,
+          filesCount: existingTorrent.files?.length || 0,
+          files: existingTorrent.files?.map((f: any) => f.name) || []
         });
         // Use existing torrent directly for streaming
         const torrent = existingTorrent;
