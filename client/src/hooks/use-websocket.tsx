@@ -733,6 +733,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       }, 30000);
 
       // Add magnet URI to client with additional trackers
+      console.log("🔗 Adding magnet URI to WebTorrent client...");
       const torrent = client.add(magnetUri, {
         announce: [
           // WebSocket trackers for browser support
@@ -745,6 +746,32 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           'udp://9.rarbg.to:2710',
           'udp://exodus.desync.com:6969'
         ]
+      });
+
+      // Add more diagnostic events
+      torrent.on('infoHash', () => {
+        console.log("📄 Got torrent info hash:", torrent.infoHash);
+      });
+
+      torrent.on('metadata', () => {
+        console.log("📋 Got torrent metadata:", {
+          name: torrent.name,
+          files: torrent.files.length,
+          length: torrent.length
+        });
+      });
+
+      torrent.on('wire', (wire: any) => {
+        console.log("🔌 Connected to peer:", wire.remoteAddress);
+      });
+
+      torrent.on('noPeers', () => {
+        console.warn("😞 No peers found for this torrent");
+        toast({
+          title: "No peers found",
+          description: "This magnet link has no active seeders. Try a different one.",
+          variant: "destructive",
+        });
       });
 
       torrent.on('ready', () => {
