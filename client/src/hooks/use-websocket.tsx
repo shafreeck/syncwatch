@@ -782,6 +782,14 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           files: torrent.files?.length
         });
         
+        console.log("🔍 Torrent status:", {
+          ready: torrent.ready,
+          done: torrent.done,
+          numPeers: torrent.numPeers,
+          downloaded: torrent.downloaded,
+          uploaded: torrent.uploaded
+        });
+        
         // Find video file
         const videoFile = torrent.files.find((file: any) => 
           file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
@@ -812,6 +820,30 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       
       console.log("🎯 Torrent object created with callback - waiting for metadata...");
+      
+      // Add error handling for the torrent
+      torrent.on('error', (err: any) => {
+        clearTimeout(loadingTimeout);
+        console.error("❌ Torrent error:", err);
+        toast({
+          title: "Magnet link error",
+          description: `Failed to load magnet: ${err.message}`,
+          variant: "destructive",
+        });
+      });
+      
+      // Add timeout specifically for this torrent
+      setTimeout(() => {
+        if (!torrent.ready) {
+          console.warn("⚠️ Torrent still not ready after 60 seconds - checking status...");
+          console.log("🔍 Torrent debug info:", {
+            infoHash: torrent.infoHash,
+            ready: torrent.ready,
+            numPeers: torrent.numPeers,
+            magnetURI: torrent.magnetURI
+          });
+        }
+      }, 60000);
       
     } catch (error) {
       console.error("Failed to load magnet link:", error);
