@@ -247,14 +247,20 @@ export function useWebTorrent() {
         return;
       }
       
-      // **CRITICAL FIX**: Keep seeding torrents - don't remove torrents that have files ready for upload
-      // These are torrents created by user file uploads that are actively seeding
+      // **CRITICAL FIX**: Keep seeding torrents AND loading torrents
+      // Don't remove torrents that are actively seeding (ready with files)
       if (torrent.ready && torrent.files && torrent.files.length > 0) {
         console.log(`⚠️ Keeping seeding torrent: ${torrent.name} (ready: ${torrent.ready}, files: ${torrent.files.length})`);
         return;
       }
       
-      // Only remove torrents that are loading metadata or empty
+      // Don't remove torrents that are still loading metadata (these could be valid magnet links)
+      if (!torrent.ready) {
+        console.log(`⚠️ Keeping loading torrent: ${torrent.name || 'Unknown'} (ready: ${torrent.ready})`);
+        return;
+      }
+      
+      // Only remove empty/broken torrents that are ready but have no files
       torrentsToRemove.push(torrent);
     });
     
