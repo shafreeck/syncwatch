@@ -240,48 +240,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         // Handle video selection - always set a fresh object to force re-load
         console.log("Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
-        
-        // **新逻辑**: 区分页面刷新 vs 重新进入房间
-        const currentRoomId = room?.id;
-        const lastRoomId = sessionStorage.getItem('last-room-id');
-        const isPageJustLoaded = !sessionStorage.getItem('page-loaded');
-        
-        // 页面刷新的判断：在同一个房间 + 页面刚加载
-        const isPageRefresh = currentRoomId && lastRoomId === currentRoomId && isPageJustLoaded;
-        
-        // 记录当前房间ID
-        if (currentRoomId) {
-          sessionStorage.setItem('last-room-id', currentRoomId);
-        }
-        
-        console.log("🔍 Video selection logic check:", {
-          currentRoomId,
-          lastRoomId,
-          isPageJustLoaded,
-          isPageRefresh,
-          messageData: message.data
-        });
-        
-        // 标记页面已加载（只在这次会话中有效）
-        if (isPageJustLoaded) {
-          sessionStorage.setItem('page-loaded', 'true');
-        }
-        
-        if (isPageRefresh) {
-          console.log("🔄 Ignoring server video selection - existing user refreshed page, keeping player clear");
-          sessionStorage.setItem('user-manually-selected-video', 'true');
-          // **关键**: 确保当前视频也被清空
-          setCurrentVideo(null);
-          break;
-        } else if (!hasVisitedBefore) {
-          console.log("👋 New user joining room - accepting server video selection");
-          // 标记用户已经访问过，为将来的刷新做准备
-          localStorage.setItem('visited-rooms', 'true');
-          sessionStorage.setItem('user-manually-selected-video', 'true');
-        } else {
-          console.log("✅ Normal video selection - processing");
-        }
-        
         {
           const selectedVideo = videos.find(v => v.id === message.data.videoId);
           if (selectedVideo) {
