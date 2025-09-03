@@ -771,21 +771,29 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
         
-        // **FIXED**: Remove the local placeholder update since server will handle it
-        // Just remove the placeholder and let server create the real entry
-        setVideos(prev => prev.filter(v => v.id !== tempId));
+        // **FIXED**: Send WebSocket message only if connection is stable
+        const attemptSendMessage = () => {
+          if (isConnected && socket?.readyState === WebSocket.OPEN) {
+            console.log("🔔 Sending video_share message (connection stable)...");
+            sendWSMessage("video_share", {
+              name: videoFile.name,
+              magnetUri: torrent.magnetURI,
+              infoHash: torrent.infoHash,
+              size: torrent.length.toString(),
+              roomId: currentRoomId,
+            });
+          } else {
+            console.log("⏳ WebSocket not ready, retrying in 1 second...");
+            setTimeout(attemptSendMessage, 1000);
+          }
+        };
         
-        // **CRITICAL FIX**: Wait a bit to ensure join_room has been processed
-        // This prevents video_share from being sent before socket context is set
+        attemptSendMessage();
+        
+        // **DELAYED**: Only remove placeholder after message is sent
         setTimeout(() => {
-          sendWSMessage("video_share", {
-            name: videoFile.name,
-            magnetUri: torrent.magnetURI,
-            infoHash: torrent.infoHash,
-            size: torrent.length.toString(),
-            roomId: currentRoomId,
-          });
-        }, 100); // 100ms delay to ensure proper WebSocket state
+          setVideos(prev => prev.filter(v => v.id !== tempId));
+        }, 500); // Keep placeholder longer to ensure server processes the message
         
         // Register torrent for P2P statistics if available
         if (registerTorrent) {
