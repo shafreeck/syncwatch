@@ -507,9 +507,15 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       }
       
       // **尝试从 IndexedDB 中的文件句柄恢复做种**
-      console.log("🔄 No existing torrent found - trying to restore from IndexedDB file handle");
+      console.log("🔄 No existing torrent found or no file content - trying to restore from IndexedDB file handle");
       
       try {
+        // 如果有空的 torrent，先移除它
+        if (existingTorrent && !hasFileContent) {
+          console.log("🗑️ Removing empty torrent before re-seeding:", existingTorrent.name);
+          client.remove(existingTorrent.infoHash || existingTorrent);
+        }
+        
         // 从 IndexedDB 获取文件句柄
         if (seedEntry.handle) {
           console.log("📁 Found file handle in IndexedDB, requesting file access...");
