@@ -34,7 +34,6 @@ interface FileShareProps {
   onVideoShare: (file: File, onProgress?: (progress: number) => void, handle?: any) => Promise<void>;
   onTorrentShare?: (torrentFile: File) => Promise<void>;
   onMagnetShare?: (magnetUri: string) => Promise<void>;
-  onSeedFile?: (file: File) => Promise<any>;
   videos: Video[];
   onSelectVideo: (video: Video) => void;
   onDeleteVideo?: (video: Video) => void;
@@ -44,7 +43,7 @@ interface FileShareProps {
   currentUser?: { id: string; username: string } | null;
 }
 
-export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, onSeedFile, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
+export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -411,14 +410,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       // Resume seeding directly (no new video creation) 
       console.log("🔄 Resuming seeding from IndexDB:", file.name);
 
-      // Use the onSeedFile function passed from parent component
-      if (!onSeedFile) {
-        throw new Error("Seeding function not available");
-      }
+      // Use the onVideoShare function - it has built-in deduplication logic
+      console.log("🔄 Calling onVideoShare for resume seeding...");
       
       try {
-        const torrent = await onSeedFile(file);
-        console.log("✅ Resumed seeding:", torrent.name, torrent.infoHash);
+        await onVideoShare(file, undefined, handle);
+        console.log("✅ Resume seeding completed via onVideoShare");
         
         toast({
           title: "Seeding resumed",
@@ -436,7 +433,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         variant: "destructive",
       });
     }
-  }, [onSeedFile, toast]);
+  }, [onVideoShare, toast]);
 
   // Helper to check if video is currently being seeded
   const isVideoBeingSeeded = (video: Video) => {

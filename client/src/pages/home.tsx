@@ -27,7 +27,7 @@ export default function Home() {
   const roomId = location.split("/room/")[1];
 
   // Get WebTorrent statistics for progress visualization
-  const { shareSpeed, peers, statsByInfoHash, registerTorrent, cleanupUnusedTorrents, client, clearCurrentVideo, seedFile } = useWebTorrent();
+  const { shareSpeed, peers, statsByInfoHash, registerTorrent, cleanupUnusedTorrents, client, clearCurrentVideo } = useWebTorrent();
 
   const {
     isConnected,
@@ -321,7 +321,6 @@ export default function Home() {
               onVideoShare={shareVideo}
               onTorrentShare={shareTorrentFile}
               onMagnetShare={shareMagnetLink}
-              onSeedFile={seedFile}
               videos={videos}
               shareSpeed={shareSpeed}
               peers={peers}
