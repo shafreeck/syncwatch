@@ -503,19 +503,83 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
       
-      // **刷新后文件权限丢失，无法继续做种**
-      console.log("⚠️ No existing torrent found - file access lost after refresh");
+      // **尝试从 IndexedDB 中的文件句柄恢复做种**
+      console.log("🔄 No existing torrent found - trying to restore from IndexedDB file handle");
       
-      setIsUploading(false);
-      setShowProgressModal(false);
-      setSeedingProgress(0);
-      setCurrentFileName("");
-      
-      toast({
-        title: "File access lost", 
-        description: "Please re-upload the file to resume seeding after page refresh.",
-        variant: "destructive",
-      });
+      try {
+        // 从 IndexedDB 获取文件句柄
+        if (seedEntry.handle) {
+          console.log("📁 Found file handle in IndexedDB, requesting file access...");
+          
+          // 请求文件访问权限并获取文件
+          const file = await seedEntry.handle.getFile();
+          console.log("✅ File access granted, file size:", file.size);
+          
+          // 重新做种
+          console.log("🌱 Re-seeding file from restored handle...");
+          const newTorrent = client.seed(file);
+          
+          newTorrent.on('ready', () => {
+            console.log("✅ Resume seeding: File re-seeded successfully:", file.name);
+            
+            // 注册统计跟踪
+            if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+              console.log("📊 Registering re-seeded torrent for P2P statistics tracking");
+              (window as any).__registerTorrent(newTorrent);
+            }
+            
+            // 触发事件通知播放器
+            console.log("🔄 Triggering video player refresh to detect re-seeded torrent...");
+            window.dispatchEvent(new CustomEvent('webtorrent-seeding-started', {
+              detail: { infoHash: newTorrent.infoHash, name: newTorrent.name }
+            }));
+            
+            setSeedingProgress(100);
+            
+            setTimeout(() => {
+              setShowProgressModal(false);
+              setSeedingProgress(0);
+              setCurrentFileName("");
+              setIsUploading(false);
+              
+              toast({
+                title: "Seeding resumed",
+                description: `${file.name} is now being shared again`,
+              });
+            }, 1000);
+          });
+          
+          newTorrent.on('error', (err: any) => {
+            console.error("❌ Resume seeding failed:", err);
+            setIsUploading(false);
+            setShowProgressModal(false);
+            setSeedingProgress(0);
+            setCurrentFileName("");
+            
+            toast({
+              title: "Resume seeding failed",
+              description: "Failed to re-seed file. Please try uploading again.",
+              variant: "destructive",
+            });
+          });
+          
+        } else {
+          throw new Error("No file handle found in IndexedDB");
+        }
+        
+      } catch (error) {
+        console.log("⚠️ File handle access denied or unavailable:", error);
+        setIsUploading(false);
+        setShowProgressModal(false);
+        setSeedingProgress(0);
+        setCurrentFileName("");
+        
+        toast({
+          title: "File access lost", 
+          description: "Please re-upload the file to resume seeding after page refresh.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
