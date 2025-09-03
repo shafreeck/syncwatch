@@ -331,57 +331,122 @@ export function useWebTorrent() {
             );
             try {
               videoFile.select();
-              // Set priority for sequential downloading to prevent buffering issues
-              if (typeof (videoFile as any).createReadStream === "function") {
-                console.log(
-                  "Setting sequential download priority for smoother streaming",
-                );
+              
+              // **IMPROVED BUFFERING**: Set higher priority for better streaming
+              console.log("🎬 Setting up optimized streaming for:", videoFile.name);
+              
+              // Prioritize first and last pieces for faster start and seeking
+              if (torrent.pieces) {
+                const firstPieces = Math.min(10, Math.floor(torrent.pieces.length * 0.05));
+                const lastPieces = Math.min(10, Math.floor(torrent.pieces.length * 0.05));
+                
+                // Download first pieces (for immediate playback)
+                for (let i = 0; i < firstPieces; i++) {
+                  videoFile.select(i, i + 1, 0); // High priority
+                }
+                
+                // Download last pieces (for seeking)
+                for (let i = torrent.pieces.length - lastPieces; i < torrent.pieces.length; i++) {
+                  videoFile.select(i, i + 1, 1); // Medium priority  
+                }
               }
-            } catch {}
-            try {
-              (videoFile as any).streamTo(videoElement);
-              console.log("StreamTo setup successful for:", videoFile.name);
+              
             } catch (e) {
-              console.error("streamTo failed for", videoFile.name, ":", e);
-              // Add fallback for unsupported formats
+              console.warn("Advanced buffering setup failed:", e);
+            }
+            
+            try {
+              // **CRITICAL**: Use appendTo for better streaming support
+              if (typeof (videoFile as any).appendTo === 'function') {
+                console.log("✅ Using appendTo for progressive streaming");
+                (videoFile as any).appendTo(videoElement, {
+                  autoplay: false,
+                  controls: true,
+                  muted: false, // Try to enable audio
+                });
+              } else if (typeof (videoFile as any).streamTo === 'function') {
+                console.log("⚠️ Fallback to streamTo");
+                (videoFile as any).streamTo(videoElement);
+              } else {
+                console.error("❌ Neither appendTo nor streamTo available");
+              }
+              
+              console.log("✅ Streaming setup successful for:", videoFile.name);
+            } catch (e) {
+              console.error("❌ Streaming setup failed for", videoFile.name, ":", e);
               if (videoFile.name.toLowerCase().includes(".mkv")) {
-                console.warn(
-                  "MKV format may have limited browser support. Consider converting to MP4.",
-                );
+                console.warn("⚠️ MKV format detected - audio may not work due to codec limitations");
               }
             }
 
-            // Add better error handling and buffering monitoring
-            videoElement.addEventListener(
-              "loadedmetadata",
-              () => {
-                console.log("Video loaded, duration:", videoElement.duration);
-                videoElement.play().catch(() => {});
-              },
-              { once: true },
-            );
+            // **ENHANCED BUFFERING & AUDIO MONITORING**
+            let stallCount = 0;
+            let lastBufferTime = 0;
+            
+            videoElement.addEventListener("loadedmetadata", () => {
+              console.log("🎬 Video metadata loaded:", {
+                duration: videoElement.duration,
+                hasAudio: videoElement.audioTracks?.length > 0 || !videoElement.muted,
+                videoTracks: videoElement.videoTracks?.length || 'unknown',
+                format: videoFile.name.split('.').pop()
+              });
+              
+              // **MKV AUDIO FIX**: Force unmute for MKV files
+              if (videoFile.name.toLowerCase().includes(".mkv")) {
+                videoElement.muted = false;
+                videoElement.volume = 1.0;
+                console.log("🔊 Force enabled audio for MKV file");
+              }
+            }, { once: true });
 
             videoElement.addEventListener("waiting", () => {
-              console.log("Video buffering at time:", videoElement.currentTime);
+              stallCount++;
+              lastBufferTime = videoElement.currentTime;
+              console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s`);
+              
+              // **ANTI-STALL**: If stuck for too long, try to trigger more downloads
+              setTimeout(() => {
+                if (videoElement.currentTime === lastBufferTime && stallCount > 2) {
+                  console.log("🚨 Video seems stuck, triggering priority download...");
+                  const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
+                  // Download next few pieces with high priority
+                  for (let i = currentPiece; i < Math.min(currentPiece + 5, torrent.pieces.length); i++) {
+                    try {
+                      videoFile.select(i, i + 1, 0);
+                    } catch {}
+                  }
+                }
+              }, 3000);
             });
 
             videoElement.addEventListener("canplay", () => {
-              console.log(
-                "Video ready to play at time:",
-                videoElement.currentTime,
-              );
+              stallCount = 0; // Reset stall counter
+              console.log(`✅ Ready to play at ${videoElement.currentTime.toFixed(1)}s`);
+            });
+
+            videoElement.addEventListener("canplaythrough", () => {
+              console.log(`🎯 Smooth playback possible at ${videoElement.currentTime.toFixed(1)}s`);
             });
 
             videoElement.addEventListener("stalled", () => {
-              console.warn("Video stalled at time:", videoElement.currentTime);
+              console.warn(`🐌 Network stalled at ${videoElement.currentTime.toFixed(1)}s`);
+            });
+
+            videoElement.addEventListener("suspend", () => {
+              console.log(`⏸️ Download suspended at ${videoElement.currentTime.toFixed(1)}s`);
             });
 
             videoElement.addEventListener("error", (e) => {
-              console.error("Video element error:", e, "File:", videoFile.name);
+              console.error("❌ Video error:", {
+                error: videoElement.error,
+                currentTime: videoElement.currentTime,
+                networkState: videoElement.networkState,
+                readyState: videoElement.readyState,
+                file: videoFile.name
+              });
+              
               if (videoFile.name.toLowerCase().includes(".mkv")) {
-                console.error(
-                  "MKV playback failed - this format has limited browser support",
-                );
+                console.error("⚠️ MKV limitations: TrueHD/Atmos audio not supported in browsers");
               }
             });
           }

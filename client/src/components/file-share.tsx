@@ -536,6 +536,9 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                 <p className="text-amber-600 dark:text-amber-400">
                   ⚠️ Note: Only WebTorrent-compatible magnets work reliably. Traditional BitTorrent magnets may timeout.
                 </p>
+                <p className="text-blue-600 dark:text-blue-400">
+                  💡 Format tip: MP4/WebM work best. MKV may have audio issues due to advanced codecs.
+                </p>
               </div>
             </div>
             <Button
