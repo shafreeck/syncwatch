@@ -69,11 +69,26 @@ export function useStorageManager() {
   const getWebTorrentStorage = useCallback(async (): Promise<WebTorrentStorage | null> => {
     try {
       const databases = await indexedDB.databases();
-      const webTorrentDbs = databases.filter(db => 
-        db.name?.includes('webtorrent') || 
-        db.name?.includes('torrent') ||
-        db.name?.includes('WebTorrent')
-      );
+      
+      // 打印所有数据库名称用于调试
+      console.log('🔍 All IndexedDB databases:', databases.map(db => ({ name: db.name, version: db.version })));
+      
+      // 扩展过滤条件，包含更多可能的WebTorrent相关数据库
+      const webTorrentDbs = databases.filter(db => {
+        const name = db.name?.toLowerCase() || '';
+        return name.includes('webtorrent') || 
+               name.includes('torrent') ||
+               name.includes('wt-') ||
+               name.includes('chunk') ||
+               name.includes('peer') ||
+               name.includes('storage') ||
+               name.includes('cache') ||
+               // 通用的可能存储大文件的数据库
+               (db.version && db.version > 1) || // 版本较高的数据库可能是应用数据库
+               name.length > 20; // 长名称的数据库可能是hash-based
+      });
+
+      console.log('🎯 Filtered WebTorrent databases:', webTorrentDbs.map(db => db.name));
 
       let totalSize = 0;
       const torrents: Array<{
@@ -83,8 +98,28 @@ export function useStorageManager() {
         infoHash: string;
       }> = [];
 
-      // 简化版本：只返回数据库名称列表
-      // 完整的大小计算需要遍历每个数据库，比较复杂
+      // 尝试计算每个数据库的估算大小
+      for (const dbInfo of webTorrentDbs) {
+        if (!dbInfo.name) continue;
+        
+        try {
+          // 简单的大小估算：基于数据库版本和名称特征
+          const estimatedSize = await estimateDatabaseSize(dbInfo.name);
+          totalSize += estimatedSize;
+          
+          if (estimatedSize > 100 * 1024 * 1024) { // 大于100MB的被认为是torrent数据
+            torrents.push({
+              name: dbInfo.name,
+              size: estimatedSize,
+              lastAccessed: Date.now(),
+              infoHash: dbInfo.name.slice(-40) || 'unknown'
+            });
+          }
+        } catch (err) {
+          console.warn(`Failed to estimate size for ${dbInfo.name}:`, err);
+        }
+      }
+
       const dbNames = webTorrentDbs.map(db => db.name || 'unknown');
 
       return {
@@ -96,6 +131,50 @@ export function useStorageManager() {
       console.error('Failed to get WebTorrent storage info:', err);
       return null;
     }
+  }, []);
+
+  // 估算单个数据库大小的辅助函数
+  const estimateDatabaseSize = useCallback(async (dbName: string): Promise<number> => {
+    return new Promise((resolve) => {
+      const request = indexedDB.open(dbName);
+      
+      request.onsuccess = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        let estimatedSize = 0;
+        
+        try {
+          // 基于对象存储的数量和名称估算大小
+          const storeNames = Array.from(db.objectStoreNames);
+          
+          for (const storeName of storeNames) {
+            // 如果存储名称暗示是块数据或文件数据，估算较大的大小
+            if (storeName.includes('chunk') || storeName.includes('data') || storeName.includes('file')) {
+              estimatedSize += 10 * 1024 * 1024; // 每个这样的存储估算10MB
+            } else {
+              estimatedSize += 1024 * 1024; // 其他存储估算1MB
+            }
+          }
+          
+          // 如果数据库有很多对象存储，可能包含大量数据
+          if (storeNames.length > 5) {
+            estimatedSize *= storeNames.length;
+          }
+          
+          db.close();
+          resolve(estimatedSize);
+        } catch (err) {
+          db.close();
+          resolve(0);
+        }
+      };
+      
+      request.onerror = () => {
+        resolve(0);
+      };
+      
+      // 5秒超时
+      setTimeout(() => resolve(0), 5000);
+    });
   }, []);
 
   // 清理指定的torrent数据
