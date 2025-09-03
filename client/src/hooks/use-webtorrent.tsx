@@ -30,7 +30,29 @@ export function useWebTorrent() {
 
   const registerTorrent = useCallback((torrent: any) => {
     const toMB = (x: number) => (x || 0) / (1024 * 1024);
+    
+    // Throttle updates to once per second to avoid excessive UI updates
+    let lastUpdateTime = 0;
+    let updateTimeoutId: number | null = null;
+    
     const update = () => {
+      const now = Date.now();
+      
+      // If we just updated, schedule an update for later
+      if (now - lastUpdateTime < 1000) {
+        if (updateTimeoutId) return; // Already scheduled
+        updateTimeoutId = window.setTimeout(() => {
+          updateTimeoutId = null;
+          performUpdate();
+        }, 1000 - (now - lastUpdateTime));
+        return;
+      }
+      
+      performUpdate();
+    };
+    
+    const performUpdate = () => {
+      lastUpdateTime = Date.now();
       try {
         setStatsByInfoHash((prev) => ({
           ...prev,
@@ -44,11 +66,23 @@ export function useWebTorrent() {
         }));
       } catch {}
     };
+    
     update();
     torrent.on("download", update);
     torrent.on("upload", update);
     torrent.on("wire", update);
     torrent.on("done", update);
+    
+    // Clean up timeout when torrent is removed
+    const cleanup = () => {
+      if (updateTimeoutId) {
+        window.clearTimeout(updateTimeoutId);
+        updateTimeoutId = null;
+      }
+    };
+    torrent.on("destroyed", cleanup);
+    
+    return cleanup;
   }, []);
 
   useEffect(() => {

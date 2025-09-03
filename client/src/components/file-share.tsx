@@ -563,11 +563,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                 className="group flex items-center justify-between p-2 hover:bg-secondary rounded-lg transition-colors"
                 data-testid={`video-item-${video.id}`}
               >
-                {/* Left side - Video info */}
-                <div className="flex items-center space-x-3 flex-1">
+                {/* Left side - Video info with fixed width to prevent layout shifts */}
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <FileVideo className="w-4 h-4 text-primary flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium" data-testid={`text-video-name-${video.id}`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" data-testid={`text-video-name-${video.id}`} title={video.name}>
                       {video.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -576,11 +576,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                   </div>
                 </div>
                 
-                {/* Right side - P2P Status and Actions */}
-                <div className="flex items-center gap-4">
-                  {/* P2P and seeding status - moved from left side, keeping original format */}
+                {/* Right side - P2P Status and Actions with fixed width */}
+                <div className="flex items-center gap-4 min-w-[280px] justify-end">
+                  {/* P2P and seeding status with consistent positioning */}
                   {isVideoBeingSeeded(video) ? (
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex-shrink-0">
                       {/* Seeding progress for current uploading file */}
                       {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
                         <div>
@@ -608,7 +608,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                     </div>
                   ) : needsWarning(video) ? (
                     <button
-                      className="px-2 py-1 text-[11px] bg-amber-500/20 text-amber-600 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors cursor-pointer"
+                      className="px-2 py-1 text-[11px] bg-amber-500/20 text-amber-600 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors cursor-pointer flex-shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleReshareFromDB(video);
@@ -617,7 +617,9 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                     >
                       Click to resume seeding
                     </button>
-                  ) : null}
+                  ) : (
+                    <div className="w-48 flex-shrink-0"></div>
+                  )}
                   
                   {onDeleteVideo && (
                     <TooltipProvider delayDuration={200}>
