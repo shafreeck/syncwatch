@@ -243,14 +243,24 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         
         // **新逻辑**: 区分页面刷新 vs 新用户进入房间
         const hasVisitedBefore = localStorage.getItem('visited-rooms') !== null;
-        const isPageRefresh = hasVisitedBefore && !sessionStorage.getItem('user-manually-selected-video');
+        const hasUserSelectedVideo = sessionStorage.getItem('user-manually-selected-video') !== null;
+        const isPageJustLoaded = !sessionStorage.getItem('page-loaded');
+        
+        // 页面刷新的判断：访问过 + 页面刚加载 + 用户还没手动选择过
+        const isPageRefresh = hasVisitedBefore && isPageJustLoaded;
         
         console.log("🔍 Video selection logic check:", {
           hasVisitedBefore,
-          sessionStorageKey: sessionStorage.getItem('user-manually-selected-video'),
+          hasUserSelectedVideo,
+          isPageJustLoaded,
           isPageRefresh,
           messageData: message.data
         });
+        
+        // 标记页面已加载（只在这次会话中有效）
+        if (isPageJustLoaded) {
+          sessionStorage.setItem('page-loaded', 'true');
+        }
         
         if (isPageRefresh) {
           console.log("🔄 Ignoring server video selection - existing user refreshed page, keeping player clear");
