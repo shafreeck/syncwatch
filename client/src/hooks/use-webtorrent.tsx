@@ -99,7 +99,18 @@ export function useWebTorrent() {
             // Import WebTorrent constructor via centralized loader
             const WebTorrent = await getWebTorrent();
 
-            const webTorrentClient = new WebTorrent();
+            const webTorrentClient = new WebTorrent({
+              // 优化存储配置，减少磁盘占用
+              maxConns: 55,        // 限制连接数
+              nodeId: undefined,   // 让WebTorrent生成随机ID
+              peerId: undefined,   // 让WebTorrent生成随机peer ID
+              dht: true,          // 启用DHT
+              lsd: false,         // 禁用本地服务发现
+              natUpnp: false,     // 禁用UPnP
+              // 限制内存使用，优先流式播放而非下载完整文件
+              downloadLimit: -1,   // 不限制下载速度
+              uploadLimit: -1,     // 不限制上传速度
+            });
 
             const reg = await navigator.serviceWorker
               .register("/sw.min.js", { scope: "/" })
@@ -210,6 +221,44 @@ export function useWebTorrent() {
     };
   }, []);
 
+  const cleanupUnusedTorrents = useCallback((activeInfoHash: string | null = null) => {
+    if (!client) return;
+    
+    console.log("🧹 Cleaning up unused torrents...");
+    const torrentsToRemove: any[] = [];
+    
+    client.torrents.forEach((torrent: any) => {
+      // Keep the currently active torrent
+      if (activeInfoHash && torrent.infoHash === activeInfoHash) {
+        return;
+      }
+      
+      // Remove torrents that are not actively being used for playback
+      // This helps free up memory and storage space
+      if (torrent !== currentTorrent.current) {
+        torrentsToRemove.push(torrent);
+      }
+    });
+    
+    torrentsToRemove.forEach((torrent) => {
+      console.log(`🗑️ Removing unused torrent: ${torrent.name || 'Unknown'}`);
+      client.remove(torrent);
+      
+      // Also cleanup from stats
+      if (torrent.infoHash) {
+        setStatsByInfoHash((prev) => {
+          const newStats = { ...prev };
+          delete newStats[torrent.infoHash];
+          return newStats;
+        });
+      }
+    });
+    
+    if (torrentsToRemove.length > 0) {
+      console.log(`✅ Cleaned up ${torrentsToRemove.length} unused torrents`);
+    }
+  }, [client]);
+
   const loadTorrent = useCallback(
     async (magnetUri: string, videoElement?: HTMLVideoElement | null) => {
       // Ensure a client instance, even if this hook mounted before init completed
@@ -230,6 +279,10 @@ export function useWebTorrent() {
         }
       }
 
+      // Get the info hash of the torrent we're about to load
+      const infoHashMatch = magnetUri.match(/btih:([a-f0-9]{40})/i);
+      const targetInfoHash = infoHashMatch ? infoHashMatch[1].toLowerCase() : null;
+
       // Check if we're already loading this same torrent
       if (
         currentTorrent.current &&
@@ -241,6 +294,9 @@ export function useWebTorrent() {
         );
         return;
       }
+
+      // Clean up unused torrents before adding new one (keep the target one if exists)
+      cleanupUnusedTorrents(targetInfoHash);
 
       // Remove existing torrent to prevent conflicts
       if (currentTorrent.current) {
@@ -438,5 +494,6 @@ export function useWebTorrent() {
     downloadFile,
     statsByInfoHash,
     registerTorrent, // Export registerTorrent so shareVideo can use it
+    cleanupUnusedTorrents, // Export cleanup function
   };
 }
