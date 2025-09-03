@@ -351,10 +351,17 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
   };
 
   const handleReshareFromDB = useCallback(async (video: Video) => {
-    if (!video.infoHash) return;
+    console.log("🔄 Resume seeding clicked for video:", video.name, video.infoHash);
+    
+    if (!video.infoHash) {
+      console.warn("❌ No infoHash for video:", video);
+      return;
+    }
     
     try {
+      console.log("🔍 Looking for seed entry in IndexedDB...");
       const seedEntry = await getSeedByInfoHash(video.infoHash);
+      console.log("📋 Seed entry found:", seedEntry);
       if (!seedEntry || !seedEntry.handle) {
         toast({
           title: "File not found",
@@ -429,7 +436,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         variant: "destructive",
       });
     }
-  }, [onVideoShare, toast]);
+  }, [onSeedFile, toast]);
 
   // Helper to check if video is currently being seeded
   const isVideoBeingSeeded = (video: Video) => {
