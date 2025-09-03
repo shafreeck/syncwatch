@@ -76,6 +76,11 @@
   }
 }
 
+/* Hide video.js error messages */
+.video-js .vjs-error-display {
+  display: none !important;
+}
+
 /* Video centering - use more specific selectors */
 .video-js .vjs-tech,
 .video-js video,
