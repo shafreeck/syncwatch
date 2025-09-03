@@ -440,11 +440,11 @@ export function useWebTorrent() {
               stallCount = 0; // Reset stall counter
               console.log(`✅ Ready to play at ${videoElement.currentTime.toFixed(1)}s`);
               
-              // **RESTORE AUTOPLAY**: Automatically start playing when video is ready
-              videoElement.play().catch((e) => {
-                console.warn("Autoplay failed (browser policy):", e);
-              });
-            }, { once: true }); // Only auto-play once per load
+              // **REMOVED AUTOPLAY**: Let user control playback to avoid buffering issues
+              // videoElement.play().catch((e) => {
+              //   console.warn("Autoplay failed (browser policy):", e);
+              // });
+            }, { once: true });
 
             videoElement.addEventListener("canplaythrough", () => {
               console.log(`🎯 Smooth playback possible at ${videoElement.currentTime.toFixed(1)}s`);

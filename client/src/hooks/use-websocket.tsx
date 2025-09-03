@@ -323,7 +323,16 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
         return;
       }
-      socket.send(JSON.stringify({ type, data }));
+      
+      // Automatically add userId and roomId for relevant message types
+      const messageData = {
+        type,
+        data,
+        ...(currentUser && { userId: currentUser.id }),
+        ...(room && { roomId: room.id })
+      };
+      
+      socket.send(JSON.stringify(messageData));
     } else {
       console.error("WebSocket not connected");
     }
