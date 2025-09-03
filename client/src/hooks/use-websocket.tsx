@@ -736,10 +736,40 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
       
-      // **MINIMAL APPROACH**: Don't use any callbacks or event listeners that might block
+      // **SAFE APPROACH**: Minimal event handling with timeout protection
       const torrent = client.add(magnetUri);
       
-      console.log("🎯 Torrent object created, skipping all event handling to prevent blocking...");
+      console.log("🎯 Torrent object created, adding minimal safe handling...");
+      
+      // **SIMPLE TIMEOUT CHECK**: Only check if torrent is ready after a delay
+      setTimeout(() => {
+        try {
+          if (torrent && torrent.ready && torrent.files && torrent.files.length > 0) {
+            console.log("📋 Torrent metadata available after timeout check");
+            
+            const videoFile = torrent.files.find((file: any) => 
+              file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
+            );
+            
+            if (videoFile && currentRoomId) {
+              console.log("🔄 Updating placeholder with real torrent data...");
+              
+              sendWSMessage("video_share", {
+                name: videoFile.name,
+                magnetUri: torrent.magnetURI,
+                infoHash: torrent.infoHash,
+                size: torrent.length.toString(),
+                roomId: currentRoomId,
+              });
+              
+              // Remove placeholder - server will add the real video
+              setVideos(prev => prev.filter(v => v.id !== tempId));
+            }
+          }
+        } catch (err) {
+          console.log("📋 Torrent not ready yet, keeping placeholder");
+        }
+      }, 5000); // Check after 5 seconds
 
       // Handle torrent errors
       torrent.on('error', (err: any) => {
