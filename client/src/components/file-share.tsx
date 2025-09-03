@@ -414,15 +414,33 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       setShowProgressModal(true);
       console.log("🚀 Resume seeding for existing video:", video.name);
 
-      // **使用统一的客户端**: 直接调用 onVideoShare，它内部使用统一客户端
-      console.log("Resume seeding: Using unified client via onVideoShare...");
+      // **使用统一的客户端**: 直接从钩子获取客户端，只做种不创建新条目
+      console.log("Resume seeding: Getting unified client from hook...");
       
-      // 直接使用 onVideoShare，它会用统一的客户端来处理 seeding
-      await onVideoShare(file, (progress) => {
-        setSeedingProgress(progress);
+      // 获取统一的 WebTorrent 客户端 - 从 window 或者钩子
+      const getWebTorrent = (await import('@/lib/wt-esm')).default;
+      const WebTorrent = await getWebTorrent();
+      
+      // **关键**: 检查是否已有全局客户端实例
+      let client = (window as any).__webtorrentClient;
+      if (!client) {
+        console.log("No global client found, this should not happen during resume");
+        return;
+      }
+      
+      console.log("Resume seeding: Using existing global client for seeding only");
+      
+      // **只做种，不创建新视频条目**
+      client.seed(file, (torrent: any) => {
+        console.log("Resume seeding: Torrent created for existing video:", {
+          magnetURI: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          name: file.name
+        });
+        
+        setSeedingProgress(100);
+        console.log("Resume seeding: Completed - existing video is now being seeded");
       });
-      
-      console.log("Resume seeding: Completed using unified client");
       
       // Close progress modal after completion
       setTimeout(() => {
