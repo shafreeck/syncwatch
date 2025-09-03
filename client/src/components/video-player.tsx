@@ -33,6 +33,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [showSyncNotification, setShowSyncNotification] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
 
   const {
     client,
@@ -93,10 +94,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
     const handleCanPlay = () => {
       console.log('Video ready to play');
+      setIsVideoLoading(false); // Hide loading when video is ready
     };
     
     const handleLoadedData = () => {
       console.log('Video data loaded - can start playback');
+      setIsVideoLoading(false); // Hide loading when data loaded
     };
     
     const handleError = (e: any) => {
@@ -148,10 +151,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       setIsPlaying(false);
       setCurrentTime(0);
       setDuration(0);
+      setIsVideoLoading(false); // Clear loading state
       return;
     }
     
     console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
+    setIsVideoLoading(true); // Show loading when starting to load video
     
     // **CRITICAL FIX**: For video.js, we MUST use the internal video element
     // Wait for video.js to initialize if it hasn't yet
@@ -484,6 +489,22 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
               <div className="text-6xl mb-4">🎬</div>
               <p className="text-xl text-white mb-2">No video selected</p>
               <p className="text-muted-foreground">Share or select a video to start watching together</p>
+            </div>
+          </div>
+        )}
+
+        {/* Video Loading Indicator */}
+        {currentVideo && isVideoLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div className="text-center">
+              <div className="mb-4">
+                <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
+              </div>
+              <p className="text-xl text-white mb-2">Loading video...</p>
+              <p className="text-white/70 text-sm">{currentVideo.name}</p>
+              <div className="mt-3 text-xs text-white/50">
+                Connecting to peers and buffering content
+              </div>
             </div>
           </div>
         )}
