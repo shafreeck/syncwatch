@@ -741,57 +741,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       
       console.log("🎯 Torrent object created, adding minimal safe handling...");
       
-      // **MULTIPLE TIMEOUT CHECKS**: Check multiple times to catch when torrent becomes ready
-      const checkTorrentReady = () => {
-        try {
-          console.log("🔍 Checking torrent status...", {
-            exists: !!torrent,
-            ready: torrent?.ready,
-            hasFiles: torrent?.files?.length > 0,
-            infoHash: torrent?.infoHash
-          });
-          
-          if (torrent && torrent.ready && torrent.files && torrent.files.length > 0) {
-            console.log("📋 Torrent metadata available!");
-            
-            const videoFile = torrent.files.find((file: any) => 
-              file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
-            );
-            
-            if (videoFile && currentRoomId) {
-              console.log("🔄 Updating placeholder with real torrent data...");
-              
-              sendWSMessage("video_share", {
-                name: videoFile.name,
-                magnetUri: torrent.magnetURI,
-                infoHash: torrent.infoHash,
-                size: torrent.length.toString(),
-                roomId: currentRoomId,
-              });
-              
-              // Remove placeholder - server will add the real video
-              setVideos(prev => prev.filter(v => v.id !== tempId));
-              return true; // Stop checking
-            }
-          }
-        } catch (err) {
-          console.log("📋 Torrent not ready yet:", err);
-        }
-        return false; // Continue checking
-      };
-      
-      // Check multiple times with increasing intervals
-      setTimeout(() => {
-        if (!checkTorrentReady()) {
-          setTimeout(() => {
-            if (!checkTorrentReady()) {
-              setTimeout(() => {
-                checkTorrentReady();
-              }, 15000); // Check again at 25s total
-            }
-          }, 5000); // Check again at 10s total
-        }
-      }, 5000); // First check at 5s
+      // **ABSOLUTE MINIMAL**: No checks, no event handling, just add and forget
+      console.log("✅ Torrent added to client - no further processing to prevent blocking");
 
       // Handle torrent errors
       torrent.on('error', (err: any) => {
