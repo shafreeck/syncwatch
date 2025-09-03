@@ -305,45 +305,90 @@ export function useWebTorrent() {
         currentTorrent.current = null;
       }
 
-      // **CORRECT LOGIC**: Only find existing torrent and use it for streaming
+      // **SMART LOGIC**: Check if torrent exists, if not, add it
       const existingTorrent = wt.torrents.find((t: any) => t.magnetURI === magnetUri || t.infoHash === targetInfoHash);
       
-      if (!existingTorrent) {
-        console.error("❌ Torrent not found in client! This should have been added earlier.");
-        console.log("Available torrents:", wt.torrents.map((t: any) => ({ name: t.name, magnetURI: t.magnetURI })));
+      if (existingTorrent) {
+        console.log("🎯 Found existing torrent, using directly:", existingTorrent.name);
+        // Use existing torrent directly for streaming
+        const torrent = existingTorrent;
+        setIsSeeding(true);
+        registerTorrent(torrent);
+
+        // Find video file and set up streaming
+        const videoFile = torrent.files.find(
+          (file: WebTorrentNS.TorrentFile) =>
+            file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+        );
+
+        if (videoFile && videoElement) {
+          console.log("Setting up streaming for existing torrent:", videoFile.name);
+          try {
+            videoFile.select();
+            (videoFile as any).streamTo(videoElement);
+            console.log("✅ StreamTo setup successful for existing torrent:", videoFile.name);
+            
+            videoElement.addEventListener("loadedmetadata", () => {
+              console.log("🎬 Video metadata loaded, ready to play!");
+              videoElement.play().catch((e) => {
+                console.warn("Autoplay failed (browser policy):", e);
+              });
+            }, { once: true });
+          } catch (e) {
+            console.error("❌ StreamTo failed for existing torrent:", e);
+          }
+        }
+
+        currentTorrent.current = torrent;
         return;
       }
 
-      console.log("🎯 Found existing torrent, setting up streaming:", existingTorrent.name);
-      const torrent = existingTorrent;
-      setIsSeeding(true);
-      registerTorrent(torrent);
+      // If torrent doesn't exist (e.g., local file case), add it
+      console.log("Adding torrent for streaming:", magnetUri);
+      const WSS = [
+        "wss://tracker.btorrent.xyz",
+        "wss://tracker.openwebtorrent.com",
+        "wss://tracker.webtorrent.dev",
+      ];
+      const torrent = wt.add(
+        magnetUri,
+        { announce: WSS },
+        (torrent: WebTorrentNS.Torrent) => {
+          console.log("Torrent loaded for streaming:", torrent.name);
+          setIsSeeding(true);
+          registerTorrent(torrent);
 
-      // Find video file and set up streaming
-      const videoFile = torrent.files.find(
-        (file: WebTorrentNS.TorrentFile) =>
-          file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+          // Find video file and set up streaming
+          const videoFile = torrent.files.find(
+            (file: WebTorrentNS.TorrentFile) =>
+              file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i),
+          );
+
+          if (videoFile && videoElement) {
+            console.log("Setting up streaming for new torrent:", videoFile.name);
+            try {
+              videoFile.select();
+              (videoFile as any).streamTo(videoElement);
+              console.log("✅ StreamTo setup successful for new torrent:", videoFile.name);
+              
+              videoElement.addEventListener("loadedmetadata", () => {
+                console.log("🎬 Video metadata loaded, ready to play!");
+                videoElement.play().catch((e) => {
+                  console.warn("Autoplay failed (browser policy):", e);
+                });
+              }, { once: true });
+            } catch (e) {
+              console.error("❌ StreamTo failed for new torrent:", e);
+            }
+          }
+
+          currentTorrent.current = torrent;
+        },
       );
 
-      if (videoFile && videoElement) {
-        console.log("Setting up streaming for:", videoFile.name);
-        try {
-          videoFile.select();
-          (videoFile as any).streamTo(videoElement);
-          console.log("✅ StreamTo setup successful for:", videoFile.name);
-          
-          videoElement.addEventListener("loadedmetadata", () => {
-            console.log("🎬 Video metadata loaded, ready to play!");
-            videoElement.play().catch((e) => {
-              console.warn("Autoplay failed (browser policy):", e);
-            });
-          }, { once: true });
-        } catch (e) {
-          console.error("❌ StreamTo failed:", e);
-        }
-      }
-
-      currentTorrent.current = torrent;
+      torrent.on("error", (err: string | Error) => {
+        console.error("WebTorrent torrent error:", err);
+      });
     },
     [client],
   );
