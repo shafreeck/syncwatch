@@ -1,0 +1,31 @@
+Created new user: 36da6e33-323e-4018-89d9-2df6bf7f7669
+🔄 Using persistent user ID: 36da6e33-323e-4018-89d9-2df6bf7f7669 for Eric
+WebSocket message error: SqliteError: no such column: "status" - should this be a string literal in single-quotes?
+    at Database.prepare (/opt/render/project/src/node_modules/better-sqlite3/lib/methods/wrappers.js:5:21)
+    at BetterSQLiteSession.prepareQuery (file:///opt/render/project/src/node_modules/drizzle-orm/better-sqlite3/session.js:20:30)
+    at BetterSQLiteSession.prepareOneTimeQuery (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/session.js:65:17)
+    at SQLiteSelectBase._prepare (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:572:88)
+    at SQLiteSelectBase.all (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:588:17)
+    at SQLiteSelectBase.execute (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:597:17)
+    at SQLiteSelectBase.then (file:///opt/render/project/src/node_modules/drizzle-orm/query-promise.js:21:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'SQLITE_ERROR'
+}
+🔄 Video status update: {
+  videoId: 'temp-magnet-1756928465429',
+  size: '41215608',
+  infoHash: 'd7f325a3cc39b6b25e73ed54a64b474dc79acc35',
+  magnetUri: 'magnet:?xt=urn:btih:d7f325a3cc39b6b25e73ed54a64b474dc79acc35&dn=%E6%8A%96%E9%9F%B3202591-587987.mp4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.dev'
+}
+❌ Failed to update video status: SqliteError: no such column: "status" - should this be a string literal in single-quotes?
+    at Database.prepare (/opt/render/project/src/node_modules/better-sqlite3/lib/methods/wrappers.js:5:21)
+    at BetterSQLiteSession.prepareQuery (file:///opt/render/project/src/node_modules/drizzle-orm/better-sqlite3/session.js:20:30)
+    at BetterSQLiteSession.prepareOneTimeQuery (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/session.js:65:17)
+    at SQLiteSelectBase._prepare (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:572:88)
+    at SQLiteSelectBase.all (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:588:17)
+    at SQLiteSelectBase.execute (file:///opt/render/project/src/node_modules/drizzle-orm/sqlite-core/query-builders/select.js:597:17)
+    at SQLiteSelectBase.then (file:///opt/render/project/src/node_modules/drizzle-orm/query-promise.js:21:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'SQLITE_ERROR'
+}
+Need better ways to work with logs? Try theRender CLI, Render MCP Server, or set up a log stream integration 
