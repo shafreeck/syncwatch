@@ -267,11 +267,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         // Handle video status updates (processing -> ready -> error)
         console.log("Video status update received:", message.data);
         {
-          const { videoId, status, processingStep, size, infoHash, magnetUri } = message.data || {};
+          const { videoId, name, status, processingStep, size, infoHash, magnetUri } = message.data || {};
           setVideos(prev => prev.map(video => 
             video.id === videoId 
               ? { 
                   ...video, 
+                  ...(name && { name }),
                   status, 
                   processingStep, 
                   ...(size && { size }),
@@ -409,18 +410,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     
     console.log("Starting P2P video sharing for:", file.name);
     
-    // **NEW**: Create immediate placeholder for instant feedback
-    const placeholderVideoId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // **INSTANT FEEDBACK**: Create video entry immediately with ready status
+    // Since user already selected the file, it's ready to be processed
+    const tempMagnetUri = `temp-magnet-${Date.now()}`;
     
-    // Send placeholder video immediately
+    // Send video immediately as ready (file is selected, just needs torrent creation)
     sendWSMessage("video_share", {
       name: file.name,
-      magnetUri: "", // Empty initially
-      infoHash: placeholderVideoId, // Use temp ID as placeholder
+      magnetUri: tempMagnetUri, // Temporary URI, will be updated
+      infoHash: `temp-${Date.now()}`, // Temporary hash
       size: file.size.toString(),
       roomId: currentRoomId,
-      status: "processing",
-      processingStep: "Preparing file..."
+      status: "ready", // File is ready, just creating torrent in background
+      processingStep: undefined
     });
     
     try {
@@ -463,21 +465,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           }
         }
         
-        // Update placeholder with real torrent info
+        // Update video with real torrent data (keep status as ready)
         if (!currentRoomId) {
           console.error("No room ID available for video share");
           return;
         }
         
-        // **NEW**: Update the placeholder with real torrent data
-        sendWSMessage("video_status_update", {
-          videoId: placeholderVideoId, // Update the placeholder we created
-          status: "ready",
-          processingStep: "Ready for streaming",
-          size: torrent.length.toString(),
-          infoHash: torrent.infoHash,
-          magnetUri: torrent.magnetURI
-        });
+        // **UPDATE**: Replace temporary data with real torrent info
+        // Find the video by temporary magnet URI and update it
+        setTimeout(() => {
+          sendWSMessage("video_status_update", {
+            videoId: tempMagnetUri, // Use temp magnet as identifier
+            size: torrent.length.toString(),
+            infoHash: torrent.infoHash,
+            magnetUri: torrent.magnetURI
+            // Don't change status - it's already ready
+          });
+        }, 100);
 
         // Persist file handle to re-seed after refresh (when available)
         try {
@@ -649,6 +653,29 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       return;
     }
     
+    // **INSTANT FEEDBACK**: Create placeholder immediately
+    const extractedName = (() => {
+      try {
+        const dnMatch = magnetUri.match(/dn=([^&]+)/);
+        return dnMatch ? decodeURIComponent(dnMatch[1]) : 'Loading video...';
+      } catch {
+        return 'Loading video...';
+      }
+    })();
+    
+    const tempId = `magnet-${Date.now()}`;
+    
+    // Send placeholder immediately
+    sendWSMessage("video_share", {
+      name: extractedName,
+      magnetUri: tempId, // Use temp ID for tracking
+      infoHash: tempId,
+      size: '0', // Unknown size initially
+      roomId: currentRoomId,
+      status: 'processing',
+      processingStep: 'Loading magnet...',
+    });
+    
     // **CRITICAL FIX**: Use the global WebTorrent client instead of creating a new one
     if (!globalWebTorrentClient) {
       console.error("❌ Global WebTorrent client not available");
@@ -738,31 +765,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
         
-        sendWSMessage("video_share", {
-          name: videoFile.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          size: torrent.length.toString(),
-          roomId: currentRoomId,
-        });
-        
-        // **NEW**: Update status to ready once torrent is loaded
-        // Store the infoHash to update status after video is created
-        const updateVideoStatus = () => {
-          // Use a more reliable method to find and update the video
+        // **UPDATE**: Update the placeholder with real magnet data
+        setTimeout(() => {
           sendWSMessage("video_status_update", {
-            videoId: torrent.infoHash, // Use infoHash as fallback identifier
-            status: "ready",
-            processingStep: "Ready for streaming",
+            videoId: tempId, // Use temp ID to find the placeholder
+            name: videoFile.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
             size: torrent.length.toString(),
-            infoHash: torrent.infoHash
+            status: "ready",
+            processingStep: undefined // Clear processing step
           });
-        };
-        
-        // Try updating immediately, then retry a few times if needed
-        setTimeout(updateVideoStatus, 1000);
-        setTimeout(updateVideoStatus, 3000);
-        setTimeout(updateVideoStatus, 5000);
+        }, 100);
         
         // Register torrent for P2P statistics if available
         if (registerTorrent) {

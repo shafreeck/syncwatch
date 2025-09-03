@@ -148,6 +148,18 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       roomId: z.string(),
     }),
   }),
+  z.object({
+    type: z.literal("video_status_update"),
+    data: z.object({
+      videoId: z.string(),
+      name: z.string().optional(),
+      status: z.string().optional(),
+      processingStep: z.string().optional(),
+      size: z.string().optional(),
+      infoHash: z.string().optional(),
+      magnetUri: z.string().optional(),
+    }),
+  }),
 ]);
 
 export type WSMessage = z.infer<typeof wsMessageSchema>;

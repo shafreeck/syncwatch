@@ -368,24 +368,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case "video_status_update":
             if (socket.userId && socket.roomId) {
               console.log(`🔄 Video status update:`, message.data);
-              const { videoId, status, processingStep, size, infoHash, magnetUri } = message.data;
+              const { videoId, name, status, processingStep, size, infoHash, magnetUri } = message.data;
               
               try {
                 let targetVideoId = videoId;
                 
-                // If videoId is actually an infoHash, find the real video ID
-                if (infoHash && (!videoId || videoId === infoHash)) {
+                // Find video by different identifiers
+                if (!targetVideoId || targetVideoId.startsWith('temp-')) {
                   const videos = await storage.getVideosByRoom(socket.roomId);
-                  const video = videos.find(v => v.infoHash === infoHash);
-                  if (video) {
-                    targetVideoId = video.id;
-                    console.log(`📍 Found video by infoHash: ${infoHash} -> ${targetVideoId}`);
+                  
+                  // Try to find by infoHash first
+                  if (infoHash) {
+                    const video = videos.find(v => v.infoHash === infoHash);
+                    if (video) {
+                      targetVideoId = video.id;
+                      console.log(`📍 Found video by infoHash: ${infoHash} -> ${targetVideoId}`);
+                    }
+                  }
+                  
+                  // Try to find by temporary magnetUri (for local files)
+                  if (!targetVideoId || targetVideoId.startsWith('temp-')) {
+                    const video = videos.find(v => v.magnetUri === videoId || v.infoHash === videoId);
+                    if (video) {
+                      targetVideoId = video.id;
+                      console.log(`📍 Found video by magnetUri/tempId: ${videoId} -> ${targetVideoId}`);
+                    }
                   }
                 }
                 
                 if (targetVideoId) {
                   // Update video in storage
                   await storage.updateVideo(targetVideoId, { 
+                    ...(name && { name }),
                     status, 
                     processingStep,
                     ...(size && { size }),
@@ -396,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   // Broadcast update to all users in room
                   broadcastToRoom(socket.roomId, {
                     type: "video_status_updated",
-                    data: { videoId: targetVideoId, status, processingStep, size, infoHash, magnetUri }
+                    data: { videoId: targetVideoId, name, status, processingStep, size, infoHash, magnetUri }
                   });
                   
                   console.log(`✅ Video ${targetVideoId} status updated to: ${status}`);
