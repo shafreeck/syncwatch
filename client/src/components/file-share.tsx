@@ -414,18 +414,18 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       setShowProgressModal(true);
       console.log("🚀 Resume seeding for existing video:", video.name);
 
-      // 使用跟 onVideoShare 相同的 WebTorrent 逻辑
-      const getWebTorrent = (await import('@/lib/wt-esm')).default;
-      const WebTorrent = await getWebTorrent();
-      const client = new WebTorrent();
-
-      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      // 使用现有的全局单例客户端
+      const globalClient = (window as any).__webtorrentClient;
+      
+      if (!globalClient) {
+        throw new Error("WebTorrent global client not available");
+      }
       
       console.log("Resume seeding: Creating torrent from file...");
       setSeedingProgress(1);
       
-      // Create torrent from the file (照抄 onVideoShare)
-      client.seed(file, async (torrent: any) => {
+      // 使用全局客户端创建 torrent
+      globalClient.seed(file, async (torrent: any) => {
         console.log("Resume seeding: Torrent created:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -468,12 +468,6 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         console.log("✅ Resume seeding completed - video is now being shared via P2P");
       });
       
-      client.on("error", (err: any) => {
-        console.error("Resume seeding error:", err);
-        setIsUploading(false);
-        setShowProgressModal(false);
-        throw err;
-      });
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
       toast({
