@@ -407,24 +407,19 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         return;
       }
 
-      // Resume seeding directly (no new video creation) 
-      console.log("🔄 Resuming seeding from IndexDB:", file.name);
+      // Start re-sharing with progress tracking
+      setIsUploading(true);
+      setCurrentFileName(file.name);
+      setSeedingProgress(0);
+      setShowProgressModal(true);
+      console.log("Re-sharing from IndexDB:", file.name);
 
-      // Use the onVideoShare function - it has built-in deduplication logic
-      console.log("🔄 Calling onVideoShare for resume seeding...");
-      
-      try {
-        await onVideoShare(file, undefined, handle);
-        console.log("✅ Resume seeding completed via onVideoShare");
-        
-        toast({
-          title: "Seeding resumed",
-          description: `${file.name} is now being shared again`,
-        });
-      } catch (error) {
-        console.error("Failed to resume seeding:", error);
-        throw error;
-      }
+      await onVideoShare(file, (progress: number) => {
+        setSeedingProgress(progress);
+        console.log(`📈 Re-seeding progress: ${progress.toFixed(1)}%`);
+      }, handle);
+
+      console.log("Re-share initialized successfully");
     } catch (error) {
       console.error("Re-share from IndexDB failed:", error);
       toast({

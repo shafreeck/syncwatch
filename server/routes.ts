@@ -330,13 +330,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
               data: message.data
             });
             if (socket.userId && socket.roomId) {
-              // Deduplicate by (roomId, infoHash)
+              // Deduplicate by (roomId, infoHash) or (roomId, name, size) for temp files
               const roomId = message.data.roomId;
               const infoHash = message.data.infoHash;
-              const existing = (await storage.getVideosByRoom(roomId)).find(v => v.infoHash === infoHash);
+              const fileName = message.data.name;
+              const fileSize = message.data.size;
+              
+              const existing = (await storage.getVideosByRoom(roomId)).find(v => {
+                // If we have a real infoHash (not temp), use it for deduplication
+                if (infoHash && !infoHash.startsWith('temp-') && v.infoHash === infoHash) {
+                  return true;
+                }
+                // For temp infoHashes, deduplicate by name + size
+                if (infoHash?.startsWith('temp-') && v.name === fileName && v.size === fileSize) {
+                  return true;
+                }
+                return false;
+              });
 
               let video;
               if (existing) {
+                console.log(`🔍 Found existing video, using: ${existing.id} (${existing.name})`);
                 video = existing;
                 // Optionally, we could update name/magnet if changed; keep first seen stable for now
                 // Do not broadcast a new item to avoid duplicates on clients
