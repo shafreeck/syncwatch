@@ -273,8 +273,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
               ? { 
                   ...video, 
                   ...(name && { name }),
-                  status, 
-                  processingStep, 
+                  ...(status !== undefined && { status }),
+                  processingStep, // Always update, even if undefined to clear it
                   ...(size && { size }),
                   ...(infoHash && { infoHash }),
                   ...(magnetUri && { magnetUri })
@@ -653,28 +653,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       return;
     }
     
-    // **INSTANT FEEDBACK**: Create placeholder immediately
-    const extractedName = (() => {
-      try {
-        const dnMatch = magnetUri.match(/dn=([^&]+)/);
-        return dnMatch ? decodeURIComponent(dnMatch[1]) : 'Loading video...';
-      } catch {
-        return 'Loading video...';
-      }
-    })();
+    // **NEW APPROACH**: Create UI-only placeholder, no persistence
+    const tempId = `temp-magnet-${Date.now()}`;
+    const placeholderName = 'Loading...';
     
-    const tempId = `magnet-${Date.now()}`;
-    
-    // Send placeholder immediately
-    sendWSMessage("video_share", {
-      name: extractedName,
-      magnetUri: tempId, // Use temp ID for tracking
-      infoHash: tempId,
-      size: '0', // Unknown size initially
-      roomId: currentRoomId,
+    // Add temporary placeholder to UI state only
+    setVideos(prev => [...prev, {
+      id: tempId,
+      name: placeholderName,
+      magnetUri: '',
+      infoHash: '',
+      size: '0',
+      roomId: currentRoomId || '',
+      uploadedBy: '',
+      uploadedAt: new Date(),
       status: 'processing',
-      processingStep: 'Loading magnet...',
-    });
+      processingStep: 'Loading magnet...'
+    }]);
     
     // **CRITICAL FIX**: Use the global WebTorrent client instead of creating a new one
     if (!globalWebTorrentClient) {
@@ -765,18 +760,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
         
-        // **UPDATE**: Update the placeholder with real magnet data
-        setTimeout(() => {
-          sendWSMessage("video_status_update", {
-            videoId: tempId, // Use temp ID to find the placeholder
-            name: videoFile.name,
-            magnetUri: torrent.magnetURI,
-            infoHash: torrent.infoHash,
-            size: torrent.length.toString(),
-            status: "ready",
-            processingStep: undefined // Clear processing step
-          });
-        }, 100);
+        // **NEW**: Remove UI placeholder and add real video
+        // First remove the temporary placeholder
+        setVideos(prev => prev.filter(v => v.id !== tempId));
+        
+        // Then send the real video to be persisted
+        sendWSMessage("video_share", {
+          name: videoFile.name,
+          magnetUri: torrent.magnetURI,
+          infoHash: torrent.infoHash,
+          size: torrent.length.toString(),
+          roomId: currentRoomId,
+        });
         
         // Register torrent for P2P statistics if available
         if (registerTorrent) {

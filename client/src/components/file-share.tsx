@@ -434,6 +434,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
 
   // Helper to check if video needs warning message (only for videos uploaded by current user)
   const needsWarning = (video: Video) => {
+    // Don't show warning for temporary placeholders or processing videos
+    if ((video as any).status === 'processing' || video.id.startsWith('temp-')) {
+      return false;
+    }
+    
     return video.infoHash && 
            !statsByInfoHash[video.infoHash] && 
            currentUser && 
