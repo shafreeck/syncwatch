@@ -261,15 +261,6 @@ export function useWebTorrent() {
 
   const loadTorrent = useCallback(
     async (magnetUri: string, videoElement?: HTMLVideoElement | null) => {
-      // **CRITICAL**: Register Service Worker first (required for video.js integration)
-      try {
-        await navigator.serviceWorker.register('/sw.min.js', { scope: '/' });
-        console.log('✅ Service Worker registered successfully');
-      } catch (e) {
-        console.warn('⚠️ Service Worker registration failed:', e);
-        // Continue anyway - may still work in some cases
-      }
-      
       // Ensure a client instance, even if this hook mounted before init completed
       let wt: any = client || globalClient;
       if (!wt) {
@@ -286,17 +277,6 @@ export function useWebTorrent() {
           console.error("Failed waiting for WebTorrent client:", e);
           return;
         }
-      }
-      
-      // **NEW**: Create server with controller for video.js integration
-      try {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg && reg.active) {
-          await wt.createServer({ controller: reg });
-          console.log('✅ WebTorrent server created with Service Worker controller');
-        }
-      } catch (e) {
-        console.warn('⚠️ Failed to create WebTorrent server:', e);
       }
 
       // Get the info hash of the torrent we're about to load
