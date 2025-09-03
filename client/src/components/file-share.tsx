@@ -459,6 +459,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
           torrent.on('ready', markReady);
         }
         
+        // **添加统计信息追踪** - 照抄 onVideoShare 的逻辑
+        if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+          console.log("📊 Registering torrent for P2P statistics tracking");
+          (window as any).__registerTorrent(torrent);
+        }
+        
         console.log("✅ Resume seeding completed - video is now being shared via P2P");
       });
       
