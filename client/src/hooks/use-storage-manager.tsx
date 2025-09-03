@@ -65,73 +65,96 @@ export function useStorageManager() {
     }
   }, [formatBytes]);
 
-  // 获取WebTorrent相关的IndexedDB存储信息
+  // 获取WebTorrent相关的存储信息（包括文件系统和IndexedDB）
   const getWebTorrentStorage = useCallback(async (): Promise<WebTorrentStorage | null> => {
     try {
+      console.log('🔍 检查存储分布...');
+      
+      // 1. 检查 IndexedDB 数据库
       const databases = await indexedDB.databases();
+      console.log('📊 所有 IndexedDB 数据库:', databases.map(db => ({ name: db.name, version: db.version })));
       
-      // 打印所有数据库名称用于调试
-      console.log('🔍 All IndexedDB databases:', databases.map(db => ({ name: db.name, version: db.version })));
+      // 2. 尝试获取详细的存储分布信息
+      let totalSize = 0;
+      let estimatedWebTorrentSize = 0;
       
-      // 扩展过滤条件，包含更多可能的WebTorrent相关数据库
+      // 检查 navigator.storage 的详细信息
+      if (navigator.storage && navigator.storage.estimate) {
+        const estimate = await navigator.storage.estimate();
+        const usage = estimate.usage || 0;
+        const quota = estimate.quota || 0;
+        
+        console.log('💾 浏览器存储详情:', {
+          usage: formatBytes(usage),
+          quota: formatBytes(quota),
+          usageBytes: usage,
+          quotaBytes: quota
+        });
+        
+        // 如果使用量很大（超过10GB），很可能包含视频缓存
+        if (usage > 10 * 1024 * 1024 * 1024) {
+          // 估算 WebTorrent 占用：假设大部分大文件存储都是视频相关
+          estimatedWebTorrentSize = Math.max(0, usage - (500 * 1024 * 1024)); // 减去500MB基础使用量
+          console.log('🎬 估算 WebTorrent 缓存大小:', formatBytes(estimatedWebTorrentSize));
+        }
+      }
+      
+      // 3. 检查可能的 WebTorrent 相关数据库
       const webTorrentDbs = databases.filter(db => {
         const name = db.name?.toLowerCase() || '';
         return name.includes('webtorrent') || 
                name.includes('torrent') ||
                name.includes('wt-') ||
                name.includes('chunk') ||
-               name.includes('peer') ||
-               name.includes('storage') ||
-               name.includes('cache') ||
-               // 通用的可能存储大文件的数据库
-               (db.version && db.version > 1) || // 版本较高的数据库可能是应用数据库
-               name.length > 20; // 长名称的数据库可能是hash-based
+               name.includes('file') ||
+               name.includes('cache');
       });
-
-      console.log('🎯 Filtered WebTorrent databases:', webTorrentDbs.map(db => db.name));
-
-      let totalSize = 0;
+      
+      console.log('🎯 可能的 WebTorrent 数据库:', webTorrentDbs.map(db => db.name));
+      
+      // 4. 检查 Origin Private File System API（如果支持）
+      let opfsSize = 0;
+      try {
+        if ('storage' in navigator && 'getDirectory' in navigator.storage) {
+          console.log('🗂️ 检查 Origin Private File System...');
+          // @ts-ignore - OPFS API可能不在类型定义中
+          const opfsRoot = await navigator.storage.getDirectory();
+          // 这里可以遍历文件系统，但比较复杂，暂时跳过
+          console.log('✅ OPFS 可用，但跳过详细扫描');
+        }
+      } catch (err) {
+        console.log('❌ OPFS 不可用或访问失败:', err);
+      }
+      
       const torrents: Array<{
         name: string;
         size: number;
         lastAccessed: number;
         infoHash: string;
       }> = [];
-
-      // 尝试计算每个数据库的估算大小
-      for (const dbInfo of webTorrentDbs) {
-        if (!dbInfo.name) continue;
-        
-        try {
-          // 简单的大小估算：基于数据库版本和名称特征
-          const estimatedSize = await estimateDatabaseSize(dbInfo.name);
-          totalSize += estimatedSize;
-          
-          if (estimatedSize > 100 * 1024 * 1024) { // 大于100MB的被认为是torrent数据
-            torrents.push({
-              name: dbInfo.name,
-              size: estimatedSize,
-              lastAccessed: Date.now(),
-              infoHash: dbInfo.name.slice(-40) || 'unknown'
-            });
-          }
-        } catch (err) {
-          console.warn(`Failed to estimate size for ${dbInfo.name}:`, err);
-        }
+      
+      // 如果估算的大小很大，创建一个虚拟的 torrent 条目表示缓存
+      if (estimatedWebTorrentSize > 1024 * 1024 * 1024) { // 大于1GB
+        torrents.push({
+          name: '视频缓存文件',
+          size: estimatedWebTorrentSize,
+          lastAccessed: Date.now(),
+          infoHash: 'cached-videos'
+        });
       }
 
       const dbNames = webTorrentDbs.map(db => db.name || 'unknown');
 
       return {
         databases: dbNames,
-        totalSize,
+        totalSize: estimatedWebTorrentSize,
         torrents,
       };
     } catch (err) {
       console.error('Failed to get WebTorrent storage info:', err);
       return null;
     }
-  }, []);
+  }, [formatBytes]);
 
   // 估算单个数据库大小的辅助函数
   const estimateDatabaseSize = useCallback(async (dbName: string): Promise<number> => {
