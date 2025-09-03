@@ -53,6 +53,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       videoJsPlayerRef.current = window.videojs(video, {
         fluid: true,
         responsive: true,
+        errorDisplay: false, // Hide video.js error messages
         playbackRates: [0.5, 1, 1.25, 1.5, 2],
         plugins: {}
       });
@@ -98,8 +99,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     };
     
     const handleError = (e: any) => {
-      if (e.target.error && e.target.error.code !== 4) {
-        console.error('Video error:', e.target.error);
+      // Suppress all video errors since we're using video.js errorDisplay: false
+      // and handling errors through our own UI
+      if (e.target.error) {
+        console.log('Video error suppressed:', e.target.error.code);
       }
     };
 

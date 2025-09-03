@@ -76,13 +76,21 @@
   }
 }
 
-/* Video.js centering fix */
+/* Video.js styling fixes */
+.video-js .vjs-error-display {
+  display: none !important;
+}
+
 .video-js .vjs-tech {
   object-fit: contain !important;
   object-position: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .video-js video {
   object-fit: contain !important;
   object-position: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
