@@ -97,10 +97,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     
     try {
       // Pass progress callback to track seeding progress
+      // Note: traditional file input doesn't provide handle, so no auto re-seed after refresh
+      console.log("⚠️ Using traditional file input - no handle available for auto re-seed");
       await onVideoShare(file, (progress: number) => {
         setSeedingProgress(progress);
         console.log(`📈 Seeding progress: ${progress.toFixed(1)}%`);
-      });
+      }, undefined); // Explicitly pass undefined for handle
 
       console.log("Video share initialized (seeding continues in background)");
       // Do not auto-close: keep the modal until user closes/minimizes

@@ -507,7 +507,15 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         try {
           if (handle && torrent?.infoHash && currentRoomId) {
             await saveSeedHandle({ infoHash: torrent.infoHash, roomId: currentRoomId, name: file.name, handle });
-            console.log('Saved seed handle for auto re-seed:', torrent.infoHash);
+            console.log('✅ Saved seed handle for auto re-seed:', torrent.infoHash);
+          } else {
+            if (!handle) {
+              console.log('⚠️ No file handle available - auto re-seed after refresh not possible');
+            } else if (!torrent?.infoHash) {
+              console.log('⚠️ No torrent infoHash - cannot save seed handle');
+            } else if (!currentRoomId) {
+              console.log('⚠️ No room ID - cannot save seed handle');
+            }
           }
         } catch (e) {
           console.warn('Failed saving seed handle:', e);

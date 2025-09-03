@@ -210,6 +210,7 @@ export function useWebTorrent() {
         } catch (e) {
           console.warn("Auto re-seed: enumeration failed", e);
         }
+        console.log("🔚 Auto re-seed initialization completed");
       } catch (err) {
         console.error("Failed to create WebTorrent client:", err);
         setIsLoading(false);
