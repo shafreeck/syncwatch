@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Use persistent user ID if provided, otherwise create new user
             let user;
-            if (persistentUserId) {
+            if (persistentUserId && typeof storage.createUserWithId === 'function') {
               // Create user with the persistent ID from client
               user = {
                 id: persistentUserId,
@@ -202,13 +202,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 isHost,
                 joinedAt: new Date()
               };
-              // Store in memory storage (we're not using the database createUser method)
               await storage.createUserWithId(user);
               console.log(`🔄 Using persistent user ID: ${persistentUserId} for ${username}`);
             } else {
               // Fallback to auto-generated ID
               user = await storage.createUser({ username, roomId, isHost });
               console.log(`🆔 Created new user ID: ${user.id} for ${username}`);
+              if (persistentUserId) {
+                console.log(`⚠️ createUserWithId method not available, used auto-generated ID instead`);
+              }
             }
 
             socket.userId = user.id;

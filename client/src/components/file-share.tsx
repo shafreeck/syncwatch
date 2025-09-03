@@ -452,17 +452,11 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     const hasCurrentUser = !!currentUser;
     const isUploadedByCurrentUser = currentUser && video.uploadedBy === currentUser.id;
     
-    const result = hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser;
-    console.log(`🔍 Resume button check for ${video.name}:`);
-    console.log(`  hasInfoHash: ${hasInfoHash} (${video.infoHash})`);
-    console.log(`  hasStats: ${hasStats}`);
-    console.log(`  hasCurrentUser: ${hasCurrentUser}`);
-    console.log(`  isUploadedByCurrentUser: ${isUploadedByCurrentUser}`);
-    console.log(`  videoUploadedBy: ${video.uploadedBy}`);
-    console.log(`  currentUserId: ${currentUser?.id}`);
-    console.log(`  video.id: ${video.id} (contains temp-magnet: ${video.id.includes('temp-magnet')})`);
-    console.log(`  magnetUri: ${video.magnetUri}`);
-    console.log(`  🎯 FINAL needsWarning result: ${result}`);
+    // Debug info only when needed
+    // console.log(`🔍 Resume button check for ${video.name}:`, {
+    //   hasInfoHash, hasStats, hasCurrentUser, isUploadedByCurrentUser,
+    //   videoUploadedBy: video.uploadedBy, currentUserId: currentUser?.id
+    // });
     
     return hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser;
   };
