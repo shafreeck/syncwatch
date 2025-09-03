@@ -145,6 +145,8 @@ export function useWebTorrent() {
             }
 
             globalClient = webTorrentClient;
+            // **ADD**: 设置到 window 对象，供其他组件使用
+            (window as any).__webtorrentClient = webTorrentClient;
             return webTorrentClient;
           })();
         }
@@ -152,6 +154,8 @@ export function useWebTorrent() {
         const shared = await globalInit;
         setClient(shared);
         setIsLoading(false);
+        // **ADD**: 确保 window 对象上也有客户端引用
+        (window as any).__webtorrentClient = shared;
         console.log("WebTorrent client initialized (singleton)");
 
         // After client is ready, attempt to re-seed from persisted file handles
