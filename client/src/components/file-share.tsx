@@ -480,6 +480,14 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         setSeedingProgress(100);
         console.log("✅ Resume seeding: Using existing torrent - video is already being seeded");
         
+        // **关键**: 通知播放器重新检查，可能现在有 peer 了
+        console.log("🔄 Triggering video player refresh to detect new seeding...");
+        
+        // 通过触发一个自定义事件来通知播放器
+        window.dispatchEvent(new CustomEvent('webtorrent-seeding-started', {
+          detail: { infoHash: existingTorrent.infoHash, name: existingTorrent.name }
+        }));
+        
         // 立即完成
         setTimeout(() => {
           setShowProgressModal(false);

@@ -1,0 +1,65 @@
+client:536 WebSocket connection to 'wss://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/?token=ILYgEjnQZQQL' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) DOMException: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=ILYgEjnQZQQL' is invalid.
+    at setupWebSocket (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:536:19)
+    at fallback (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:509:16)
+    at WebSocket.<anonymous> (https://39c86aa0-c5d4-4084-99d9-982af7691c13-00-2iw9bnh25owpo.janeway.replit.dev/@vite/client:555:7)
+chunk-WERSD76P.js?v=721b3c71:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+video-player.tsx:59 🎬 Video.js player initialized
+video-player.tsx:134 🎬 Video player currentVideo changed: Object
+video-player.tsx:143 🧹 Clearing video player - no current video or magnetUri
+video.min.js:12 VIDEOJS: ERROR: (CODE:4 MEDIA_ERR_SRC_NOT_SUPPORTED) No compatible source was found for this media. i
+i @ video.min.js:12
+2use-webtorrent.tsx:161 WebTorrent client initialized (singleton)
+video-player.tsx:134 🎬 Video player currentVideo changed: Object
+video-player.tsx:143 🧹 Clearing video player - no current video or magnetUri
+video.min.js:12 VIDEOJS: ERROR: (CODE:4 MEDIA_ERR_SRC_NOT_SUPPORTED) No compatible source was found for this media. i
+i @ video.min.js:12
+use-webtorrent.tsx:166 🔄 Auto re-seed check: found persisted entries: 4
+use-webtorrent.tsx:168 📋 Persisted seeds: Array(4)
+use-webtorrent.tsx:166 🔄 Auto re-seed check: found persisted entries: 4
+use-webtorrent.tsx:168 📋 Persisted seeds: Array(4)
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Revenged.Love.S01E01.2025.1080p.Viu.WEB-DL.H264.AAC.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Sintel.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Revenged.Love.S01E01.2025.1080p.Viu.WEB-DL.H264.AAC.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for 抖音202591-587987.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Sintel.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Superman 2025 1080p WEB-DL HEVC x265 5.1 BONE.mkv - file access permission lost after refresh
+use-webtorrent.tsx:220 🔚 Auto re-seed initialization completed
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for 抖音202591-587987.mp4 - file access permission lost after refresh
+use-webtorrent.tsx:191 ⚠️ Auto re-seed: permission not granted for Superman 2025 1080p WEB-DL HEVC x265 5.1 BONE.mkv - file access permission lost after refresh
+use-webtorrent.tsx:220 🔚 Auto re-seed initialization completed
+use-websocket.tsx:60 WebSocket connected
+use-websocket.tsx:342 🚪 Joining room via WebSocket: Object
+use-websocket.tsx:354 🔄 Using existing persistent user ID for Eric: 82a009b7-eb10-40e4-81e4-696ef96d82c6
+use-websocket.tsx:113 Received WebSocket message: room_state Object
+use-websocket.tsx:116 Setting room state: Object
+use-websocket.tsx:128 ✓ Videos state updated: Array(1)
+use-websocket.tsx:113 Received WebSocket message: video_selected Object
+use-websocket.tsx:241 Video selected message received: Object
+use-websocket.tsx:242 Current videos in state: Array(0)
+use-websocket.tsx:262 Setting current video from message data: Object
+use-websocket.tsx:113 Received WebSocket message: video_sync Object
+use-websocket.tsx:213 Video sync: Object
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+video-player.tsx:134 🎬 Video player currentVideo changed: Object
+video-player.tsx:155 🚀 Loading video via torrent: Selected Video magnetUri: magnet:?xt=urn:btih:d7f325a3cc39b6b25e73ed54a64b474dc79acc35&dn=%E6%8A%96%E9%9F%B3202591-587987.mp4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.dev
+video-player.tsx:179 ✅ Using video.js internal element for streamTo: webtorrent-player_html5_api
+use-webtorrent.tsx:236 🧹 Cleaning up unused torrents...
+use-webtorrent.tsx:370 Adding torrent for streaming: magnet:?xt=urn:btih:d7f325a3cc39b6b25e73ed54a64b474dc79acc35&dn=%E6%8A%96%E9%9F%B3202591-587987.mp4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.dev
+use-webtorrent.tsx:371 🔍 Target infoHash for streaming: d7f325a3cc39b6b25e73ed54a64b474dc79acc35
+use-webtorrent.tsx:372 🔍 Current client torrents: Array(0)
+file-share.tsx:353 🔄 Resume seeding clicked for video: 抖音202591-587987.mp4 d7f325a3cc39b6b25e73ed54a64b474dc79acc35
+file-share.tsx:361 🔍 Looking for seed entry in IndexedDB...
+file-share.tsx:363 📋 Seed entry found: Object
+file-share.tsx:415 🚀 Resume seeding for existing video: 抖音202591-587987.mp4
+file-share.tsx:418 Resume seeding: Getting unified client from hook...
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:458 Resume seeding: Using existing global client for seeding only
+file-share.tsx:459 🔍 Resume client torrents: Array(1)
+file-share.tsx:464 🔍 Resume client === window client? true
+file-share.tsx:472 🎯 Found existing torrent for resume seeding: 抖音202591-587987.mp4
+file-share.tsx:476 📊 Registering existing torrent for P2P statistics tracking
+file-share.tsx:481 ✅ Resume seeding: Using existing torrent - video is already being seeded
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)
+file-share.tsx:61 FileShare rendered with videos: 1 Array(1)

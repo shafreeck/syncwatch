@@ -183,6 +183,31 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     loadVideoWithRetry();
   }, [currentVideo, loadTorrent]);
 
+  // **监听 resume seeding 事件，重新尝试加载**
+  useEffect(() => {
+    const handleSeedingStarted = (event: CustomEvent) => {
+      console.log("🔄 Seeding started event received:", event.detail);
+      
+      // 如果当前视频的 infoHash 匹配，重新尝试加载
+      if (currentVideo && currentVideo.infoHash === event.detail.infoHash) {
+        console.log("🎯 Re-attempting video load after seeding started...");
+        
+        if (loadTorrent && currentVideo.magnetUri) {
+          const actualVideoElement = document.querySelector('#webtorrent-player_html5_api') as HTMLVideoElement;
+          if (actualVideoElement) {
+            loadTorrent(currentVideo.magnetUri, actualVideoElement);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('webtorrent-seeding-started', handleSeedingStarted as EventListener);
+    
+    return () => {
+      window.removeEventListener('webtorrent-seeding-started', handleSeedingStarted as EventListener);
+    };
+  }, [currentVideo, loadTorrent]);
+
   // Apply incoming sync messages (best-effort)
   useEffect(() => {
     const video = videoRef.current;
