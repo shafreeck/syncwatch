@@ -441,15 +441,29 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       return false;
     }
     
-    // Don't show warning for magnet link videos (they start with "magnet:")
-    if (video.magnetUri && video.magnetUri.startsWith('magnet:')) {
+    // Don't show warning for magnet link videos (only for videos that started as magnet links)
+    // We check if the original video was shared via magnet link by looking for temp-magnet prefix
+    if (video.magnetUri && video.magnetUri.startsWith('magnet:') && video.id.includes('temp-magnet')) {
       return false;
     }
     
-    return video.infoHash && 
-           !statsByInfoHash[video.infoHash] && 
-           currentUser && 
-           video.uploadedBy === currentUser.id;
+    const hasInfoHash = !!video.infoHash;
+    const hasStats = video.infoHash && !!statsByInfoHash[video.infoHash];
+    const hasCurrentUser = !!currentUser;
+    const isUploadedByCurrentUser = currentUser && video.uploadedBy === currentUser.id;
+    
+    console.log(`🔍 Resume button check for ${video.name}:`, {
+      hasInfoHash,
+      hasStats,
+      hasCurrentUser,
+      isUploadedByCurrentUser,
+      videoUploadedBy: video.uploadedBy,
+      currentUserId: currentUser?.id,
+      magnetUri: video.magnetUri,
+      needsWarning: hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser
+    });
+    
+    return hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser;
   };
 
   const handleTabChange = (tab: string) => {
