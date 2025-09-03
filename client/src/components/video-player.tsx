@@ -60,7 +60,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         },
         plugins: {}
       });
-      console.log('🎬 Video.js player initialized');
+      
+      // Force show controls after initialization
+      if (videoJsPlayerRef.current) {
+        videoJsPlayerRef.current.controls(true);
+        console.log('🎬 Video.js player initialized with controls enabled');
+      }
     }
     
     // Cleanup on unmount
