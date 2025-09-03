@@ -366,10 +366,23 @@ export function useWebTorrent() {
               console.warn("Advanced buffering setup failed:", e);
             }
             
+            // **CRITICAL**: Configure video element for optimal streaming BEFORE streamTo
+            videoElement.preload = "metadata"; // Better than "auto" for streaming
+            videoElement.crossOrigin = "anonymous";
+            
             try {
               // **CORRECT**: Use streamTo (appendTo is deprecated)
               (videoFile as any).streamTo(videoElement);
               console.log("✅ StreamTo setup successful for:", videoFile.name);
+              
+              // **FIX DECODE STALLING**: Force video element to be ready for streaming
+              setTimeout(() => {
+                if (videoElement.readyState < 2) { // HAVE_CURRENT_DATA
+                  console.log("🔄 Video not ready, triggering load...");
+                  videoElement.load(); // Force reload if stuck
+                }
+              }, 1000);
+              
             } catch (e) {
               console.error("❌ StreamTo failed for", videoFile.name, ":", e);
               if (videoFile.name.toLowerCase().includes(".mkv")) {
@@ -400,33 +413,49 @@ export function useWebTorrent() {
             videoElement.addEventListener("waiting", () => {
               stallCount++;
               lastBufferTime = videoElement.currentTime;
-              console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s`);
+              console.log(`⏳ Buffering #${stallCount} at ${videoElement.currentTime.toFixed(1)}s, readyState: ${videoElement.readyState}`);
               
-              // **ENHANCED ANTI-STALL**: Multiple strategies to prevent video freezing
+              // **DECODE RECOVERY**: Handle different types of stalls
               setTimeout(() => {
-                if (videoElement.currentTime === lastBufferTime && stallCount > 2) {
-                  console.log("🚨 Video stuck, implementing recovery strategies...");
+                if (videoElement.currentTime === lastBufferTime) {
+                  console.log("🚨 Video stuck - implementing multi-layered recovery...");
                   
-                  // Strategy 1: Select current and upcoming pieces with max priority
-                  if (torrent.pieces && videoElement.duration) {
+                  // **Layer 1**: Video element is stuck in decoding
+                  if (videoElement.readyState < 3 && stallCount > 1) {
+                    console.log("🔧 ReadyState issue detected, forcing video reload...");
+                    const currentTime = videoElement.currentTime;
+                    videoElement.load();
+                    setTimeout(() => {
+                      videoElement.currentTime = currentTime;
+                    }, 100);
+                  }
+                  
+                  // **Layer 2**: Data priority (only if data is the issue)
+                  if (torrent.pieces && videoElement.duration && stallCount > 2) {
                     const currentPiece = Math.floor((videoElement.currentTime / videoElement.duration) * torrent.pieces.length);
-                    const nextPieces = Math.min(15, torrent.pieces.length - currentPiece); // More pieces
+                    const nextPieces = Math.min(10, torrent.pieces.length - currentPiece);
                     
-                    console.log(`📥 Requesting pieces ${currentPiece} to ${currentPiece + nextPieces}`);
+                    console.log(`📥 Re-prioritizing pieces ${currentPiece} to ${currentPiece + nextPieces}`);
                     for (let i = currentPiece; i < currentPiece + nextPieces; i++) {
                       try {
-                        videoFile.select(i, i + 1, 0); // Max priority
+                        videoFile.select(i, i + 1, 0);
                       } catch {}
                     }
                   }
                   
-                  // Strategy 2: Force re-selection of the entire video file
-                  try {
-                    console.log("🔄 Re-selecting video file to prioritize download");
-                    videoFile.select();
-                  } catch {}
+                  // **Layer 3**: Nuclear option - recreate stream connection
+                  if (stallCount > 5) {
+                    console.log("💥 Nuclear recovery: Re-establishing stream...");
+                    try {
+                      const currentTime = videoElement.currentTime;
+                      (videoFile as any).streamTo(videoElement);
+                      setTimeout(() => {
+                        videoElement.currentTime = currentTime;
+                      }, 200);
+                    } catch {}
+                  }
                 }
-              }, 2000); // Faster response time
+              }, 1500); // Quick response
             });
 
             videoElement.addEventListener("canplay", () => {
@@ -458,6 +487,39 @@ export function useWebTorrent() {
               if (videoFile.name.toLowerCase().includes(".mkv")) {
                 console.error("⚠️ MKV limitations: TrueHD/Atmos audio not supported in browsers");
               }
+            });
+
+            // **WATCHDOG**: Monitor for long-term freezing 
+            let watchdogInterval = setInterval(() => {
+              if (videoElement.paused) return; // Don't interfere when user pauses
+              
+              const currentReadyState = videoElement.readyState;
+              const isStuck = videoElement.currentTime === lastBufferTime && 
+                             Date.now() - (videoElement as any).lastTimeUpdate > 5000;
+              
+              if (isStuck && currentReadyState < 4) { // Not HAVE_ENOUGH_DATA
+                console.log("🚨 WATCHDOG: Video frozen for >5s, forcing recovery...");
+                
+                // Mark current time update
+                (videoElement as any).lastTimeUpdate = Date.now();
+                
+                // Force reload and restore position
+                const restoreTime = videoElement.currentTime;
+                videoElement.load();
+                
+                setTimeout(() => {
+                  videoElement.currentTime = restoreTime;
+                  console.log(`🔄 Restored to ${restoreTime.toFixed(1)}s`);
+                }, 300);
+              }
+            }, 3000);
+
+            // Cleanup watchdog when component unmounts
+            const cleanupWatchdog = () => clearInterval(watchdogInterval);
+            
+            // Track time updates for watchdog
+            videoElement.addEventListener("timeupdate", () => {
+              (videoElement as any).lastTimeUpdate = Date.now();
             });
           }
 
