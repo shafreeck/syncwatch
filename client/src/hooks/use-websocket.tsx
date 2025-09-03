@@ -768,6 +768,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           // Remove placeholder
           setVideos(prev => prev.filter(v => v.id !== tempId));
           
+          // Register torrent for P2P statistics tracking
+          if (registerTorrent) {
+            console.log("📊 Registering magnet torrent for P2P statistics tracking");
+            registerTorrent(torrent);
+          }
+          
           console.log("✅ Real video info sent - when user clicks Select, streamTo will work!");
         }
       });
