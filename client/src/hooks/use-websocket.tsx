@@ -736,33 +736,10 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
       
-      // **SIMPLIFIED**: Don't override trackers, let the magnet link use its own trackers
-      const torrent = client.add(magnetUri);
-      
-      console.log("🎯 Torrent object created, waiting for events...");
-      
-      // Add basic diagnostic logs (no state updates)
-      torrent.on('infoHash', () => {
-        console.log("📄 [DIAGNOSTIC] Got torrent info hash:", torrent.infoHash);
-      });
-
-      torrent.on('metadata', () => {
-        console.log("📋 [DIAGNOSTIC] Got torrent metadata - files:", torrent.files?.length || 0);
-      });
-
-      // **MINIMAL EVENTS**: Only use essential events, avoid interfering with player
-      torrent.on('noPeers', () => {
-        console.warn("😞 No peers found for this torrent");
-        toast({
-          title: "No peers found", 
-          description: "This magnet link has no active seeders. Try a different one.",
-          variant: "destructive",
-        });
-      });
-
-      torrent.on('ready', () => {
+      // **CORRECT API USAGE**: Use callback function instead of event listeners
+      const torrent = client.add(magnetUri, (torrent: any) => {
         clearTimeout(loadingTimeout);
-        console.log("🎉 Magnet torrent ready!");
+        console.log("🎉 Magnet torrent ready (using correct API)!");
         console.log("📁 Magnet torrent loaded:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -790,14 +767,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           return;
         }
         
-        console.log("🔔 Sending video_share message for magnet:", {
-          name: videoFile.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          size: torrent.length.toString(),
-          roomId: currentRoomId,
-        });
-        
         sendWSMessage("video_share", {
           name: videoFile.name,
           magnetUri: torrent.magnetURI,
@@ -819,6 +788,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         toast({
           title: "Magnet loaded",
           description: `${videoFile.name} is now available for streaming`,
+        });
+      });
+      
+      console.log("🎯 Torrent object created, waiting for metadata...");
+      
+      // Only add essential error handling
+      torrent.on('noPeers', () => {
+        console.warn("😞 No peers found for this torrent");
+        toast({
+          title: "No peers found", 
+          description: "This magnet link has no active seeders. Try a different one.",
+          variant: "destructive",
         });
       });
 
