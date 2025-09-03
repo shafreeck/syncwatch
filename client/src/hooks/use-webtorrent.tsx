@@ -156,6 +156,8 @@ export function useWebTorrent() {
         setIsLoading(false);
         // **ADD**: 确保 window 对象上也有客户端引用
         (window as any).__webtorrentClient = shared;
+        // **ADD**: 暴露 registerTorrent 函数到 window 对象
+        (window as any).__registerTorrent = registerTorrent;
         console.log("WebTorrent client initialized (singleton)");
 
         // After client is ready, attempt to re-seed from persisted file handles

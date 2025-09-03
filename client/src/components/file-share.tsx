@@ -465,6 +465,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
           name: file.name
         });
         
+        // **关键**: 注册 torrent 到统计系统，这样 isVideoBeingSeeded 才能识别
+        if (typeof window !== 'undefined' && (window as any).__registerTorrent) {
+          console.log("📊 Registering resumed torrent for P2P statistics tracking");
+          (window as any).__registerTorrent(torrent);
+        }
+        
         setSeedingProgress(100);
         console.log("✅ Resume seeding: Completed - existing video is now being seeded");
         
