@@ -760,9 +760,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
         
-        // **NEW**: Remove UI placeholder and add real video
-        // First remove the temporary placeholder
-        setVideos(prev => prev.filter(v => v.id !== tempId));
+        // **IMPROVED**: Update placeholder instead of delete+recreate
+        // This avoids the gap where user sees no video in the list
+        setVideos(prev => prev.map(v => 
+          v.id === tempId ? {
+            ...v,
+            name: videoFile.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
+            size: torrent.length.toString(),
+            status: 'ready' as const,
+            processingStep: null
+          } : v
+        ));
         
         // **CRITICAL FIX**: Wait a bit to ensure join_room has been processed
         // This prevents video_share from being sent before socket context is set
