@@ -371,21 +371,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const { videoId, status, processingStep, size, infoHash } = message.data;
               
               try {
-                // Update video in storage
-                await storage.updateVideo(videoId, { 
-                  status, 
-                  processingStep,
-                  ...(size && { size }),
-                  ...(infoHash && { infoHash })
-                });
+                let targetVideoId = videoId;
                 
-                // Broadcast update to all users in room
-                broadcastToRoom(socket.roomId, {
-                  type: "video_status_updated",
-                  data: { videoId, status, processingStep, size, infoHash }
-                });
+                // If videoId is actually an infoHash, find the real video ID
+                if (infoHash && (!videoId || videoId === infoHash)) {
+                  const videos = await storage.getVideosByRoom(socket.roomId);
+                  const video = videos.find(v => v.infoHash === infoHash);
+                  if (video) {
+                    targetVideoId = video.id;
+                    console.log(`📍 Found video by infoHash: ${infoHash} -> ${targetVideoId}`);
+                  }
+                }
                 
-                console.log(`✅ Video ${videoId} status updated to: ${status}`);
+                if (targetVideoId) {
+                  // Update video in storage
+                  await storage.updateVideo(targetVideoId, { 
+                    status, 
+                    processingStep,
+                    ...(size && { size }),
+                    ...(infoHash && { infoHash })
+                  });
+                  
+                  // Broadcast update to all users in room
+                  broadcastToRoom(socket.roomId, {
+                    type: "video_status_updated",
+                    data: { videoId: targetVideoId, status, processingStep, size, infoHash }
+                  });
+                  
+                  console.log(`✅ Video ${targetVideoId} status updated to: ${status}`);
+                } else {
+                  console.warn(`⚠️ Could not find video to update: videoId=${videoId}, infoHash=${infoHash}`);
+                }
               } catch (error) {
                 console.error(`❌ Failed to update video status:`, error);
               }

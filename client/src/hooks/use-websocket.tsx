@@ -263,6 +263,25 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         }
         break;
 
+      case "video_status_updated":
+        // Handle video status updates (processing -> ready -> error)
+        console.log("Video status update received:", message.data);
+        {
+          const { videoId, status, processingStep, size, infoHash } = message.data || {};
+          setVideos(prev => prev.map(video => 
+            video.id === videoId 
+              ? { 
+                  ...video, 
+                  status, 
+                  processingStep, 
+                  ...(size && { size }),
+                  ...(infoHash && { infoHash })
+                } 
+              : video
+          ));
+        }
+        break;
+
       case "error":
         toast({
           title: "Error",
@@ -709,6 +728,24 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           size: torrent.length.toString(),
           roomId: currentRoomId,
         });
+        
+        // **NEW**: Update status to ready once torrent is loaded
+        // Store the infoHash to update status after video is created
+        const updateVideoStatus = () => {
+          // Use a more reliable method to find and update the video
+          sendWSMessage("video_status_update", {
+            videoId: torrent.infoHash, // Use infoHash as fallback identifier
+            status: "ready",
+            processingStep: "Ready for streaming",
+            size: torrent.length.toString(),
+            infoHash: torrent.infoHash
+          });
+        };
+        
+        // Try updating immediately, then retry a few times if needed
+        setTimeout(updateVideoStatus, 1000);
+        setTimeout(updateVideoStatus, 3000);
+        setTimeout(updateVideoStatus, 5000);
         
         // Register torrent for P2P statistics if available
         if (registerTorrent) {
