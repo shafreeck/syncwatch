@@ -748,27 +748,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         ]
       });
 
-      // Add more diagnostic events
-      torrent.on('infoHash', () => {
-        console.log("📄 Got torrent info hash:", torrent.infoHash);
-      });
-
-      torrent.on('metadata', () => {
-        console.log("📋 Got torrent metadata:", {
-          name: torrent.name,
-          files: torrent.files.length,
-          length: torrent.length
-        });
-      });
-
-      torrent.on('wire', (wire: any) => {
-        console.log("🔌 Connected to peer:", wire.remoteAddress);
-      });
-
+      // **MINIMAL EVENTS**: Only use essential events, avoid interfering with player
       torrent.on('noPeers', () => {
         console.warn("😞 No peers found for this torrent");
         toast({
-          title: "No peers found",
+          title: "No peers found", 
           description: "This magnet link has no active seeders. Try a different one.",
           variant: "destructive",
         });
