@@ -343,29 +343,7 @@ export function useWebTorrent() {
         }
       }
 
-          // **THROTTLED PROGRESS TRACKING**: Update only once per second
-          let lastStatsUpdate = 0;
-          const updateStats = () => {
-            const now = Date.now();
-            if (now - lastStatsUpdate < 1000) return; // Throttle to 1 second
-            lastStatsUpdate = now;
-            
-            setDownloadProgress(torrent.progress * 100);
-            // Convert uploadSpeed from bytes/sec to MB/sec for consistency
-            setShareSpeed((torrent.uploadSpeed || 0) / (1024 * 1024));
-            setPeers(torrent.numPeers || 0);
-          };
-
-          torrent.on("download", updateStats);
-          torrent.on("upload", updateStats);
-
-          currentTorrent.current = torrent;
-        },
-      );
-
-      torrent.on("error", (err: string | Error) => {
-        console.error("WebTorrent torrent error:", err);
-      });
+      currentTorrent.current = torrent;
     },
     [client],
   );
