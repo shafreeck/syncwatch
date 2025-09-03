@@ -51,8 +51,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     // Initialize video.js player
     if (window.videojs && !videoJsPlayerRef.current) {
       videoJsPlayerRef.current = window.videojs(video, {
-        fluid: true,
-        responsive: true,
         errorDisplay: false, // Hide video.js error messages
         playbackRates: [0.5, 1, 1.25, 1.5, 2],
         plugins: {}

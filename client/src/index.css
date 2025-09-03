@@ -81,16 +81,10 @@
   display: none !important;
 }
 
-.video-js .vjs-tech {
+/* Video centering - use more specific selectors */
+.video-js .vjs-tech,
+.video-js video,
+#webtorrent-player_html5_api {
   object-fit: contain !important;
   object-position: center !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.video-js video {
-  object-fit: contain !important;
-  object-position: center !important;
-  width: 100% !important;
-  height: 100% !important;
 }
