@@ -33,7 +33,7 @@ interface Video {
   uploadedAt: Date;
 }
 
-export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWebTorrentClient?: any) {
+export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWebTorrentClient?: any, clearCurrentVideo?: () => void) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [room, setRoom] = useState<Room | null>(null);
@@ -190,7 +190,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           return newVideos;
         });
         // If the current playing video is deleted, clear it
-        setCurrentVideo(prev => (prev && prev.id === message.data.videoId ? null : prev));
+        setCurrentVideo(prev => {
+          if (prev && prev.id === message.data.videoId) {
+            // **ENHANCED CLEANUP**: Also clean up WebTorrent resources
+            if (typeof clearCurrentVideo === 'function') {
+              console.log("🧹 Triggering WebTorrent cleanup for deleted video");
+              clearCurrentVideo();
+            }
+            return null;
+          }
+          return prev;
+        });
         toast({
           title: "Video deleted",
           description: "The video has been removed from the room",

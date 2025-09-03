@@ -89,7 +89,20 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !currentVideo || !currentVideo.magnetUri) return;
+    if (!video) return;
+    
+    // **CLEANUP**: If currentVideo is null or invalid, clear the player
+    if (!currentVideo || !currentVideo.magnetUri) {
+      console.log("🧹 Clearing video player - no current video");
+      video.pause();
+      video.src = "";
+      video.load(); // Reset video element
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+      return;
+    }
+    
     console.log("Loading video via torrent:", currentVideo.name);
     loadTorrent(currentVideo.magnetUri, video);
   }, [currentVideo, loadTorrent]);

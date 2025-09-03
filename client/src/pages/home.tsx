@@ -26,7 +26,7 @@ export default function Home() {
   const roomId = location.split("/room/")[1];
 
   // Get WebTorrent statistics for progress visualization
-  const { shareSpeed, peers, statsByInfoHash, registerTorrent, cleanupUnusedTorrents, client } = useWebTorrent();
+  const { shareSpeed, peers, statsByInfoHash, registerTorrent, cleanupUnusedTorrents, client, clearCurrentVideo } = useWebTorrent();
 
   const {
     isConnected,
@@ -48,7 +48,7 @@ export default function Home() {
     shareVideo,
     shareTorrentFile,
     shareMagnetLink,
-  } = useWebSocket(registerTorrent, client);
+  } = useWebSocket(registerTorrent, client, clearCurrentVideo);
 
   useEffect(() => {
     // Show room modal only if no room ID in URL (not based on connection status)

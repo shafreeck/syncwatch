@@ -629,6 +629,19 @@ export function useWebTorrent() {
     [client],
   );
 
+  // **NEW**: Clear current torrent when video is deleted
+  const clearCurrentVideo = useCallback(() => {
+    if (currentTorrent.current && client) {
+      console.log("🧹 Clearing current torrent due to video deletion");
+      client.remove(currentTorrent.current);
+      currentTorrent.current = null;
+      setIsSeeding(false);
+      setDownloadProgress(0);
+      setShareSpeed(0);
+      setPeers(0);
+    }
+  }, [client]);
+
   return {
     client,
     downloadProgress,
@@ -642,5 +655,6 @@ export function useWebTorrent() {
     statsByInfoHash,
     registerTorrent, // Export registerTorrent so shareVideo can use it
     cleanupUnusedTorrents, // Export cleanup function
+    clearCurrentVideo, // NEW: Export cleanup function for deleted videos
   };
 }
