@@ -241,12 +241,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
         
-        // **新逻辑**: 检查是否刚刚刷新页面，如果是则忽略服务器的自动选择
-        const isPageRefresh = !sessionStorage.getItem('user-manually-selected-video');
+        // **新逻辑**: 区分页面刷新 vs 新用户进入房间
+        const hasVisitedBefore = localStorage.getItem('visited-rooms') !== null;
+        const isPageRefresh = hasVisitedBefore && !sessionStorage.getItem('user-manually-selected-video');
+        
         if (isPageRefresh) {
-          console.log("🔄 Ignoring server video selection - page was refreshed, keeping player clear");
+          console.log("🔄 Ignoring server video selection - existing user refreshed page, keeping player clear");
           sessionStorage.setItem('user-manually-selected-video', 'true');
           break;
+        } else if (!hasVisitedBefore) {
+          console.log("👋 New user joining room - accepting server video selection");
+          // 标记用户已经访问过，为将来的刷新做准备
+          localStorage.setItem('visited-rooms', 'true');
+          sessionStorage.setItem('user-manually-selected-video', 'true');
         }
         
         {
