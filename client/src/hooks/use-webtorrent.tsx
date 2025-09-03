@@ -157,8 +157,9 @@ export function useWebTorrent() {
         // After client is ready, attempt to re-seed from persisted file handles
         try {
           const seeds = await getAllSeeds();
+          console.log("🔄 Auto re-seed check: found persisted entries:", seeds?.length || 0);
           if (seeds?.length) {
-            console.log("Auto re-seed: found persisted entries:", seeds.length);
+            console.log("📋 Persisted seeds:", seeds.map(s => ({ name: s.name, infoHash: s.infoHash })));
           }
           for (const s of seeds) {
             const handle = (s as any).handle;
