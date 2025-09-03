@@ -312,11 +312,20 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const sendWSMessage = useCallback((type: string, data: any) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
+      // **CRITICAL**: For video_share messages, ensure user is properly joined
+      if (type === "video_share" && (!currentUser || !room)) {
+        console.error("❌ Cannot send video_share: User not properly joined to room", {
+          currentUser: currentUser?.id || 'null',
+          room: room?.id || 'null',
+          type
+        });
+        return;
+      }
       socket.send(JSON.stringify({ type, data }));
     } else {
       console.error("WebSocket not connected");
     }
-  }, [socket]);
+  }, [socket, currentUser, room]);
 
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
@@ -690,19 +699,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       
       console.log("Loading magnet link...");
       
-      // Set up error handling and timeout
-      const timeout = setTimeout(() => {
-        console.warn('Magnet link loading timeout after 30 seconds');
-        toast({
-          title: "Connection timeout",
-          description: "This magnet link may not have WebTorrent-compatible peers. Try using magnets from WebTorrent-compatible sources.",
-          variant: "destructive",
-        });
-      }, 30000);
+      // Since we now have placeholders, remove the 30s timeout notification
+      // Users can see the loading state in the video list
       
       client.on('error', (err: any) => {
         console.error('WebTorrent client error:', err);
-        clearTimeout(timeout);
         toast({
           title: "Magnet link error",
           description: "This magnet link is not compatible with WebTorrent. Try using WebTorrent-optimized sources.",
@@ -724,7 +725,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           'udp://exodus.desync.com:6969'
         ]
       }, (torrent: any) => {
-        clearTimeout(timeout);
         console.log("Magnet torrent loaded:", {
           magnetURI: torrent.magnetURI,
           infoHash: torrent.infoHash,
@@ -764,14 +764,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         // First remove the temporary placeholder
         setVideos(prev => prev.filter(v => v.id !== tempId));
         
-        // Then send the real video to be persisted
-        sendWSMessage("video_share", {
-          name: videoFile.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          size: torrent.length.toString(),
-          roomId: currentRoomId,
-        });
+        // **CRITICAL FIX**: Wait a bit to ensure join_room has been processed
+        // This prevents video_share from being sent before socket context is set
+        setTimeout(() => {
+          sendWSMessage("video_share", {
+            name: videoFile.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
+            size: torrent.length.toString(),
+            roomId: currentRoomId,
+          });
+        }, 100); // 100ms delay to ensure proper WebSocket state
         
         // Register torrent for P2P statistics if available
         if (registerTorrent) {
