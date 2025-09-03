@@ -523,17 +523,21 @@ export function useWebTorrent() {
             });
           }
 
-          // Track progress and stats
-          torrent.on("download", () => {
+          // **THROTTLED PROGRESS TRACKING**: Update only once per second
+          let lastStatsUpdate = 0;
+          const updateStats = () => {
+            const now = Date.now();
+            if (now - lastStatsUpdate < 1000) return; // Throttle to 1 second
+            lastStatsUpdate = now;
+            
             setDownloadProgress(torrent.progress * 100);
-            setShareSpeed(torrent.uploadSpeed);
-            setPeers(torrent.numPeers);
-          });
+            // Convert uploadSpeed from bytes/sec to MB/sec for consistency
+            setShareSpeed((torrent.uploadSpeed || 0) / (1024 * 1024));
+            setPeers(torrent.numPeers || 0);
+          };
 
-          torrent.on("upload", () => {
-            setShareSpeed(torrent.uploadSpeed);
-            setPeers(torrent.numPeers);
-          });
+          torrent.on("download", updateStats);
+          torrent.on("upload", updateStats);
 
           currentTorrent.current = torrent;
         },
@@ -566,10 +570,16 @@ export function useWebTorrent() {
           setIsSeeding(true);
           registerTorrent(torrent);
 
-          // Track upload progress
+          // **THROTTLED UPLOAD TRACKING**: Update only once per second  
+          let lastUploadUpdate = 0;
           const updateProgress = () => {
-            setShareSpeed(torrent.uploadSpeed);
-            setPeers(torrent.numPeers);
+            const now = Date.now();
+            if (now - lastUploadUpdate < 1000) return; // Throttle to 1 second
+            lastUploadUpdate = now;
+            
+            // Convert uploadSpeed from bytes/sec to MB/sec for consistency
+            setShareSpeed((torrent.uploadSpeed || 0) / (1024 * 1024));
+            setPeers(torrent.numPeers || 0);
           };
 
           torrent.on("upload", updateProgress);
