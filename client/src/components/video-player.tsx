@@ -34,6 +34,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const [showSyncNotification, setShowSyncNotification] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [allowSyncBroadcast, setAllowSyncBroadcast] = useState(true);
 
   const {
     client,
@@ -228,6 +229,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const video = videoRef.current;
     if (!video || !lastSync) return;
     const { action, currentTime } = lastSync;
+    
+    // Temporarily disable sync broadcasting when applying incoming sync
+    setAllowSyncBroadcast(false);
+    
     try {
       if (typeof currentTime === 'number' && !isNaN(currentTime)) {
         const timeDiff = Math.abs((video.currentTime || 0) - currentTime);
@@ -245,6 +250,11 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         setIsPlaying(false);
       }
     } catch {}
+    
+    // Re-enable sync broadcasting after a short delay
+    setTimeout(() => {
+      setAllowSyncBroadcast(true);
+    }, 1000);
   }, [lastSync]);
   
   const handleSyncToHost = () => {
@@ -277,7 +287,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     if (isPlaying) {
       video.pause();
       setIsPlaying(false);
-      onVideoSync("pause", video.currentTime);
+      if (allowSyncBroadcast) {
+        onVideoSync("pause", video.currentTime);
+      }
     } else {
       console.log('🎬 Attempting to play video...');
       console.log('Pre-play video state:', {
@@ -294,7 +306,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
       video.play().then(() => {
         console.log('✅ Play SUCCESS!');
         setIsPlaying(true);
-        onVideoSync("play", video.currentTime);
+        if (allowSyncBroadcast) {
+          onVideoSync("play", video.currentTime);
+        }
       }).catch(error => {
         console.error('❌ Play FAILED:', error);
         console.log('Post-fail video state:', {
@@ -334,7 +348,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const newTime = percent * duration;
     
     video.currentTime = newTime;
-    onVideoSync("seek", newTime);
+    if (allowSyncBroadcast) {
+      onVideoSync("seek", newTime);
+    }
   };
 
   const formatTime = (time: number) => {
