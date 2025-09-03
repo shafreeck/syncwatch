@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, HardDrive, Trash2, RefreshCw, Database } from "lucide-react";
+import { AlertTriangle, HardDrive, Trash2, RefreshCw, Database, FileVideo, Folder } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useStorageManager } from "@/hooks/use-storage-manager";
 import { useToast } from "@/hooks/use-toast";
@@ -152,16 +152,42 @@ export function StorageMonitor() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                WebTorrent数据库
+                <FileVideo className="h-4 w-4" />
+                WebTorrent 缓存文件
               </h3>
-              <span className="text-xs text-muted-foreground" data-testid="text-database-count">
-                {webTorrentStorage.databases.length} 个数据库
+              <span className="text-xs text-muted-foreground" data-testid="text-cache-size">
+                {webTorrentStorage.totalSize > 0 ? 
+                  `约 ${(webTorrentStorage.totalSize / (1024 * 1024 * 1024)).toFixed(1)} GB` : 
+                  '暂无缓存'}
               </span>
             </div>
 
-            {webTorrentStorage.databases.length > 0 ? (
+            {webTorrentStorage.torrents && webTorrentStorage.torrents.length > 0 ? (
               <div className="space-y-2">
+                {webTorrentStorage.torrents.map((torrent, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between p-3 bg-muted/50 rounded text-sm"
+                    data-testid={`item-torrent-${index}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Folder className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">{torrent.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {(torrent.size / (1024 * 1024 * 1024)).toFixed(1)} GB
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">视频缓存</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : webTorrentStorage.databases.length > 0 ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  检测到 {webTorrentStorage.databases.length} 个相关数据库，但暂无大文件缓存
+                </p>
                 {webTorrentStorage.databases.map((dbName, index) => (
                   <div 
                     key={index} 
@@ -169,13 +195,13 @@ export function StorageMonitor() {
                     data-testid={`item-database-${index}`}
                   >
                     <span className="font-mono text-xs">{dbName}</span>
-                    <Badge variant="outline" className="text-xs">IndexedDB</Badge>
+                    <Badge variant="outline" className="text-xs">数据库</Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground" data-testid="text-no-databases">
-                暂无WebTorrent数据库
+              <p className="text-sm text-muted-foreground" data-testid="text-no-cache">
+                暂无 WebTorrent 缓存文件
               </p>
             )}
           </div>
@@ -198,7 +224,7 @@ export function StorageMonitor() {
             variant="destructive"
             size="sm"
             onClick={handleCleanupAll}
-            disabled={isCleanupLoading || !webTorrentStorage?.databases.length}
+            disabled={isCleanupLoading || (!webTorrentStorage?.databases.length && !webTorrentStorage?.torrents.length)}
             className="flex items-center gap-2"
             data-testid="button-cleanup-all"
           >
