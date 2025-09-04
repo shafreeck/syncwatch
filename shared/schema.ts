@@ -41,6 +41,8 @@ export const videos = sqliteTable("videos", {
   // **NEW**: Processing status for immediate feedback
   status: text("status", { enum: ["processing", "ready", "error"] }).default("processing"),
   processingStep: text("processing_step"), // e.g., "Loading torrent", "Getting metadata", "Ready"
+  // **NEW**: Video source type to identify origin
+  sourceType: text("source_type", { enum: ["local_file", "magnet_link", "torrent_file"] }).default("local_file"),
 });
 
 // Insert schemas

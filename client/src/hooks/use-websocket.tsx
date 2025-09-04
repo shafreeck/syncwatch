@@ -471,7 +471,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       size: file.size.toString(),
       roomId: currentRoomId,
       status: "ready", // File is ready, just creating torrent in background
-      processingStep: undefined
+      processingStep: undefined,
+      sourceType: "local_file"
     });
 
     try {
@@ -666,6 +667,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             infoHash: torrent.infoHash,
             size: torrent.length.toString(),
             roomId: currentRoomId,
+            sourceType: "torrent_file",
           });
 
           // Register torrent for P2P statistics if available
@@ -835,6 +837,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
               infoHash: torrent.infoHash,
               size: torrent.length.toString(),
               roomId: currentRoomId,
+              sourceType: "magnet_link",
             });
 
             // Store tempId for cleanup when we receive confirmation from server

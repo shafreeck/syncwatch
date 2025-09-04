@@ -150,6 +150,7 @@ export class MemStorage implements IStorage {
       infoHash: insertVideo.infoHash,
       status: insertVideo.status || "ready",
       processingStep: insertVideo.processingStep || null,
+      sourceType: insertVideo.sourceType || "local_file",
     };
     this.videos.set(id, video);
     return video;

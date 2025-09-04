@@ -611,16 +611,17 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     return isCurrentlySeeding || hasActiveStats;
   };
 
-  // Helper to check if video needs warning message (only for videos uploaded by current user)
+  // Helper to check if video needs warning message (only for LOCAL FILE videos uploaded by current user)
   const needsWarning = (video: Video) => {
     // Don't show warning for temporary placeholders or processing videos
     if ((video as any).status === 'processing' || video.id.startsWith('temp-')) {
       return false;
     }
     
-    // Don't show warning for magnet link videos (they were shared via magnet link input)
-    // We identify magnet link videos by checking if the video ID contains 'temp-magnet'
-    if (video.id.includes('temp-magnet')) {
+    // **CRITICAL FIX**: Only show "resume seeding" for local file uploads
+    // Don't show for magnet links or torrent files - they don't need file handle restoration
+    const videoSource = (video as any).sourceType || 'local_file';
+    if (videoSource !== 'local_file') {
       return false;
     }
     
@@ -628,12 +629,6 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     const hasStats = video.infoHash && !!statsByInfoHash[video.infoHash];
     const hasCurrentUser = !!currentUser;
     const isUploadedByCurrentUser = currentUser && video.uploadedBy === currentUser.id;
-    
-    // Debug info only when needed
-    // console.log(`🔍 Resume button check for ${video.name}:`, {
-    //   hasInfoHash, hasStats, hasCurrentUser, isUploadedByCurrentUser,
-    //   videoUploadedBy: video.uploadedBy, currentUserId: currentUser?.id
-    // });
     
     return hasInfoHash && !hasStats && hasCurrentUser && isUploadedByCurrentUser;
   };
