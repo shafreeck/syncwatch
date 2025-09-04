@@ -41,7 +41,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   const [messages, setMessages] = useState<Message[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
-  const [lastSync, setLastSync] = useState<{ action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null>(null);
+  const [lastSync, setLastSync] = useState<{ action: 'play' | 'pause' | 'seek'; currentTime: number; roomId: string; at: number } | null>(null);
   const [userProgresses, setUserProgresses] = useState<Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>>({});
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { toast } = useToast();
@@ -78,7 +78,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("WebSocket disconnected", event.code, event.reason);
         setIsConnected(false);
         setSocket(null);
-        
+
         // Only attempt to reconnect for unexpected closures, not normal ones
         if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
           reconnectAttempts.current++;
@@ -126,7 +126,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         setMessages(message.data.messages || []);
         setVideos(message.data.videos || []);
         console.log('✓ Videos state updated:', message.data.videos);
-        
+
         // Find current user by username if we have a temp current user
         if (currentUser && (!currentUser.id || currentUser.id === '') && users.length > 0) {
           const foundUser = users.find((u: User) => u.username === currentUser.username);
@@ -141,12 +141,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           const u: User = message.data.user;
           const exists = prev.some(x => x.id === u.id);
           const newUsers = exists ? prev.map(x => (x.id === u.id ? u : x)) : [...prev, u];
-          
+
           // Check if this is the current user joining by matching username
           if (currentUser && !currentUser.id && u.username === currentUser.username) {
             setCurrentUser(u);
           }
-          
+
           return newUsers;
         });
         break;
@@ -163,7 +163,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         console.log("Received new video:", message.data.video);
         setVideos(prev => {
           const v = message.data.video as any;
-          
+
           // Deduplicate by infoHash (fallback to id)
           const existsIdx = prev.findIndex(x => (x as any).infoHash && v.infoHash ? (x as any).infoHash === v.infoHash : x.id === v.id);
           let newList: any[];
@@ -216,9 +216,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           if (action && typeof currentTime === 'number') {
             setLastSync({ action, currentTime, roomId, at: Date.now() });
           }
-        } catch {}
+        } catch { }
         break;
-        
+
       case "user_progress":
         // Handle individual user progress updates
         try {
@@ -233,7 +233,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
               }
             }));
           }
-        } catch {}
+        } catch { }
         break;
 
       case "video_selected":
@@ -252,7 +252,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             const magnetUri = message.data.magnetUri || "";
             const infoHashMatch = magnetUri.match(/xt=urn:btih:([a-f0-9]{40})/i);
             const extractedInfoHash = infoHashMatch ? infoHashMatch[1] : undefined;
-            
+
             const videoFromMessage = {
               id: message.data.videoId,
               magnetUri: magnetUri,
@@ -275,17 +275,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         {
           const { videoId, name, status, processingStep, size, infoHash, magnetUri } = message.data || {};
           console.log(`🔄 Updating video ${videoId} with:`, { name, magnetUri, infoHash, size });
-          setVideos(prev => prev.map(video => 
-            video.id === videoId 
-              ? { 
-                  ...video, 
-                  ...(name && { name }),
-                  ...(magnetUri && { magnetUri }),
-                  ...(infoHash && { infoHash }),
-                  ...(size && { size }),
-                  ...(status !== undefined && { status: status || 'ready' }),
-                  processingStep, // Always update, even if undefined to clear it
-                } 
+          setVideos(prev => prev.map(video =>
+            video.id === videoId
+              ? {
+                ...video,
+                ...(name && { name }),
+                ...(magnetUri && { magnetUri }),
+                ...(infoHash && { infoHash }),
+                ...(size && { size }),
+                ...(status !== undefined && { status: status || 'ready' }),
+                processingStep, // Always update, even if undefined to clear it
+              }
               : video
           ));
         }
@@ -328,7 +328,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
         return;
       }
-      
+
       // Automatically add userId and roomId for relevant message types
       const messageData = {
         type,
@@ -336,7 +336,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         ...(currentUser && { userId: currentUser.id }),
         ...(room && { roomId: room.id })
       };
-      
+
       socket.send(JSON.stringify(messageData));
     } else {
       console.error("WebSocket not connected");
@@ -345,11 +345,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
-    
+
     // Get or create persistent user ID for this browser/username combination
     const persistentUserIdKey = `syncwatch:userId:${username}`;
     let persistentUserId = localStorage.getItem(persistentUserIdKey);
-    
+
     if (!persistentUserId) {
       // Generate new persistent ID for this username on this browser
       persistentUserId = crypto.randomUUID();
@@ -358,7 +358,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     } else {
       console.log(`🔄 Using existing persistent user ID for ${username}: ${persistentUserId}`);
     }
-    
+
     // Store the username with persistent ID to identify current user when room state is received
     setCurrentUser({ id: persistentUserId, username, isHost: false, joinedAt: new Date() } as User);
     sendMessage("join_room", { roomId, username, persistentUserId });
@@ -394,7 +394,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           lastUpdate: Date.now()
         }
       }));
-      
+
       // Send to other users - does NOT affect video playback control
       sendMessage("user_progress", { currentTime, isPlaying, roomId: room.id });
     }
@@ -410,12 +410,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const shareVideo = useCallback(async (file: File, onProgress?: (progress: number) => void, handle?: any) => {
     console.log('Share attempt - room state:', room);
-    
+
     // Get room ID from either state or URL
     const currentPath = window.location.pathname;
     const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
     const currentRoomId = room?.id || roomIdMatch?.[1];
-    
+
     if (!room && !currentRoomId) {
       console.error("No room available for share - room state:", room);
       toast({
@@ -425,17 +425,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       return;
     }
-    
+
     if (!room && currentRoomId && isConnected) {
       console.log("🔄 Room state not loaded yet, waiting briefly...");
       toast({
         title: "Please wait",
         description: "Connecting to room...",
       });
-      
+
       // Wait a moment for room state to load
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Check again - if still no room state, continue with roomId from URL
       if (!room && !currentRoomId) {
         toast({
@@ -446,13 +446,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         return;
       }
     }
-    
+
     console.log("Starting P2P video sharing for:", file.name);
-    
+
     // **INSTANT FEEDBACK**: Create video entry immediately with ready status
     // Since user already selected the file, it's ready to be processed
     const tempMagnetUri = `temp-magnet-${Date.now()}`;
-    
+
     // Send video immediately as ready (file is selected, just needs torrent creation)
     sendWSMessage("video_share", {
       name: file.name,
@@ -463,7 +463,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       status: "ready", // File is ready, just creating torrent in background
       processingStep: undefined
     });
-    
+
     try {
       // Use the same simplest logic as the test page (official tutorial) via centralized loader
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
@@ -473,11 +473,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       // For seeding, we don't need to start the BrowserServer.
       // Avoid creating a second server instance that can race and reply 404s.
       // Service Worker already registered in main.tsx
-      
+
       console.log("Creating torrent from file...");
       // Give immediate feedback that we started preparing
-      try { onProgress?.(1); } catch {}
-      
+      try { onProgress?.(1); } catch { }
+
       // Create torrent from the file
       client.seed(file, async (torrent: any) => {
         console.log("Torrent created:", {
@@ -486,7 +486,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           name: file.name,
           length: torrent.length
         });
-        
+
         // Set up progress tracking for seeding
         if (onProgress) {
           console.log("📊 Tracking seeding readiness...");
@@ -502,13 +502,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             torrent.on('ready', markReady);
           }
         }
-        
+
         // Update video with real torrent data (keep status as ready)
         if (!currentRoomId) {
           console.error("No room ID available for video share");
           return;
         }
-        
+
         // **UPDATE**: Replace temporary data with real torrent info
         // Find the video by temporary magnet URI and update it
         setTimeout(() => {
@@ -538,16 +538,16 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         } catch (e) {
           console.warn('Failed saving seed handle:', e);
         }
-        
+
         // Register torrent for P2P statistics if available
         if (registerTorrent) {
           console.log("📊 Registering torrent for P2P statistics tracking");
           registerTorrent(torrent);
         }
-        
+
         console.log("Video is now being seeded and shared via P2P");
       });
-      
+
     } catch (error) {
       console.error("Failed to create P2P torrent:", error);
       throw error;
@@ -556,12 +556,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const shareTorrentFile = useCallback(async (torrentFile: File) => {
     console.log('Torrent file share attempt - room state:', room);
-    
+
     // Get room ID from either state or URL
     const currentPath = window.location.pathname;
     const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
     const currentRoomId = room?.id || roomIdMatch?.[1];
-    
+
     if (!room && !currentRoomId) {
       console.error("No room available for torrent share - room state:", room);
       toast({
@@ -571,9 +571,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       return;
     }
-    
+
     console.log("Starting P2P torrent file sharing for:", torrentFile.name);
-    
+
     try {
       const getWebTorrent = (await import('@/lib/wt-esm')).default;
       const WebTorrent = await getWebTorrent();
@@ -588,29 +588,29 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         tracker: {
           announce: [
             'wss://tracker.openwebtorrent.com',
-            'wss://tracker.btorrent.xyz', 
+            'wss://tracker.btorrent.xyz',
             'wss://tracker.webtorrent.dev'
           ]
         }
       });
 
       // Service Worker already registered in main.tsx
-      
+
       console.log("Loading torrent file...");
-      
+
       // Set up error handling for torrent loading
       client.on('error', (err: any) => {
         console.error('WebTorrent client error during torrent file loading:', err);
         toast({
-          title: "Torrent file error", 
+          title: "Torrent file error",
           description: "Failed to load torrent file: " + err.message,
           variant: "destructive",
         });
       });
-      
+
       // Read torrent file as ArrayBuffer
       const torrentData = await torrentFile.arrayBuffer();
-      
+
       // Add torrent to client using ArrayBuffer
       console.log("Adding torrent data to client, size:", torrentData.byteLength, "bytes");
       client.add(torrentData, (torrent: any) => {
@@ -620,12 +620,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           name: torrent.name,
           length: torrent.length
         });
-        
+
         // Find video file in torrent
-        const videoFile = torrent.files.find((file: any) => 
+        const videoFile = torrent.files.find((file: any) =>
           file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
         );
-        
+
         if (!videoFile) {
           toast({
             title: "No video found",
@@ -634,13 +634,13 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           });
           return;
         }
-        
+
         // Send torrent info to room via WebSocket
         if (!currentRoomId) {
           console.error("No room ID available for torrent share");
           return;
         }
-        
+
         console.log("🔔 Sending video_share message for torrent file:", {
           name: videoFile.name,
           magnetUri: torrent.magnetURI,
@@ -648,7 +648,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           size: torrent.length.toString(),
           roomId: currentRoomId,
         });
-        
+
         sendWSMessage("video_share", {
           name: videoFile.name,
           magnetUri: torrent.magnetURI,
@@ -656,20 +656,20 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           size: torrent.length.toString(),
           roomId: currentRoomId,
         });
-        
+
         // Register torrent for P2P statistics if available
         if (registerTorrent) {
           console.log("📊 Registering torrent for P2P statistics tracking");
           registerTorrent(torrent);
         }
-        
+
         console.log("Torrent is now being shared via P2P");
         toast({
           title: "Torrent loaded",
           description: `${videoFile.name} is now available for streaming`,
         });
       });
-      
+
     } catch (error) {
       console.error("Failed to load torrent file:", error);
       toast({
@@ -683,12 +683,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   const shareMagnetLink = useCallback(async (magnetUri: string) => {
     console.log('🧲 Magnet link share using GLOBAL client (no duplicates)');
-    
+
     // Get room ID from either state or URL
     const currentPath = window.location.pathname;
     const roomIdMatch = currentPath.match(/\/room\/([^/]+)/);
     const currentRoomId = room?.id || roomIdMatch?.[1];
-    
+
     if (!room && !currentRoomId) {
       console.error("No room available for magnet share - room state:", room);
       toast({
@@ -698,11 +698,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       return;
     }
-    
+
     // **NEW APPROACH**: Create UI-only placeholder, no persistence
     const tempId = `temp-magnet-${Date.now()}`;
     const placeholderName = 'Loading...';
-    
+
     // Add temporary placeholder to UI state only
     setVideos(prev => [...prev, {
       id: tempId,
@@ -716,7 +716,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       status: 'processing',
       processingStep: 'Loading magnet...'
     }]);
-    
+
     // **CRITICAL FIX**: Use the global WebTorrent client instead of creating a new one
     if (!globalWebTorrentClient) {
       console.error("❌ Global WebTorrent client not available");
@@ -733,12 +733,11 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
     try {
       // Service Worker already registered in main.tsx
-      
+
       console.log("Loading magnet link...");
-      
-      // Since we now have placeholders, remove the 30s timeout notification
+
       // Users can see the loading state in the video list
-      
+
       client.on('error', (err: any) => {
         console.error('WebTorrent client error:', err);
         toast({
@@ -747,7 +746,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           variant: "destructive",
         });
       });
-      
+
       // Add timeout for magnet link loading
       const loadingTimeout = setTimeout(() => {
         console.warn("⏰ Magnet link loading timeout (30s) - this may be normal for P2P networks");
@@ -761,12 +760,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       // Add magnet URI to client - use simple approach
       console.log("🔗 Adding magnet URI to WebTorrent client...");
       console.log("📝 Magnet URI:", magnetUri);
-      
+
       // **CORRECT LOGIC**: Use callback to get metadata, then rely on existing streamTo logic
       const torrent = client.add(magnetUri, (torrent: any) => {
         // Clear the timeout since we successfully got metadata
         clearTimeout(loadingTimeout);
-        
+
         console.log("🎉 Magnet metadata ready! Now we have real video info:");
         console.log("📁 Video details:", {
           name: torrent.name,
@@ -774,15 +773,15 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           infoHash: torrent.infoHash,
           files: torrent.files?.length
         });
-        
+
         // Find video file
-        const videoFile = torrent.files.find((file: any) => 
+        const videoFile = torrent.files.find((file: any) =>
           file.name.match(/\.(mp4|webm|ogg|avi|mov|mkv)$/i)
         );
-        
+
         if (videoFile && currentRoomId) {
           console.log("🔄 Sending real video data to room...");
-          
+
           sendWSMessage("video_share", {
             name: videoFile.name,
             magnetUri: torrent.magnetURI,
@@ -790,22 +789,22 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             size: torrent.length.toString(),
             roomId: currentRoomId,
           });
-          
+
           // Remove placeholder
           setVideos(prev => prev.filter(v => v.id !== tempId));
-          
+
           // Register torrent for P2P statistics tracking
           if (registerTorrent) {
             console.log("📊 Registering magnet torrent for P2P statistics tracking");
             registerTorrent(torrent);
           }
-          
+
           console.log("✅ Real video info sent - when user clicks Select, streamTo will work!");
         }
       });
-      
+
       console.log("🎯 Torrent object created with callback - waiting for metadata...");
-      
+
     } catch (error) {
       console.error("Failed to load magnet link:", error);
       toast({
@@ -819,7 +818,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
   useEffect(() => {
     connect();
-    
+
     return () => {
       if (socket) {
         socket.close();
