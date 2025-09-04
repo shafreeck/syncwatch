@@ -115,6 +115,9 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       infoHash: z.string(),
       size: z.string(),
       roomId: z.string(),
+      status: z.enum(["processing", "ready", "error"]).optional(),
+      processingStep: z.string().optional(),
+      sourceType: z.enum(["local_file", "magnet_link", "torrent_file"]).optional(),
     }),
   }),
   // Backward-compat alias to support older clients
@@ -126,6 +129,9 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       infoHash: z.string(),
       size: z.string(),
       roomId: z.string(),
+      status: z.enum(["processing", "ready", "error"]).optional(),
+      processingStep: z.string().optional(),
+      sourceType: z.enum(["local_file", "magnet_link", "torrent_file"]).optional(),
     }),
   }),
   z.object({

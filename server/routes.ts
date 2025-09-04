@@ -433,9 +433,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 
                 if (targetVideoId) {
                   // Update video in storage
+                  const validStatus = status && ["processing", "ready", "error"].includes(status) 
+                    ? status as "processing" | "ready" | "error"
+                    : undefined;
                   await storage.updateVideo(targetVideoId, { 
                     ...(name && { name }),
-                    status, 
+                    status: validStatus, 
                     processingStep,
                     ...(size && { size }),
                     ...(infoHash && { infoHash }),
