@@ -164,14 +164,24 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         setVideos(prev => {
           const v = message.data.video as any;
 
+          // Remove pending magnet placeholder if this matches the pending tempId
+          const pendingTempId = (window as any).__pendingMagnetTempId;
+          let newList = prev;
+          
+          if (pendingTempId && v.infoHash) {
+            console.log("🔄 Removing magnet placeholder:", pendingTempId);
+            newList = prev.filter(video => video.id !== pendingTempId);
+            // Clear the pending tempId
+            delete (window as any).__pendingMagnetTempId;
+          }
+
           // Deduplicate by infoHash (fallback to id)
-          const existsIdx = prev.findIndex(x => (x as any).infoHash && v.infoHash ? (x as any).infoHash === v.infoHash : x.id === v.id);
-          let newList: any[];
+          const existsIdx = newList.findIndex(x => (x as any).infoHash && v.infoHash ? (x as any).infoHash === v.infoHash : x.id === v.id);
           if (existsIdx >= 0) {
-            newList = [...prev];
-            newList[existsIdx] = { ...prev[existsIdx], ...v };
+            newList = [...newList];
+            newList[existsIdx] = { ...newList[existsIdx], ...v };
           } else {
-            newList = [v, ...prev];
+            newList = [v, ...newList];
           }
           console.log('✓ Videos list updated, new count:', newList.length);
           return newList as any;
@@ -782,24 +792,53 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         if (videoFile && currentRoomId) {
           console.log("🔄 Sending real video data to room...");
 
-          sendWSMessage("video_share", {
-            name: videoFile.name,
-            magnetUri: torrent.magnetURI,
-            infoHash: torrent.infoHash,
-            size: torrent.length.toString(),
-            roomId: currentRoomId,
-          });
+          try {
+            sendWSMessage("video_share", {
+              name: videoFile.name,
+              magnetUri: torrent.magnetURI,
+              infoHash: torrent.infoHash,
+              size: torrent.length.toString(),
+              roomId: currentRoomId,
+            });
 
-          // Remove placeholder
-          setVideos(prev => prev.filter(v => v.id !== tempId));
+            // Store tempId for cleanup when we receive confirmation from server
+            (window as any).__pendingMagnetTempId = tempId;
+            
+            // Set a fallback timeout to clean up placeholder if server doesn't respond
+            setTimeout(() => {
+              if ((window as any).__pendingMagnetTempId === tempId) {
+                console.log("⏰ Timeout: Server didn't respond, cleaning up placeholder");
+                setVideos(prev => prev.filter(v => v.id !== tempId));
+                delete (window as any).__pendingMagnetTempId;
+                toast({
+                  title: "Video share timeout",
+                  description: "Server didn't respond. Please try sharing the magnet link again.",
+                  variant: "destructive",
+                });
+              }
+            }, 10000); // 10 second timeout
 
-          // Register torrent for P2P statistics tracking
-          if (registerTorrent) {
-            console.log("📊 Registering magnet torrent for P2P statistics tracking");
-            registerTorrent(torrent);
+            // Register torrent for P2P statistics tracking
+            if (registerTorrent) {
+              console.log("📊 Registering magnet torrent for P2P statistics tracking");
+              registerTorrent(torrent);
+            }
+
+            console.log("✅ Real video info sent - waiting for server confirmation...");
+          } catch (error) {
+            console.error("Failed to send video_share message:", error);
+            // Update placeholder to show error
+            setVideos(prev => prev.map(v => 
+              v.id === tempId 
+                ? { ...v, status: 'error', processingStep: 'Failed to send to server' }
+                : v
+            ));
+            toast({
+              title: "Failed to share video",
+              description: "Could not send video information to the room. Please try again.",
+              variant: "destructive",
+            });
           }
-
-          console.log("✅ Real video info sent - when user clicks Select, streamTo will work!");
         }
       });
 
