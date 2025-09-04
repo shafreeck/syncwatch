@@ -472,8 +472,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
       // For seeding, we don't need to start the BrowserServer.
       // Avoid creating a second server instance that can race and reply 404s.
-      // Keep SW registration minimal to speed up control for other views.
-      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      // Service Worker already registered in main.tsx
       
       console.log("Creating torrent from file...");
       // Give immediate feedback that we started preparing
@@ -595,7 +594,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         }
       });
 
-      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      // Service Worker already registered in main.tsx
       
       console.log("Loading torrent file...");
       
@@ -733,7 +732,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     console.log("✅ Using global WebTorrent client (preventing duplicate instances)");
 
     try {
-      await navigator.serviceWorker.register('/sw.min.js', { scope: '/' }).catch(() => {});
+      // Service Worker already registered in main.tsx
       
       console.log("Loading magnet link...");
       

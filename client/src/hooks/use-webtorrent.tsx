@@ -112,33 +112,8 @@ export function useWebTorrent() {
               uploadLimit: -1,     // 不限制上传速度
             });
 
-            const reg = await navigator.serviceWorker
-              .register("/sw.min.js", { scope: "/" })
-              .then(
-                (r) =>
-                  new Promise<ServiceWorkerRegistration>((resolve) => {
-                    const w = r.active || r.waiting || r.installing;
-                    const ok = (sw: ServiceWorker | null | undefined) =>
-                      sw && sw.state === "activated";
-                    if (ok(w)) return resolve(r);
-                    w?.addEventListener("statechange", () => {
-                      if (ok(w)) resolve(r);
-                    });
-                  }),
-              );
-            // Ensure the current page is controlled by our SW
-            if (!navigator.serviceWorker.controller) {
-              await new Promise<void>((resolve) => {
-                const onCtrl = () => {
-                  resolve();
-                };
-                navigator.serviceWorker.addEventListener(
-                  "controllerchange",
-                  onCtrl,
-                  { once: true } as any,
-                );
-              });
-            }
+            // Use existing Service Worker registration from main.tsx
+            const reg = (window as any).__WT_SW_REG__ || await navigator.serviceWorker.ready;
 
             if (typeof webTorrentClient.createServer === "function") {
               webTorrentClient.createServer({ controller: reg });
