@@ -584,26 +584,21 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
     console.log("Starting P2P torrent file sharing for:", torrentFile.name);
 
-    try {
-      const getWebTorrent = (await import('@/lib/wt-esm')).default;
-      const WebTorrent = await getWebTorrent();
-      // Use default WebTorrent configuration for torrent files (enable DHT, PEX, etc.)
-      console.log("Creating WebTorrent client with DHT enabled for torrent files");
-      const client = new WebTorrent({
-        // Enable DHT for better peer discovery
-        dht: true,
-        // Enable peer exchange
-        utPex: true,
-        // Add WebSocket trackers for better connectivity
-        tracker: {
-          announce: [
-            'wss://tracker.openwebtorrent.com',
-            'wss://tracker.btorrent.xyz',
-            'wss://tracker.webtorrent.dev'
-          ]
-        }
+    // **CRITICAL FIX**: Use the global WebTorrent client instead of creating a new one
+    if (!globalWebTorrentClient) {
+      console.error("❌ Global WebTorrent client not available for torrent file");
+      toast({
+        title: "Client not ready",
+        description: "Please wait for WebTorrent to initialize",
+        variant: "destructive",
       });
+      return;
+    }
 
+    const client = globalWebTorrentClient;
+    console.log("✅ Using global WebTorrent client for torrent file (preventing duplicate instances)");
+
+    try {
       // Service Worker already registered in main.tsx
 
       console.log("Loading torrent file...");
@@ -659,25 +654,34 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           roomId: currentRoomId,
         });
 
-        sendWSMessage("video_share", {
-          name: videoFile.name,
-          magnetUri: torrent.magnetURI,
-          infoHash: torrent.infoHash,
-          size: torrent.length.toString(),
-          roomId: currentRoomId,
-        });
+        try {
+          sendWSMessage("video_share", {
+            name: videoFile.name,
+            magnetUri: torrent.magnetURI,
+            infoHash: torrent.infoHash,
+            size: torrent.length.toString(),
+            roomId: currentRoomId,
+          });
 
-        // Register torrent for P2P statistics if available
-        if (registerTorrent) {
-          console.log("📊 Registering torrent for P2P statistics tracking");
-          registerTorrent(torrent);
+          // Register torrent for P2P statistics if available
+          if (registerTorrent) {
+            console.log("📊 Registering torrent for P2P statistics tracking");
+            registerTorrent(torrent);
+          }
+
+          console.log("✅ Torrent file info sent - video will appear in room list");
+          toast({
+            title: "Torrent loaded",
+            description: `${videoFile.name} is now available for streaming`,
+          });
+        } catch (error) {
+          console.error("Failed to send torrent video_share message:", error);
+          toast({
+            title: "Failed to share torrent",
+            description: "Could not send torrent information to the room. Please try again.",
+            variant: "destructive",
+          });
         }
-
-        console.log("Torrent is now being shared via P2P");
-        toast({
-          title: "Torrent loaded",
-          description: `${videoFile.name} is now available for streaming`,
-        });
       });
 
     } catch (error) {
@@ -689,7 +693,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       });
       throw error;
     }
-  }, [sendWSMessage, room, toast, registerTorrent]);
+  }, [sendWSMessage, room, toast, registerTorrent, globalWebTorrentClient]);
 
   const shareMagnetLink = useCallback(async (magnetUri: string) => {
     console.log('🧲 Magnet link share using GLOBAL client (no duplicates)');
