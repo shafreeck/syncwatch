@@ -602,27 +602,6 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       // Service Worker already registered in main.tsx
 
       console.log("Loading torrent file...");
-
-      // Set up error handling for torrent loading
-      client.on('error', (err: any) => {
-        console.error('WebTorrent client error during torrent file loading:', err);
-        const errorMessage = err.message || err.toString() || "Unknown error";
-        toast({
-          title: "Torrent file error",
-          description: "Failed to load torrent file: " + errorMessage,
-          variant: "destructive",
-        });
-      });
-
-      // Read torrent file as ArrayBuffer and handle potential parsing issues
-      const torrentData = await torrentFile.arrayBuffer();
-      console.log("Adding torrent data to client, size:", torrentData.byteLength, "bytes");
-
-      // Use the File object directly instead of ArrayBuffer for better compatibility
-      const torrentBlob = new Blob([torrentData], { type: 'application/x-bittorrent' });
-      const torrentFile2 = new File([torrentBlob], torrentFile.name, { type: 'application/x-bittorrent' });
-
-      console.log("🔍 Attempting to parse torrent with enhanced compatibility...");
       
       // Add timeout for torrent parsing 
       const parseTimeout = setTimeout(() => {
@@ -635,7 +614,15 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
       }, 15000);
       
       try {
-        const torrentObj = client.add(torrentFile2, (torrent: any) => {
+        // Use the original File object directly - WebTorrent can handle it natively
+        console.log("🔍 Adding torrent file directly to client...");
+        console.log("File details:", { 
+          name: torrentFile.name, 
+          size: torrentFile.size, 
+          type: torrentFile.type 
+        });
+        
+        const torrentObj = client.add(torrentFile, {}, (torrent: any) => {
           clearTimeout(parseTimeout);
         console.log("Torrent loaded:", {
           magnetURI: torrent.magnetURI,
@@ -702,13 +689,18 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         }
         });
         
-        // Handle add torrent errors
+        // Handle add torrent errors with detailed logging
         torrentObj.on('error', (torrentError: any) => {
           clearTimeout(parseTimeout);
-          console.error('Torrent parsing error:', torrentError);
-          const errorMsg = torrentError.message || torrentError.toString() || "Could not parse torrent file";
+          console.error('Torrent parsing error:', {
+            error: torrentError,
+            message: torrentError?.message,
+            stack: torrentError?.stack,
+            name: torrentError?.name
+          });
+          const errorMsg = torrentError?.message || "Could not parse torrent file";
           toast({
-            title: "Torrent parsing failed",
+            title: "Torrent parsing failed", 
             description: errorMsg,
             variant: "destructive",
           });
