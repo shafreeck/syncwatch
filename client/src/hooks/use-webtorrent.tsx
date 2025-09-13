@@ -359,6 +359,8 @@ export function useWebTorrent() {
                 console.warn("Autoplay failed (browser policy):", e);
               });
             }, { once: true });
+            // Mark as current active torrent to avoid any external cleanups or re-stream attempts
+            currentTorrent.current = torrent;
           } catch (e) {
             console.error("❌ StreamTo failed for existing torrent:", e);
           }
@@ -393,6 +395,8 @@ export function useWebTorrent() {
                     console.warn("Autoplay failed (browser policy):", e);
                   });
                 }, { once: true });
+                // Mark as current active torrent
+                currentTorrent.current = torrent;
               } catch (e) {
                 console.error("❌ StreamTo failed after waiting:", e);
               }
