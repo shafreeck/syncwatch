@@ -80,14 +80,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/rooms/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const { roomCode } = req.body;
+      const { roomCode, hostOnlyControl } = req.body;
       
       const existingRoom = await storage.getRoom(id);
       if (!existingRoom) {
         return res.status(404).json({ error: "Room not found" });
       }
       
-      const updatedRoom = await storage.updateRoom(id, { roomCode });
+      const updateData: any = {};
+      if (roomCode !== undefined) {
+        updateData.roomCode = roomCode;
+      }
+      if (hostOnlyControl !== undefined) {
+        updateData.hostOnlyControl = hostOnlyControl;
+      }
+      
+      const updatedRoom = await storage.updateRoom(id, updateData);
       res.json(updatedRoom);
     } catch (error) {
       console.error("Error updating room:", error);
@@ -233,28 +241,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const messages = await storage.getMessagesByRoom(roomId);
             const videos = await storage.getVideosByRoom(roomId);
 
-            socket.send(JSON.stringify({
-              type: "room_state",
-              data: { room, users, messages, videos }
-            }));
-
-            // If there is an active selection in this room, inform the newcomer
+            // If there is an active selection in this room, include it in room_state
+            let currentVideo = null;
+            let currentPlayback = null;
             const selection = roomCurrentSelection.get(roomId);
             if (selection) {
+              // Find the selected video in the videos list
+              currentVideo = videos.find(v => v.id === selection.videoId);
+              // Also get the current playback state
+              currentPlayback = roomPlaybackState.get(roomId);
+            }
+
+            socket.send(JSON.stringify({
+              type: "room_state",
+              data: {
+                room,
+                users,
+                messages,
+                videos,
+                currentVideo: currentVideo || null,
+                currentPlayback: currentPlayback || null
+              }
+            }));
+
+            // Send current host information to the newcomer
+            const hostUser = users.find(u => u.isHost);
+            if (hostUser) {
               socket.send(JSON.stringify({
-                type: "video_selected",
-                data: { videoId: selection.videoId, magnetUri: selection.magnetUri }
+                type: "host_info",
+                data: hostUser
               }));
             }
 
-            // Also send last known playback state (best-effort)
-            const playback = roomPlaybackState.get(roomId);
-            if (playback) {
+            // Send room settings to the newcomer
+            if (room) {
               socket.send(JSON.stringify({
-                type: "video_sync",
-                data: { action: playback.action, currentTime: playback.currentTime, roomId }
+                type: "host_only_control_updated",
+                data: { hostOnlyControl: room.hostOnlyControl || false }
               }));
             }
+
+            // Send current host information to the newcomer
 
             break;
 
@@ -293,7 +320,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             break;
 
           case "video_sync":
-            if (socket.roomId) {
+            if (socket.roomId && socket.userId) {
+              // Check if user is host or if host-only control is disabled
+              const usersInRoom = await storage.getUsersByRoom(socket.roomId);
+              const currentUser = usersInRoom.find(u => u.id === socket.userId);
+
+              // Get room settings
+              const room = await storage.getRoom(socket.roomId);
+              const hostOnlyControl = room?.hostOnlyControl || false;
+
+              // If host-only control is enabled and user is not host, don't broadcast sync message
+              if (hostOnlyControl && (!currentUser || !currentUser.isHost)) {
+                console.log("Host-only control is enabled. Only host can control playback.");
+                return;
+              }
+
               // Remember last playback state for newcomers
               try {
                 const { action, currentTime } = message.data || {};
@@ -467,6 +508,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 }
               } catch (error) {
                 console.error(`❌ Failed to update video status:`, error);
+              }
+            }
+            break;
+
+          case "update_host_only_control":
+            if (socket.userId && socket.roomId) {
+              // Verify user is host
+              const usersInRoom = await storage.getUsersByRoom(socket.roomId);
+              const currentUser = usersInRoom.find(u => u.id === socket.userId);
+              
+              if (!currentUser || !currentUser.isHost) {
+                socket.send(JSON.stringify({ type: "error", message: "Only host can update room settings" }));
+                return;
+              }
+              
+              // Update room setting
+              const { roomId, hostOnlyControl } = message.data;
+              if (roomId === socket.roomId) {
+                try {
+                  await storage.updateRoom(roomId, { hostOnlyControl });
+                  
+                  // Broadcast update to all users in room
+                  broadcastToRoom(socket.roomId, {
+                    type: "host_only_control_updated",
+                    data: { hostOnlyControl }
+                  });
+                } catch (error) {
+                  console.error("Error updating hostOnlyControl:", error);
+                  socket.send(JSON.stringify({ type: "error", message: "Failed to update room settings" }));
+                }
               }
             }
             break;

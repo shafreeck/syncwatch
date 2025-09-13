@@ -39,6 +39,9 @@ export default function Home() {
     lastSync,
     userProgresses,
     currentUser,
+    hostUser,
+    hostOnlyControl,
+    setHostOnlyControl,
     joinRoom,
     leaveRoom,
     sendMessage,
@@ -315,6 +318,11 @@ export default function Home() {
               statsByInfoHash={statsByInfoHash}
               userProgresses={userProgresses}
               currentUser={currentUser}
+              hostUser={hostUser}
+              hostOnlyControl={hostOnlyControl}
+              setHostOnlyControl={setHostOnlyControl}
+              sendWSMessage={sendWSMessage}
+              room={room}
             />
             
             <FileShare

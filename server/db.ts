@@ -20,7 +20,8 @@ function ensureSchema(db: Database.Database) {
       host_id TEXT NOT NULL,
       room_code TEXT,
       created_at INTEGER,
-      is_active INTEGER DEFAULT 1
+      is_active INTEGER DEFAULT 1,
+      host_only_control INTEGER DEFAULT 0
     )
   `).run();
 
@@ -102,10 +103,16 @@ function ensureSchemaWithMigration(db: Database.Database) {
     // Check if we need to add room_code column to existing rooms table
     const tableInfo = db.prepare("PRAGMA table_info(rooms)").all() as any[];
     const hasRoomCode = tableInfo.some(col => col.name === 'room_code');
+    const hasHostOnlyControl = tableInfo.some(col => col.name === 'host_only_control');
     
     if (!hasRoomCode && tableInfo.length > 0) {
       console.log('Adding room_code column to existing rooms table...');
       db.prepare('ALTER TABLE rooms ADD COLUMN room_code TEXT').run();
+    }
+    
+    if (!hasHostOnlyControl && tableInfo.length > 0) {
+      console.log('Adding host_only_control column to existing rooms table...');
+      db.prepare('ALTER TABLE rooms ADD COLUMN host_only_control INTEGER DEFAULT 0').run();
     }
   } catch (e) {
     console.log('rooms table does not exist yet, will create with full schema');

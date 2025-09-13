@@ -21,10 +21,15 @@ interface VideoPlayerProps {
   lastSync?: { action: 'play'|'pause'|'seek'; currentTime: number; roomId: string; at: number } | null;
   statsByInfoHash?: Record<string, { uploadMBps: number; downloadMBps: number; peers: number; progress: number; name?: string }>;
   userProgresses?: Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>;
-  currentUser?: { id: string; username: string } | null;
+  currentUser?: { id: string; username: string; isHost: boolean } | null;
+  hostUser?: { id: string; username: string } | null;
+  hostOnlyControl?: boolean;
+  setHostOnlyControl?: (value: boolean) => void;
+  sendWSMessage?: (type: string, data: any) => void;
+  room?: { id: string; name: string; hostId: string; isActive: boolean } | null;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser, hostUser, hostOnlyControl, setHostOnlyControl, sendWSMessage, room }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoJsPlayerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -35,6 +40,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const [showControls, setShowControls] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [allowSyncBroadcast, setAllowSyncBroadcast] = useState(true);
+  const [hasPlayedFirstTime, setHasPlayedFirstTime] = useState(false);
 
   const {
     client,
@@ -69,6 +75,16 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     };
   }, []);
   
+  // Reset first play state when current video changes
+  useEffect(() => {
+    setHasPlayedFirstTime(false);
+  }, [currentVideo]);
+
+  // Reset first play state when room changes
+  useEffect(() => {
+    setHasPlayedFirstTime(false);
+  }, [room]);
+
   // Set up video element event listeners
   useEffect(() => {
     const video = videoRef.current;
@@ -77,7 +93,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const updateTime = () => {
       const newTime = video.currentTime || 0;
       setCurrentTime(newTime);
-      
+
       // Send periodic user progress updates (every 2 seconds for better real-time tracking)
       const now = Date.now();
       if (onUserProgress && (now - lastProgressUpdate) > 2000) {
@@ -93,13 +109,30 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const handleCanPlay = () => {
       console.log('Video ready to play');
       setIsVideoLoading(false); // Hide loading when video is ready
+
+      // Check if we should auto-play when video is ready
+      if (lastSync && lastSync.action === 'play') {
+        console.log('🎬 Auto-playing video on canplay');
+        const video = videoRef.current;
+        if (video) {
+          // Small delay to ensure everything is ready
+          setTimeout(() => {
+            video.play().catch((error) => {
+              console.error('❌ Auto-play on canplay failed:', error);
+              // Show play button overlay when autoplay fails
+              setIsPlaying(false);
+            });
+            setIsPlaying(true);
+          }, 100);
+        }
+      }
     };
-    
+
     const handleLoadedData = () => {
       console.log('Video data loaded - can start playback');
       setIsVideoLoading(false); // Hide loading when data loaded
     };
-    
+
     const handleError = (e: any) => {
       // Suppress all video errors since we're using video.js errorDisplay: false
       // and handling errors through our own UI
@@ -257,6 +290,60 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     }, 1000);
   }, [lastSync]);
   
+  // Handle video sync for new users
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !currentVideo || !lastSync) return;
+
+    console.log('🎬 Video sync triggered:', { currentVideo, lastSync, isPlaying, readyState: video.readyState });
+
+    // Function to apply sync when video is ready
+    const applySync = () => {
+      // Always sync the time regardless of play/pause state
+      if (typeof lastSync.currentTime === 'number' && !isNaN(lastSync.currentTime)) {
+        const timeDiff = Math.abs((video.currentTime || 0) - lastSync.currentTime);
+        // Only seek if difference is noticeable to avoid jank
+        if (timeDiff > 0.5) {
+          console.log('⏭️ Seeking to:', lastSync.currentTime);
+          video.currentTime = lastSync.currentTime;
+        }
+      }
+
+      // Handle play/pause state
+      if (lastSync.action === 'play' && video.paused) {
+        console.log('🎬 Playing video');
+        video.play().catch((error) => {
+          console.error('❌ Play failed:', error);
+        });
+        setIsPlaying(true);
+      } else if (lastSync.action === 'pause' && !video.paused) {
+        console.log('⏸️ Pausing video');
+        video.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    // Check if video is ready, otherwise wait for it to be ready
+    if (video.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+      // Video is ready, apply sync immediately
+      applySync();
+    } else {
+      // Video is not ready, wait for it to load
+      console.log('⏳ Video not ready yet, waiting for canplay event');
+      const canPlayHandler = () => {
+        console.log('✅ Video ready, applying sync');
+        applySync();
+        video.removeEventListener('canplay', canPlayHandler);
+      };
+      video.addEventListener('canplay', canPlayHandler);
+
+      // Clean up event listener
+      return () => {
+        video.removeEventListener('canplay', canPlayHandler);
+      };
+    }
+  }, [currentVideo, lastSync]);
+  
   const handleSyncToHost = () => {
     // 获取房间中最快的进度作为同步目标
     if (!currentUser) return;
@@ -284,6 +371,13 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const video = videoRef.current;
     if (!video) return;
 
+    // Check if user is host or if host-only control is disabled
+    const isHost = currentUser?.isHost || false;
+    if (hostOnlyControl && !isHost) {
+      console.log("Host-only control is enabled. Only host can control playback.");
+      return;
+    }
+
     if (isPlaying) {
       video.pause();
       setIsPlaying(false);
@@ -302,7 +396,13 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         paused: video.paused,
         muted: video.muted
       });
-      
+
+      // If there's a lastSync state and the video is at the beginning, seek to the sync position first
+      if (lastSync && video.currentTime === 0 && lastSync.currentTime > 0) {
+        console.log('⏭️ Seeking to sync position before play:', lastSync.currentTime);
+        video.currentTime = lastSync.currentTime;
+      }
+
       video.play().then(() => {
         console.log('✅ Play SUCCESS!');
         setIsPlaying(true);
@@ -342,6 +442,13 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const video = videoRef.current;
     if (!video || !duration) return;
+
+    // Check if user is host or if host-only control is disabled
+    const isHost = currentUser?.isHost || false;
+    if (hostOnlyControl && !isHost) {
+      console.log("Host-only control is enabled. Only host can control playback.");
+      return;
+    }
 
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
@@ -464,14 +571,37 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           controls
           onPlay={() => {
             setIsPlaying(true);
-            onVideoSync('play', videoRef.current?.currentTime || 0);
+            // Check if user is host or if host-only control is disabled
+            const isHost = currentUser?.isHost || false;
+
+            // If this is the user's first play action after joining, don't broadcast it
+            if (!hasPlayedFirstTime) {
+              setHasPlayedFirstTime(true);
+              console.log("首次播放，不广播同步消息");
+              return;
+            }
+
+            // Only send sync if allowed (not applying incoming sync)
+            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+              onVideoSync('play', videoRef.current?.currentTime || 0);
+            }
           }}
           onPause={() => {
             setIsPlaying(false);
-            onVideoSync('pause', videoRef.current?.currentTime || 0);
+            // Check if user is host or if host-only control is disabled
+            const isHost = currentUser?.isHost || false;
+            // Only send sync if allowed (not applying incoming sync)
+            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+              onVideoSync('pause', videoRef.current?.currentTime || 0);
+            }
           }}
           onSeeking={() => {
-            onVideoSync('seek', videoRef.current?.currentTime || 0);
+            // Check if user is host or if host-only control is disabled
+            const isHost = currentUser?.isHost || false;
+            // Only send sync if allowed (not applying incoming sync)
+            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+              onVideoSync('seek', videoRef.current?.currentTime || 0);
+            }
           }}
           data-testid="video-player"
         >
@@ -525,6 +655,28 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                         </div>
                       );
                     })()}
+                    {currentUser?.isHost && setHostOnlyControl && (
+                      <button
+                        onClick={() => {
+                          const newSetting = !hostOnlyControl;
+                          setHostOnlyControl && setHostOnlyControl(newSetting);
+                          // Send update to server
+                          if (room?.id && sendWSMessage) {
+                            sendWSMessage("update_host_only_control", {
+                              roomId: room.id,
+                              hostOnlyControl: newSetting
+                            });
+                          }
+                        }}
+                        className={`px-2 py-1 rounded text-xs ${
+                          hostOnlyControl 
+                            ? 'bg-red-500 hover:bg-red-600' 
+                            : 'bg-green-500 hover:bg-green-600'
+                        } text-white transition-colors`}
+                      >
+                        {hostOnlyControl ? 'Host Only' : 'All Control'}
+                      </button>
+                    )}
                     {currentPeers > 0 && (
                       <span className="text-white/80">{currentPeers} peers</span>
                     )}

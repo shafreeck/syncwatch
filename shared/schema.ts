@@ -11,6 +11,7 @@ export const rooms = sqliteTable("rooms", {
   roomCode: text("room_code"), // 可选的房间代码，作为密码使用，无需唯一性
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   isActive: integer("is_active", { mode: "boolean" }).default(true),
+  hostOnlyControl: integer("host_only_control", { mode: "boolean" }).default(false),
 });
 
 export const users = sqliteTable("users", {
@@ -167,6 +168,26 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       size: z.string().optional(),
       infoHash: z.string().optional(),
       magnetUri: z.string().optional(),
+    }),
+  }),
+  z.object({
+    type: z.literal("host_info"),
+    data: z.object({
+      userId: z.string(),
+      username: z.string(),
+    }),
+  }),
+  z.object({
+    type: z.literal("update_host_only_control"),
+    data: z.object({
+      roomId: z.string(),
+      hostOnlyControl: z.boolean(),
+    }),
+  }),
+  z.object({
+    type: z.literal("host_only_control_updated"),
+    data: z.object({
+      hostOnlyControl: z.boolean(),
     }),
   }),
 ]);

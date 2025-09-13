@@ -44,6 +44,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   const [lastSync, setLastSync] = useState<{ action: 'play' | 'pause' | 'seek'; currentTime: number; roomId: string; at: number } | null>(null);
   const [userProgresses, setUserProgresses] = useState<Record<string, { currentTime: number; isPlaying: boolean; lastUpdate: number }>>({});
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [hostUser, setHostUser] = useState<User | null>(null); // New state for host user
+  const [hostOnlyControl, setHostOnlyControl] = useState(false); // Host-only control setting
+  const [roomStateProcessed, setRoomStateProcessed] = useState(false); // Track if room state has been processed
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
@@ -113,12 +116,14 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     console.log('Received WebSocket message:', message.type, message.data);
     switch (message.type) {
       case "room_state":
-        console.log('Setting room state:', {
+        console.log('🎬 Setting room state:', {
           room: message.data.room,
           users: message.data.users?.length,
           messages: message.data.messages?.length,
           videos: message.data.videos?.length,
-          videosData: message.data.videos
+          videosData: message.data.videos,
+          currentVideo: message.data.currentVideo,
+          currentPlayback: message.data.currentPlayback
         });
         setRoom(message.data.room);
         const users = message.data.users || [];
@@ -127,6 +132,26 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         setVideos(message.data.videos || []);
         console.log('✓ Videos state updated:', message.data.videos);
 
+        // Set current video if provided
+        if (message.data.currentVideo) {
+          setCurrentVideo(message.data.currentVideo);
+          console.log('🎬 Setting current video from room_state:', message.data.currentVideo);
+        }
+
+        // Set last sync state if provided
+        if (message.data.currentPlayback) {
+          const { action, currentTime } = message.data.currentPlayback;
+          const newSyncState = { action, currentTime, roomId: message.data.room.id, at: Date.now() };
+          setLastSync(newSyncState);
+          console.log('🎬 Setting lastSync from room_state:', newSyncState);
+        }
+
+        // Set the hostUser state
+        const host = users.find((u: User) => u.isHost);
+        if (host) {
+          setHostUser(host);
+        }
+
         // Find current user by username if we have a temp current user
         if (currentUser && (!currentUser.id || currentUser.id === '') && users.length > 0) {
           const foundUser = users.find((u: User) => u.username === currentUser.username);
@@ -134,6 +159,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             setCurrentUser(foundUser);
           }
         }
+
+        // Mark room state as processed
+        setRoomStateProcessed(true);
         break;
 
       case "user_joined":
@@ -147,12 +175,29 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
             setCurrentUser(u);
           }
 
+          // Update hostUser if the new user is the host
+          if (u.isHost) {
+            setHostUser(u);
+          }
+
           return newUsers;
         });
         break;
 
       case "user_left":
-        setUsers(prev => prev.filter(user => user.id !== message.data.userId));
+        setUsers(prev => {
+          const newUsers = prev.filter(user => user.id !== message.data.userId);
+          // If the host left, update the hostUser state
+          setHostUser(prevHostUser => {
+            if (prevHostUser && prevHostUser.id === message.data.userId) {
+              // Find the new host (if any)
+              const newHost = newUsers.find(user => user.isHost);
+              return newHost || null;
+            }
+            return prevHostUser;
+          });
+          return newUsers;
+        });
         break;
 
       case "new_message":
@@ -220,13 +265,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
       case "video_sync":
         // Handle video synchronization
-        console.log("Video sync:", message.data);
+        console.log("🎬 Video sync received:", message.data);
         try {
           const { action, currentTime, roomId } = message.data || {};
           if (action && typeof currentTime === 'number') {
-            setLastSync({ action, currentTime, roomId, at: Date.now() });
+            const newSyncState = { action, currentTime, roomId, at: Date.now() };
+            console.log("🎬 Setting lastSync state:", newSyncState);
+            setLastSync(newSyncState);
           }
-        } catch { }
+        } catch (error) {
+          console.error("❌ Error handling video_sync:", error);
+        }
         break;
 
       case "user_progress":
@@ -248,14 +297,14 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
 
       case "video_selected":
         // Handle video selection - always set a fresh object to force re-load
-        console.log("Video selected message received:", message.data);
+        console.log("🎬 Video selected message received:", message.data);
         console.log("Current videos in state:", videos);
         {
           const selectedVideo = videos.find(v => v.id === message.data.videoId);
           if (selectedVideo) {
             const fresh = { ...selectedVideo };
             setCurrentVideo(fresh);
-            console.log("Setting current video from videos list:", fresh);
+            console.log("🎬 Setting current video from videos list:", fresh);
           } else {
             // If video not found in current videos list, create it from message data
             // Extract infoHash from magnetUri if available
@@ -274,7 +323,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
               uploadedAt: new Date()
             };
             setCurrentVideo(videoFromMessage);
-            console.log("Setting current video from message data:", videoFromMessage);
+            console.log("🎬 Setting current video from message data:", videoFromMessage);
           }
         }
         break;
@@ -309,6 +358,23 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         });
         break;
 
+      case "host_info":
+        // Handle host information
+        console.log("Host info received:", message.data);
+        setHostUser(message.data);
+        // Update users list to mark the host
+        setUsers(prev => prev.map(user => ({
+          ...user,
+          isHost: user.id === message.data.id
+        })));
+        break;
+
+      case "host_only_control_updated":
+        // Handle host-only control setting update
+        console.log("Host-only control setting updated:", message.data);
+        setHostOnlyControl(message.data.hostOnlyControl);
+        break;
+
       default:
         console.log("Unknown message type:", message.type);
     }
@@ -318,6 +384,16 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   useEffect(() => {
     handleMessageRef.current = handleMessage;
   }, [handleMessage]);
+
+  // Check for current video selection after room state is processed
+  useEffect(() => {
+    if (roomStateProcessed && room && videos.length > 0) {
+      // Check if there's a current selection for this room
+      // This would require a way to track the current selection on the client side
+      // For now, we'll just log that we've processed the room state
+      console.log('Room state processed, videos available:', videos.length);
+    }
+  }, [roomStateProcessed, room, videos]);
 
   const sendMessage = useCallback((type: string, data: any) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -387,10 +463,19 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   }, [sendMessage, room]);
 
   const syncVideo = useCallback((action: string, currentTime: number) => {
-    if (room) {
+    if (room && currentUser) {
+      // Check if host-only control is enabled
+      const isHost = currentUser.isHost;
+      
+      // If host-only control is enabled and user is not host, don't send sync message
+      if (hostOnlyControl && !isHost) {
+        console.log("Host-only control is enabled. Only host can control playback.");
+        return;
+      }
+      
       sendMessage("video_sync", { action, currentTime, roomId: room.id });
     }
-  }, [sendMessage, room]);
+  }, [sendMessage, room, currentUser, hostOnlyControl]);
 
   // New function to send periodic user progress updates (visualization only)
   const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
@@ -914,6 +999,9 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     lastSync,
     userProgresses,
     currentUser,
+    hostUser, // Include hostUser in the return value
+    hostOnlyControl, // Include hostOnlyControl in the return value
+    setHostOnlyControl, // Include setHostOnlyControl in the return value
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,
