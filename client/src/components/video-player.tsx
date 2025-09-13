@@ -24,12 +24,13 @@ interface VideoPlayerProps {
   currentUser?: { id: string; username: string; isHost: boolean } | null;
   hostUser?: { id: string; username: string } | null;
   hostOnlyControl?: boolean;
+  canControl?: boolean;
   setHostOnlyControl?: (value: boolean) => void;
   sendWSMessage?: (type: string, data: any) => void;
-  room?: { id: string; name: string; hostId: string; isActive: boolean } | null;
+  room?: { id: string; name: string; isActive: boolean } | null;
 }
 
-export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser, hostUser, hostOnlyControl, setHostOnlyControl, sendWSMessage, room }: VideoPlayerProps) {
+export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser, hostUser, hostOnlyControl, canControl, setHostOnlyControl, sendWSMessage, room }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoJsPlayerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,6 +42,9 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [allowSyncBroadcast, setAllowSyncBroadcast] = useState(true);
   const [hasPlayedFirstTime, setHasPlayedFirstTime] = useState(false);
+  // Track seeking state to avoid broadcasting transient pauses
+  const isSeekingRef = useRef(false);
+  const wasPlayingBeforeSeekRef = useRef(false);
 
   const {
     client,
@@ -345,9 +349,11 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
   }, [currentVideo, lastSync]);
   
   const handleSyncToHost = () => {
-    // 获取房间中最快的进度作为同步目标
+    // 本地同步到房间中最快的进度，不广播（避免触发权限校验和干扰他人）
     if (!currentUser) return;
-    
+    const video = videoRef.current;
+    if (!video) return;
+
     const allUserIds = Object.keys(userProgresses).filter(id => id !== currentUser.id);
     const activeProgresses = allUserIds
       .map(id => {
@@ -357,13 +363,18 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
         return isStale ? null : progress;
       })
       .filter(p => p && p.isPlaying);
-    
+
     if (activeProgresses.length > 0) {
       const maxTime = Math.max(...activeProgresses.map(p => p!.currentTime));
-      if (onSyncToHost) {
-        onSyncToHost(maxTime);
-        setShowSyncNotification(false);
+      // 暂时关闭同步广播，避免触发 onSeeking 的 WS 消息
+      setAllowSyncBroadcast(false);
+      try {
+        video.currentTime = maxTime;
+      } finally {
+        // 稍后恢复广播
+        setTimeout(() => setAllowSyncBroadcast(true), 800);
       }
+      setShowSyncNotification(false);
     }
   };
 
@@ -373,7 +384,8 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
     // Check if user is host or if host-only control is disabled
     const isHost = currentUser?.isHost || false;
-    if (hostOnlyControl && !isHost) {
+    const allowed = canControl || !hostOnlyControl || isHost;
+    if (!allowed) {
       console.log("Host-only control is enabled. Only host can control playback.");
       return;
     }
@@ -445,7 +457,8 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
 
     // Check if user is host or if host-only control is disabled
     const isHost = currentUser?.isHost || false;
-    if (hostOnlyControl && !isHost) {
+    const allowed = canControl || !hostOnlyControl || isHost;
+    if (!allowed) {
       console.log("Host-only control is enabled. Only host can control playback.");
       return;
     }
@@ -453,7 +466,6 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     const newTime = percent * duration;
-    
     video.currentTime = newTime;
     if (allowSyncBroadcast) {
       onVideoSync("seek", newTime);
@@ -573,6 +585,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
             setIsPlaying(true);
             // Check if user is host or if host-only control is disabled
             const isHost = currentUser?.isHost || false;
+            const allowed = canControl || !hostOnlyControl || isHost;
 
             // If this is the user's first play action after joining, don't broadcast it
             if (!hasPlayedFirstTime) {
@@ -582,26 +595,42 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
             }
 
             // Only send sync if allowed (not applying incoming sync)
-            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+            if (allowSyncBroadcast && allowed) {
               onVideoSync('play', videoRef.current?.currentTime || 0);
             }
           }}
           onPause={() => {
-            setIsPlaying(false);
+            const video = videoRef.current;
             // Check if user is host or if host-only control is disabled
             const isHost = currentUser?.isHost || false;
+            const allowed = canControl || !hostOnlyControl || isHost;
+            // If pause occurs while scrubbing and we were playing, resume locally and do not broadcast
+            if (isSeekingRef.current && wasPlayingBeforeSeekRef.current) {
+              try { video?.play().catch(() => {}); } catch {}
+              return;
+            }
+            setIsPlaying(false);
             // Only send sync if allowed (not applying incoming sync)
-            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+            if (allowSyncBroadcast && allowed) {
               onVideoSync('pause', videoRef.current?.currentTime || 0);
             }
           }}
           onSeeking={() => {
             // Check if user is host or if host-only control is disabled
             const isHost = currentUser?.isHost || false;
+            const allowed = canControl || !hostOnlyControl || isHost;
+            // Mark seeking state and remember if we were playing
+            isSeekingRef.current = true;
+            wasPlayingBeforeSeekRef.current = !videoRef.current?.paused;
             // Only send sync if allowed (not applying incoming sync)
-            if (allowSyncBroadcast && (!hostOnlyControl || isHost)) {
+            if (allowSyncBroadcast && allowed) {
               onVideoSync('seek', videoRef.current?.currentTime || 0);
             }
+          }}
+          onSeeked={() => {
+            // Clear seeking flags; no extra broadcasts
+            isSeekingRef.current = false;
+            wasPlayingBeforeSeekRef.current = false;
           }}
           data-testid="video-player"
         >
@@ -668,13 +697,14 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                             });
                           }
                         }}
-                        className={`px-2 py-1 rounded text-xs ${
-                          hostOnlyControl 
-                            ? 'bg-red-500 hover:bg-red-600' 
-                            : 'bg-green-500 hover:bg-green-600'
-                        } text-white transition-colors`}
+                        className={`inline-flex items-center gap-1 h-6 px-2 rounded-full text-[11px] ring-1 transition-colors ${
+                          hostOnlyControl
+                            ? 'text-red-300 ring-red-500/40 bg-red-500/10 hover:bg-red-500/15'
+                            : 'text-emerald-300 ring-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/15'
+                        }`}
+                        title={hostOnlyControl ? '仅房主可控' : '所有人可控'}
                       >
-                        {hostOnlyControl ? 'Host Only' : 'All Control'}
+                        {hostOnlyControl ? 'Host Only' : 'All'}
                       </button>
                     )}
                     {currentPeers > 0 && (

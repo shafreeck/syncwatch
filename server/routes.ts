@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { wsMessageSchema, insertRoomSchema, insertUserSchema, type WSMessage } from "@shared/schema";
+import { nanoid } from "nanoid";
 
 interface ExtendedWebSocket extends WebSocket {
   userId?: string;
@@ -16,8 +17,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/rooms", async (req, res) => {
     try {
       const roomData = insertRoomSchema.parse(req.body);
-      const room = await storage.createRoom(roomData);
-      res.json(room);
+      // Default to host-only control; generate并持久化 ownerSecret
+      const ownerSecret = nanoid(32);
+      const room = await storage.createRoom({
+        ...roomData,
+        hostOnlyControl: (roomData as any).hostOnlyControl ?? true,
+        ownerSecret,
+      } as any);
+      // 返回给创建者；后续接口不再暴露该字段
+      res.json({ ...room, ownerSecret });
     } catch (error) {
       console.error("Create room error:", error);
       res.status(400).json({ error: "Invalid room data" });
@@ -31,7 +39,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!room) {
         return res.status(404).json({ error: "Room not found" });
       }
-      res.json(room);
+      const { ownerSecret, ...safe } = room as any;
+      res.json(safe);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch room" });
     }
@@ -43,7 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!room) {
         return res.status(404).json({ error: "Room not found" });
       }
-      res.json(room);
+      const { ownerSecret, ...safe } = room as any;
+      res.json(safe);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch room" });
     }
@@ -111,6 +121,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const roomCurrentSelection = new Map<string, { videoId: string; magnetUri: string }>();
   // Persist last playback state (best-effort) so newcomers can align state
   const roomPlaybackState = new Map<string, { action: 'play' | 'pause' | 'seek'; currentTime: number }>();
+  // ownerSecret 改为持久化到数据库，不再使用内存映射
+  // Allow-list of users who can control playback when host-only mode is on
+  const roomControlAllow = new Map<string, Set<string>>();
 
   async function cleanupStaleUsers(roomId: string) {
     try {
@@ -147,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         switch (message.type) {
           case "join_room":
-            const { roomId, username, persistentUserId } = message.data;
+            const { roomId, username, persistentUserId, ownerSecret: providedOwnerSecret } = message.data;
             console.log(`🚪 Join room request:`, { roomId, username, persistentUserId });
             
             // Verify room exists
@@ -195,9 +208,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Before creating a new record, clean up any stale users in this room
             await cleanupStaleUsers(roomId);
             
-            // Check if this user should be the host (first user in the room or room creator)
-            const existingUsers = await storage.getUsersByRoom(roomId);
-            const isHost = existingUsers.length === 0; // First user becomes host
+            // 使用持久化的 ownerSecret 严格判定房主（不再兼容旧逻辑）
+            let isHost = false;
+            try {
+              isHost = !!providedOwnerSecret && providedOwnerSecret === (room as any).ownerSecret;
+            } catch {}
             
             // Use persistent user ID if provided, otherwise create new user
             let user;
@@ -221,6 +236,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
 
+            // 不再改写 hostId；房主身份仅由 ownerSecret 决定
+
             socket.userId = user.id;
             socket.roomId = roomId;
 
@@ -235,6 +252,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               type: "user_joined",
               data: { user }
             }, socket);
+
+            // Initialize per-room control allow-list container if missing
+            if (!roomControlAllow.has(roomId)) {
+              roomControlAllow.set(roomId, new Set());
+            }
 
             // Send current room state to new user
             const users = await storage.getUsersByRoom(roomId);
@@ -252,15 +274,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
               currentPlayback = roomPlaybackState.get(roomId);
             }
 
+            const allowedUserIds = Array.from(roomControlAllow.get(roomId) || new Set());
+            // 发送 room_state 前移除 ownerSecret
+            const { ownerSecret, ...safeRoom } = room as any;
             socket.send(JSON.stringify({
               type: "room_state",
               data: {
-                room,
+                room: safeRoom,
                 users,
                 messages,
                 videos,
                 currentVideo: currentVideo || null,
-                currentPlayback: currentPlayback || null
+                currentPlayback: currentPlayback || null,
+                control: { allowedUserIds, hostOnlyControl: room.hostOnlyControl || false }
               }
             }));
 
@@ -329,8 +355,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const room = await storage.getRoom(socket.roomId);
               const hostOnlyControl = room?.hostOnlyControl || false;
 
-              // If host-only control is enabled and user is not host, don't broadcast sync message
-              if (hostOnlyControl && (!currentUser || !currentUser.isHost)) {
+              // If host-only control is enabled and user is not host or explicitly allowed, block
+              const allowedSet = roomControlAllow.get(socket.roomId) || new Set<string>();
+              if (hostOnlyControl && (!currentUser || (!currentUser.isHost && !allowedSet.has(currentUser.id)))) {
                 console.log("Host-only control is enabled. Only host can control playback.");
                 return;
               }
@@ -346,6 +373,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 type: "video_sync",
                 data: message.data
               }, socket);
+            }
+            break;
+
+          case "control_request":
+            if (socket.roomId && socket.userId) {
+              const roomId = socket.roomId;
+              const usersInRoom = await storage.getUsersByRoom(roomId);
+              const hosts = usersInRoom.filter(u => u.isHost);
+              const payload = {
+                type: "control_request",
+                data: { roomId, userId: socket.userId, username: usersInRoom.find(u => u.id === socket.userId)?.username }
+              };
+              const conns = roomConnections.get(roomId) || new Set();
+              conns.forEach(s => {
+                const isHostSocket = hosts.some(h => h.id === (s as ExtendedWebSocket).userId);
+                if (isHostSocket && s.readyState === WebSocket.OPEN) {
+                  s.send(JSON.stringify(payload));
+                }
+              });
+            }
+            break;
+
+          case "control_grant":
+            if (socket.roomId && socket.userId) {
+              // Verify user is host
+              const usersInRoom = await storage.getUsersByRoom(socket.roomId);
+              const currentUser = usersInRoom.find(u => u.id === socket.userId);
+              if (!currentUser || !currentUser.isHost) {
+                socket.send(JSON.stringify({ type: "error", message: "Only host can grant control" }));
+                return;
+              }
+              const { roomId, userId, canControl } = message.data;
+              if (roomId !== socket.roomId) break;
+              const set = roomControlAllow.get(roomId) || new Set<string>();
+              if (canControl) set.add(userId); else set.delete(userId);
+              roomControlAllow.set(roomId, set);
+              broadcastToRoom(roomId, {
+                type: "control_permissions",
+                data: { roomId, allowedUserIds: Array.from(set) }
+              });
             }
             break;
             

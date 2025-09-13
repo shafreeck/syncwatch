@@ -91,9 +91,11 @@ export default function SeedingProgressModal({
 
           {/* Stats Grid */}
           {(() => {
-            const showSpeed = peers > 0 && shareSpeed > 0;
+            const showPeers = peers > 0;
+            const showSpeed = showPeers && shareSpeed > 0;
+            if (!showPeers && !showSpeed) return null;
             return (
-              <div className={`grid ${showSpeed ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+              <div className={`grid ${showPeers && showSpeed ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
                 {showSpeed && (
                   <div className="flex items-center space-x-2">
                     <Activity className="w-4 h-4 text-green-500" />
@@ -106,15 +108,17 @@ export default function SeedingProgressModal({
                   </div>
                 )}
 
-                <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-blue-500" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Connected Peers</p>
-                    <p className="text-sm font-mono" data-testid="text-peer-count">
-                      {peers}
-                    </p>
+                {showPeers && (
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Connected Peers</p>
+                      <p className="text-sm font-mono" data-testid="text-peer-count">
+                        {peers}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })()}

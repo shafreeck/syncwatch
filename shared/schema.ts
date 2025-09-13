@@ -7,7 +7,7 @@ import { z } from "zod";
 export const rooms = sqliteTable("rooms", {
   id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   name: text("name").notNull(),
-  hostId: text("host_id").notNull(),
+  ownerSecret: text("owner_secret"), // 持久化的房主密钥（仅服务端使用，不对外泄露）
   roomCode: text("room_code"), // 可选的房间代码，作为密码使用，无需唯一性
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   isActive: integer("is_active", { mode: "boolean" }).default(true),
@@ -85,6 +85,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       roomId: z.string(),
       username: z.string(),
       persistentUserId: z.string().optional(),
+      ownerSecret: z.string().optional(),
     }),
   }),
   z.object({
@@ -188,6 +189,31 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     type: z.literal("host_only_control_updated"),
     data: z.object({
       hostOnlyControl: z.boolean(),
+    }),
+  }),
+  // Playback control permission flow
+  z.object({
+    type: z.literal("control_request"),
+    data: z.object({
+      roomId: z.string(),
+      userId: z.string().optional(),
+      username: z.string().optional(),
+    }),
+  }),
+  z.object({
+    type: z.literal("control_grant"),
+    data: z.object({
+      roomId: z.string(),
+      userId: z.string(),
+      canControl: z.boolean(),
+    }),
+  }),
+  z.object({
+    type: z.literal("control_permissions"),
+    data: z.object({
+      roomId: z.string(),
+      allowedUserIds: z.array(z.string()),
+      hostOnlyControl: z.boolean().optional(),
     }),
   }),
 ]);

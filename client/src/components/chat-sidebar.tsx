@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, MessageCircle, Send, Settings } from "lucide-react";
+import { Users, MessageCircle, Send, Settings, Lock, Crown, KeyRound, Hand } from "lucide-react";
 
 interface User {
   id: string;
@@ -31,6 +31,12 @@ interface ChatSidebarProps {
   onShowRoomSettings?: () => void;
   roomId?: string;
   videoDuration?: number; // For accurate progress bar calculation
+  hostOnlyControl?: boolean;
+  allowedControlUserIds?: string[];
+  onGrantControl?: (userId: string, canControl: boolean) => void;
+  onRequestControl?: () => void;
+  setHostOnlyControl?: (value: boolean) => void;
+  roomStateProcessed?: boolean;
 }
 
 export default function ChatSidebar({
@@ -43,6 +49,12 @@ export default function ChatSidebar({
   onShowRoomSettings,
   roomId,
   videoDuration = 600, // Default 10 minutes
+  hostOnlyControl = false,
+  allowedControlUserIds = [],
+  onGrantControl,
+  onRequestControl,
+  setHostOnlyControl,
+  roomStateProcessed = false,
 }: ChatSidebarProps) {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -107,10 +119,36 @@ export default function ChatSidebar({
             <Users className="w-5 h-5 text-primary mr-2" />
             Viewers
           </span>
-          <div className="flex items-center space-x-2">
+          {/* 回归最稳定的布局：单行靠右 + 固定间距 */}
+          <div className="flex items-center justify-end space-x-2">
             <span className="text-sm text-muted-foreground" data-testid="text-user-count">
               {users.length}
             </span>
+            {roomStateProcessed && currentUser?.isHost && (
+              <div className="flex items-center space-x-2">
+                {/* 极简开关：语义改为 Allow Control（开=所有人可控，关=仅房主） */}
+                <button
+                  type="button"
+                  onClick={() => setHostOnlyControl && setHostOnlyControl(!hostOnlyControl)}
+                  aria-pressed={!hostOnlyControl}
+                  className={`relative inline-flex items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30
+                    ${!hostOnlyControl ? 'bg-emerald-500/30' : 'bg-white/10'}
+                    ring-1 ring-white/10 h-4 sm:h-5 w-8 sm:w-9`}
+                  title={!hostOnlyControl ? 'Allow Control: on (everyone)' : 'Allow Control: off (host only)'}
+                >
+                  <span
+                    className={`absolute left-0.5 top-0.5 inline-block rounded-full transition-transform shadow-sm 
+                      ${!hostOnlyControl ? 'bg-white/70' : 'bg-white/60'}
+                      h-3 w-3 sm:h-4 sm:w-4
+                      ${!hostOnlyControl ? 'translate-x-4 sm:translate-x-[18px]' : 'translate-x-0'}`}
+                  />
+                </button>
+                <div className={`flex items-center select-none text-[10px] sm:text-xs ${!hostOnlyControl ? 'text-emerald-300' : 'text-white/60'}`}>
+                  <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
+                  <span className="hidden sm:inline">Allow Control</span>
+                </div>
+              </div>
+            )}
             {currentUser?.isHost && onShowRoomSettings && (
               <Button
                 variant="ghost"
@@ -154,9 +192,41 @@ export default function ChatSidebar({
                       {user.username}
                     </span>
                   </div>
-                  
+                  {/* Per-user control chips */}
+                  <div className="flex items-center">
+                    {user.isHost && (
+                      <span className="inline-flex items-center gap-1 text-xs text-purple-400" title="Room host">
+                        <Crown className="w-3.5 h-3.5" /> Host
+                      </span>
+                    )}
+                    {roomStateProcessed && currentUser?.isHost && !user.isHost && onGrantControl && (
+                      <button
+                        onClick={() => onGrantControl(user.id, !allowedControlUserIds.includes(user.id))}
+                        className={`inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[11px] transition-all ${
+                          allowedControlUserIds.includes(user.id)
+                            ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25'
+                            : 'bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
+                        title={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
+                        aria-label={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
+                      >
+                        <KeyRound className="w-3 h-3" />
+                        {allowedControlUserIds.includes(user.id) ? 'Allowed' : 'Allow'}
+                      </button>
+                    )}
+                    {roomStateProcessed && !currentUser?.isHost && currentUser?.id === user.id && hostOnlyControl && !allowedControlUserIds.includes(user.id) && onRequestControl && (
+                      <button
+                        onClick={() => onRequestControl()}
+                        className="inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[11px] bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10 hover:text-white"
+                        title="Request playback control"
+                        aria-label="Request playback control"
+                      >
+                        <Hand className="w-3 h-3" /> Request
+                      </button>
+                    )}
+                  </div>
                 </div>
-                
+
                 {/* User playback progress bar below name */}
                 {(() => {
                   const progress = getUserProgress(user.id);

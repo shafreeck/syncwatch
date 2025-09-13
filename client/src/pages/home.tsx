@@ -42,6 +42,10 @@ export default function Home() {
     hostUser,
     hostOnlyControl,
     setHostOnlyControl,
+    roomStateProcessed,
+    allowedControlUserIds,
+    grantControl,
+    requestControl,
     joinRoom,
     leaveRoom,
     sendMessage,
@@ -185,12 +189,19 @@ export default function Home() {
       const response = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: roomName, hostId: "temp", roomCode }),
+        // 不再发送 hostId，房主身份由 ownerSecret 决定
+        body: JSON.stringify({ name: roomName, roomCode }),
       });
       
       if (!response.ok) throw new Error("Failed to create room");
       
       const newRoom = await response.json();
+      // Store owner secret (only returned to creator) for subsequent joins
+      try {
+        if (newRoom?.id && newRoom?.ownerSecret) {
+          localStorage.setItem(`syncwatch:ownerSecret:${newRoom.id}`, newRoom.ownerSecret);
+        }
+      } catch {}
       await joinRoom(newRoom.id, displayName);
       setUsername(displayName);
       // persist name so auto-join effect won't reopen modal
@@ -320,6 +331,7 @@ export default function Home() {
               currentUser={currentUser}
               hostUser={hostUser}
               hostOnlyControl={hostOnlyControl}
+              canControl={(!hostOnlyControl) || !!(currentUser?.isHost) || (!!currentUser && allowedControlUserIds.has(currentUser.id))}
               setHostOnlyControl={setHostOnlyControl}
               sendWSMessage={sendWSMessage}
               room={room}
@@ -407,6 +419,17 @@ export default function Home() {
               onShowRoomSettings={() => setShowRoomSettings(true)}
               roomId={roomId}
               videoDuration={currentVideo ? 600 : 0} // TODO: Get actual video duration
+              hostOnlyControl={hostOnlyControl}
+              allowedControlUserIds={Array.from(allowedControlUserIds)}
+              onGrantControl={grantControl}
+              onRequestControl={requestControl}
+              setHostOnlyControl={(value: boolean) => {
+                setHostOnlyControl(value);
+                if (room?.id) {
+                  sendWSMessage("update_host_only_control", { roomId: room.id, hostOnlyControl: value });
+                }
+              }}
+              roomStateProcessed={roomStateProcessed}
             />
           </div>
         </div>

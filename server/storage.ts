@@ -51,6 +51,7 @@ export class MemStorage implements IStorage {
     const room: Room = {
       ...insertRoom,
       id,
+      ownerSecret: (insertRoom as any).ownerSecret || null,
       roomCode: insertRoom.roomCode || null,
       createdAt: new Date(),
       isActive: true,

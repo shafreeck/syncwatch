@@ -5,7 +5,6 @@ import { saveSeedHandle } from '@/lib/seed-store';
 interface Room {
   id: string;
   name: string;
-  hostId: string;
   isActive: boolean;
 }
 
@@ -46,6 +45,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hostUser, setHostUser] = useState<User | null>(null); // New state for host user
   const [hostOnlyControl, setHostOnlyControl] = useState(false); // Host-only control setting
+  const [allowedControlUserIds, setAllowedControlUserIds] = useState<Set<string>>(new Set());
   const [roomStateProcessed, setRoomStateProcessed] = useState(false); // Track if room state has been processed
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
@@ -128,7 +128,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         setRoom(message.data.room);
         const users = message.data.users || [];
         setUsers(users);
-        setMessages(message.data.messages || []);
+        // Enrich messages with user objects on initial room_state so refresh shows names
+        try {
+          const rawMsgs = (message.data.messages || []) as Message[];
+          const enriched = rawMsgs.map((m) => ({
+            ...m,
+            user: users.find((u: User) => u.id === m.userId),
+          }));
+          setMessages(enriched as any);
+        } catch {
+          setMessages(message.data.messages || []);
+        }
         setVideos(message.data.videos || []);
         console.log('✓ Videos state updated:', message.data.videos);
 
@@ -145,6 +155,32 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           setLastSync(newSyncState);
           console.log('🎬 Setting lastSync from room_state:', newSyncState);
         }
+
+        // Apply control permissions if present
+        try {
+          const ctrl = message.data.control;
+          if (ctrl) {
+            if (Array.isArray(ctrl.allowedUserIds)) {
+              setAllowedControlUserIds(new Set(ctrl.allowedUserIds));
+            }
+            if (typeof ctrl.hostOnlyControl === 'boolean') {
+              setHostOnlyControl(ctrl.hostOnlyControl);
+            }
+          }
+        } catch {}
+
+        // Update currentUser with authoritative server record if available
+        try {
+          if (users && users.length) {
+            if (currentUser?.id) {
+              const serverMe = users.find((u: User) => u.id === currentUser.id);
+              if (serverMe) setCurrentUser(serverMe);
+            } else if (currentUser?.username) {
+              const serverMeByName = users.find((u: User) => u.username === currentUser.username);
+              if (serverMeByName) setCurrentUser(serverMeByName);
+            }
+          }
+        } catch {}
 
         // Set the hostUser state
         const host = users.find((u: User) => u.isHost);
@@ -375,6 +411,24 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         setHostOnlyControl(message.data.hostOnlyControl);
         break;
 
+      case "control_permissions":
+        try {
+          const ids = message.data?.allowedUserIds || [];
+          setAllowedControlUserIds(new Set(ids));
+          console.log('Updated allowed control users:', ids);
+        } catch {}
+        break;
+
+      case "control_request":
+        // Notify host about a control request
+        try {
+          if (currentUser?.isHost) {
+            const from = message.data?.username || message.data?.userId || 'someone';
+            toast({ title: 'Control request', description: `${from} requests playback control` });
+          }
+        } catch {}
+        break;
+
       default:
         console.log("Unknown message type:", message.type);
     }
@@ -432,22 +486,29 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   const joinRoom = useCallback(async (roomId: string, username: string) => {
     console.log(`🚪 Joining room via WebSocket:`, { roomId, username });
 
-    // Get or create persistent user ID for this browser/username combination
-    const persistentUserIdKey = `syncwatch:userId:${username}`;
-    let persistentUserId = localStorage.getItem(persistentUserIdKey);
+    // Get or create device-level persistent user ID (stable across username changes)
+    const deviceKey = 'syncwatch:deviceId';
+    const legacyKey = `syncwatch:userId:${username}`; // backward-compat
+    let persistentUserId = localStorage.getItem(deviceKey) || localStorage.getItem(legacyKey);
 
     if (!persistentUserId) {
-      // Generate new persistent ID for this username on this browser
+      // Generate new device ID for this browser profile
       persistentUserId = crypto.randomUUID();
-      localStorage.setItem(persistentUserIdKey, persistentUserId);
-      console.log(`🆔 Generated new persistent user ID for ${username}: ${persistentUserId}`);
+      try { localStorage.setItem(deviceKey, persistentUserId); } catch {}
+      console.log(`🆔 Generated new device ID: ${persistentUserId}`);
     } else {
-      console.log(`🔄 Using existing persistent user ID for ${username}: ${persistentUserId}`);
+      // Migrate legacy per-username ID to device ID for consistency
+      try { localStorage.setItem(deviceKey, persistentUserId); } catch {}
+      console.log(`🔄 Using persistent device ID: ${persistentUserId}`);
     }
+
+    // 读取此房间的 ownerSecret（仅房主创建后本地保存）
+    let ownerSecret: string | undefined = undefined;
+    try { ownerSecret = localStorage.getItem(`syncwatch:ownerSecret:${roomId}`) || undefined; } catch {}
 
     // Store the username with persistent ID to identify current user when room state is received
     setCurrentUser({ id: persistentUserId, username, isHost: false, joinedAt: new Date() } as User);
-    sendMessage("join_room", { roomId, username, persistentUserId });
+    sendMessage("join_room", { roomId, username, persistentUserId, ownerSecret });
   }, [sendMessage]);
 
   const leaveRoom = useCallback(() => {
@@ -466,16 +527,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     if (room && currentUser) {
       // Check if host-only control is enabled
       const isHost = currentUser.isHost;
+      const isAllowed = allowedControlUserIds.has(currentUser.id);
       
       // If host-only control is enabled and user is not host, don't send sync message
-      if (hostOnlyControl && !isHost) {
+      if (hostOnlyControl && !isHost && !isAllowed) {
         console.log("Host-only control is enabled. Only host can control playback.");
         return;
       }
       
       sendMessage("video_sync", { action, currentTime, roomId: room.id });
     }
-  }, [sendMessage, room, currentUser, hostOnlyControl]);
+  }, [sendMessage, room, currentUser, hostOnlyControl, allowedControlUserIds]);
 
   // New function to send periodic user progress updates (visualization only)
   const sendUserProgress = useCallback((currentTime: number, isPlaying: boolean) => {
@@ -1002,6 +1064,17 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     hostUser, // Include hostUser in the return value
     hostOnlyControl, // Include hostOnlyControl in the return value
     setHostOnlyControl, // Include setHostOnlyControl in the return value
+    roomStateProcessed,
+    allowedControlUserIds,
+    grantControl: (userId: string, canControl: boolean) => {
+      if (!room) return;
+      sendWSMessage('control_grant', { roomId: room.id, userId, canControl });
+    },
+    requestControl: () => {
+      if (!room) return;
+      sendWSMessage('control_request', { roomId: room.id });
+      try { toast({ title: 'Request sent', description: 'Waiting for host approval' }); } catch {}
+    },
     joinRoom,
     leaveRoom,
     sendMessage: sendChatMessage,
