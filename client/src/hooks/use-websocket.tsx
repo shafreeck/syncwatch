@@ -46,6 +46,7 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
   const [hostUser, setHostUser] = useState<User | null>(null); // New state for host user
   const [hostOnlyControl, setHostOnlyControl] = useState(false); // Host-only control setting
   const [allowedControlUserIds, setAllowedControlUserIds] = useState<Set<string>>(new Set());
+  const [pendingControlRequests, setPendingControlRequests] = useState<Record<string, { username?: string; at: number }>>({});
   const [roomStateProcessed, setRoomStateProcessed] = useState(false); // Track if room state has been processed
   const { toast } = useToast();
   const reconnectAttempts = useRef(0);
@@ -416,6 +417,12 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
           const ids = message.data?.allowedUserIds || [];
           setAllowedControlUserIds(new Set(ids));
           console.log('Updated allowed control users:', ids);
+          // 清理已被允许的请求
+          setPendingControlRequests((prev) => {
+            const next = { ...prev };
+            ids.forEach((id: string) => { delete next[id]; });
+            return next;
+          });
         } catch {}
         break;
 
@@ -424,6 +431,8 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
         try {
           if (currentUser?.isHost) {
             const from = message.data?.username || message.data?.userId || 'someone';
+            const uid = message.data?.userId;
+            if (uid) setPendingControlRequests((prev) => ({ ...prev, [uid]: { username: from, at: Date.now() } }));
             toast({ title: 'Control request', description: `${from} requests playback control` });
           }
         } catch {}
@@ -1066,9 +1075,16 @@ export function useWebSocket(registerTorrent?: (torrent: any) => void, globalWeb
     setHostOnlyControl, // Include setHostOnlyControl in the return value
     roomStateProcessed,
     allowedControlUserIds,
+    pendingControlRequests,
     grantControl: (userId: string, canControl: boolean) => {
       if (!room) return;
       sendWSMessage('control_grant', { roomId: room.id, userId, canControl });
+      setPendingControlRequests((prev) => { const next = { ...prev }; delete next[userId]; return next; });
+    },
+    denyControl: (userId: string) => {
+      if (!room) return;
+      sendWSMessage('control_grant', { roomId: room.id, userId, canControl: false });
+      setPendingControlRequests((prev) => { const next = { ...prev }; delete next[userId]; return next; });
     },
     requestControl: () => {
       if (!room) return;

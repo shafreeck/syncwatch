@@ -135,6 +135,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     const handleLoadedData = () => {
       console.log('Video data loaded - can start playback');
       setIsVideoLoading(false); // Hide loading when data loaded
+      try { window.dispatchEvent(new CustomEvent('player-busy', { detail: { busy: false, hasVideo: true } })); } catch {}
     };
 
     const handleError = (e: any) => {
@@ -192,6 +193,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     
     console.log("🚀 Loading video via torrent:", currentVideo.name, "magnetUri:", currentVideo.magnetUri);
     setIsVideoLoading(true); // Show loading when starting to load video
+    try { window.dispatchEvent(new CustomEvent('player-busy', { detail: { busy: true, hasVideo: !!currentVideo } })); } catch {}
     
     // **CRITICAL FIX**: For video.js, we MUST use the internal video element
     // Wait for video.js to initialize if it hasn't yet
@@ -220,6 +222,15 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
     
     loadVideoWithRetry();
   }, [currentVideo, loadTorrent]);
+
+  // Also broadcast when these flags change (outer layout can react without tight coupling)
+  useEffect(() => {
+    try {
+      const hasVideo = !!currentVideo;
+      const busy = isVideoLoading;
+      window.dispatchEvent(new CustomEvent('player-busy', { detail: { busy, hasVideo } }));
+    } catch {}
+  }, [isVideoLoading, currentVideo]);
 
   // **监听 resume seeding 事件，重新尝试加载**
   useEffect(() => {

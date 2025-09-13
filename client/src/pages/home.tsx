@@ -21,6 +21,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [showRoomSettings, setShowRoomSettings] = useState(false);
   const [username, setUsername] = useState("");
+  const [playerBusy, setPlayerBusy] = useState(false);
   // currentUser is now provided by useWebSocket hook
 
   // Extract room ID from URL
@@ -44,7 +45,9 @@ export default function Home() {
     setHostOnlyControl,
     roomStateProcessed,
     allowedControlUserIds,
+    pendingControlRequests,
     grantControl,
+    denyControl,
     requestControl,
     joinRoom,
     leaveRoom,
@@ -67,6 +70,26 @@ export default function Home() {
     }
     
   }, [roomId]);
+
+  // Listen to player busy/hasVideo signals for future scroll/UX decisions
+  useEffect(() => {
+    const handler = (e: any) => {
+      const busy = !!e?.detail?.busy;
+      setPlayerBusy(busy);
+    };
+    window.addEventListener('player-busy', handler as EventListener);
+    return () => window.removeEventListener('player-busy', handler as EventListener);
+  }, []);
+
+  // Always start at top: disable any implicit scroll jumps on initial load/join
+  useEffect(() => {
+    // Run a few times to beat late focus from nested components
+    const reset = () => { try { window.scrollTo(0, 0); } catch {} };
+    reset();
+    const t1 = setTimeout(reset, 50);
+    const t2 = setTimeout(reset, 200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   const handleJoinRoom = async (roomCode: string, displayName: string) => {
     try {
@@ -421,7 +444,10 @@ export default function Home() {
               videoDuration={currentVideo ? 600 : 0} // TODO: Get actual video duration
               hostOnlyControl={hostOnlyControl}
               allowedControlUserIds={Array.from(allowedControlUserIds)}
+              pendingControlUserIds={Object.keys(pendingControlRequests || {})}
               onGrantControl={grantControl}
+              onApproveControl={(id) => grantControl(id, true)}
+              onDenyControl={(id) => denyControl(id)}
               onRequestControl={requestControl}
               setHostOnlyControl={(value: boolean) => {
                 setHostOnlyControl(value);

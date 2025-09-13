@@ -37,6 +37,9 @@ interface ChatSidebarProps {
   onRequestControl?: () => void;
   setHostOnlyControl?: (value: boolean) => void;
   roomStateProcessed?: boolean;
+  pendingControlUserIds?: string[];
+  onApproveControl?: (userId: string) => void;
+  onDenyControl?: (userId: string) => void;
 }
 
 export default function ChatSidebar({
@@ -55,12 +58,22 @@ export default function ChatSidebar({
   onRequestControl,
   setHostOnlyControl,
   roomStateProcessed = false,
+  pendingControlUserIds = [],
+  onApproveControl,
+  onDenyControl,
 }: ChatSidebarProps) {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesListRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const list = messagesListRef.current;
+    if (!list) return;
+    try {
+      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+    } catch {
+      list.scrollTop = list.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -199,20 +212,46 @@ export default function ChatSidebar({
                         <Crown className="w-3.5 h-3.5" /> Host
                       </span>
                     )}
-                    {roomStateProcessed && currentUser?.isHost && !user.isHost && onGrantControl && (
-                      <button
-                        onClick={() => onGrantControl(user.id, !allowedControlUserIds.includes(user.id))}
-                        className={`inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[11px] transition-all ${
-                          allowedControlUserIds.includes(user.id)
-                            ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25'
-                            : 'bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10 hover:text-white'
-                        }`}
-                        title={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
-                        aria-label={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
-                      >
-                        <KeyRound className="w-3 h-3" />
-                        {allowedControlUserIds.includes(user.id) ? 'Allowed' : 'Allow'}
-                      </button>
+                    {roomStateProcessed && currentUser?.isHost && !user.isHost && (
+                      pendingControlUserIds.includes(user.id) ? (
+                        <div className="inline-flex items-center gap-1">
+                          <span className="text-[10px] text-amber-300/90">Request</span>
+                          {onApproveControl && (
+                            <button
+                              className="inline-flex items-center h-5 px-1 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
+                              title="Allow control"
+                              onClick={() => onApproveControl(user.id)}
+                            >
+                              Allow
+                            </button>
+                          )}
+                          {onDenyControl && (
+                            <button
+                              className="inline-flex items-center h-5 px-1 rounded-full text-[10px] bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10 hover:text-white"
+                              title="Deny request"
+                              onClick={() => onDenyControl(user.id)}
+                            >
+                              Dismiss
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        onGrantControl && (
+                          <button
+                            onClick={() => onGrantControl(user.id, !allowedControlUserIds.includes(user.id))}
+                            className={`inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[11px] transition-all ${
+                              allowedControlUserIds.includes(user.id)
+                                ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25'
+                                : 'bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10 hover:text-white'
+                            }`}
+                            title={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
+                            aria-label={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
+                          >
+                            <KeyRound className="w-3 h-3" />
+                            {allowedControlUserIds.includes(user.id) ? 'Allowed' : 'Allow'}
+                          </button>
+                        )
+                      )
                     )}
                     {roomStateProcessed && !currentUser?.isHost && currentUser?.id === user.id && hostOnlyControl && !allowedControlUserIds.includes(user.id) && onRequestControl && (
                       <button
@@ -321,7 +360,7 @@ export default function ChatSidebar({
         </div>
         
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3" data-testid="chat-messages">
+        <div ref={messagesListRef} className="flex-1 overflow-y-auto p-4 space-y-3" data-testid="chat-messages">
           {messages.map((message) => (
             <div key={message.id} className="flex items-start space-x-3">
               <Avatar className="w-6 h-6 flex-shrink-0">
