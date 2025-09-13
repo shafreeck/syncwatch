@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users, MessageCircle, Send, Settings, Lock, Crown, KeyRound, Hand } from "lucide-react";
+import { useT } from "@/i18n";
 
 interface User {
   id: string;
@@ -62,6 +63,7 @@ export default function ChatSidebar({
   onApproveControl,
   onDenyControl,
 }: ChatSidebarProps) {
+  const t = useT('common');
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
@@ -130,7 +132,7 @@ export default function ChatSidebar({
         <h3 className="text-lg font-semibold mb-3 flex items-center justify-between">
           <span className="flex items-center">
             <Users className="w-5 h-5 text-primary mr-2" />
-            Viewers
+            {t('viewers')}
           </span>
           {/* 回归最稳定的布局：单行靠右 + 固定间距 */}
           <div className="flex items-center justify-end space-x-2">
@@ -147,7 +149,7 @@ export default function ChatSidebar({
                   className={`relative inline-flex items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30
                     ${!hostOnlyControl ? 'bg-emerald-500/30' : 'bg-white/10'}
                     ring-1 ring-white/10 h-4 sm:h-5 w-8 sm:w-9`}
-                  title={!hostOnlyControl ? 'Allow Control: on (everyone)' : 'Allow Control: off (host only)'}
+                  title={!hostOnlyControl ? `${t('allowControl')}: on` : `${t('allowControl')}: off`}
                 >
                   <span
                     className={`absolute left-0.5 top-0.5 inline-block rounded-full transition-transform shadow-sm 
@@ -158,7 +160,7 @@ export default function ChatSidebar({
                 </button>
                 <div className={`flex items-center select-none text-[10px] sm:text-xs ${!hostOnlyControl ? 'text-emerald-300' : 'text-white/60'}`}>
                   <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
-                  <span className="hidden sm:inline">Allow Control</span>
+                  <span className="hidden sm:inline">{t('allowControl')}</span>
                 </div>
               </div>
             )}
@@ -209,20 +211,20 @@ export default function ChatSidebar({
                   <div className="flex items-center">
                     {user.isHost && (
                       <span className="inline-flex items-center gap-1 text-xs text-purple-400" title="Room host">
-                        <Crown className="w-3.5 h-3.5" /> Host
+                        <Crown className="w-3.5 h-3.5" /> {t('host')}
                       </span>
                     )}
                     {roomStateProcessed && currentUser?.isHost && !user.isHost && (
                       pendingControlUserIds.includes(user.id) ? (
                         <div className="inline-flex items-center gap-1">
-                          <span className="text-[10px] text-amber-300/90">Request</span>
+                          <span className="text-[10px] text-amber-300/90">{t('request')}</span>
                           {onApproveControl && (
                             <button
                               className="inline-flex items-center h-5 px-1 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
                               title="Allow control"
                               onClick={() => onApproveControl(user.id)}
                             >
-                              Allow
+                              {t('allow')}
                             </button>
                           )}
                           {onDenyControl && (
@@ -231,7 +233,7 @@ export default function ChatSidebar({
                               title="Deny request"
                               onClick={() => onDenyControl(user.id)}
                             >
-                              Dismiss
+                              {t('dismiss')}
                             </button>
                           )}
                         </div>
@@ -248,7 +250,7 @@ export default function ChatSidebar({
                             aria-label={allowedControlUserIds.includes(user.id) ? 'Revoke control' : 'Grant control'}
                           >
                             <KeyRound className="w-3 h-3" />
-                            {allowedControlUserIds.includes(user.id) ? 'Allowed' : 'Allow'}
+                            {allowedControlUserIds.includes(user.id) ? t('allowed') : t('allow')}
                           </button>
                         )
                       )
@@ -355,7 +357,7 @@ export default function ChatSidebar({
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold flex items-center">
             <MessageCircle className="w-5 h-5 text-primary mr-2" />
-            Chat
+            {t('chat')}
           </h3>
         </div>
         
@@ -392,7 +394,7 @@ export default function ChatSidebar({
           <div className="flex items-center space-x-2">
             <Input
               type="text"
-              placeholder="Type a message..."
+              placeholder={t('typeMessage')}
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}

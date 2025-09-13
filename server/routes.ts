@@ -540,18 +540,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 }
                 
                 if (targetVideoId) {
-                  // Update video in storage
-                  const validStatus = status && ["processing", "ready", "error"].includes(status) 
-                    ? status as "processing" | "ready" | "error"
+                  // Update video in storage (do not overwrite status when not provided)
+                  const validStatus = status && ["processing", "ready", "error"].includes(status)
+                    ? (status as "processing" | "ready" | "error")
                     : undefined;
-                  await storage.updateVideo(targetVideoId, { 
+                  const updates: any = {
                     ...(name && { name }),
-                    status: validStatus, 
                     processingStep,
                     ...(size && { size }),
                     ...(infoHash && { infoHash }),
-                    ...(magnetUri && { magnetUri })
-                  });
+                    ...(magnetUri && { magnetUri }),
+                  };
+                  if (validStatus !== undefined) updates.status = validStatus;
+                  await storage.updateVideo(targetVideoId, updates);
                   
                   // Clean up duplicates: if we just set a real infoHash, remove other videos with same infoHash
                   if (infoHash && !infoHash.startsWith('temp-')) {
@@ -563,13 +564,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     }
                   }
                   
-                  // Broadcast update to all users in room
-                  broadcastToRoom(socket.roomId, {
-                    type: "video_status_updated",
-                    data: { videoId: targetVideoId, name, status, processingStep, size, infoHash, magnetUri }
-                  });
-                  
-                  console.log(`✅ Video ${targetVideoId} status updated to: ${status}`);
+                  // Broadcast update to all users in room (omit status if unchanged)
+                  const broadcastData: any = { videoId: targetVideoId, name, processingStep, size, infoHash, magnetUri };
+                  if (validStatus !== undefined) broadcastData.status = validStatus;
+                  broadcastToRoom(socket.roomId, { type: "video_status_updated", data: broadcastData });
+                  console.log(`✅ Video ${targetVideoId} status updated to: ${validStatus ?? '(unchanged)'}`);
                 } else {
                   console.warn(`⚠️ Could not find video to update: videoId=${videoId}, infoHash=${infoHash}`);
                 }

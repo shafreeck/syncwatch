@@ -12,9 +12,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings, PlayCircle, Users, Copy } from "lucide-react";
+import LanguageSwitcher from "@/components/language-switcher";
+import { useT } from "@/i18n";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
+  const t = useT('common');
   const [location, navigate] = useLocation();
   const { toast } = useToast();
   const [showRoomModal, setShowRoomModal] = useState(false);
@@ -295,7 +298,7 @@ export default function Home() {
               {room && (
                 <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
                   <Badge variant="secondary" data-testid="room-name">
-                    Room: {room.name}
+                    {t('room')}: {room.name}
                   </Badge>
                   <span className="text-xs" data-testid="room-id">
                     #{room.id.substring(0, 6)}
@@ -308,7 +311,7 @@ export default function Home() {
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
                 <span className="text-sm text-muted-foreground" data-testid="viewer-count">
-                  {users.length} viewers
+                  {users.length} {t('viewers')}
                 </span>
               </div>
               
@@ -321,9 +324,10 @@ export default function Home() {
                   className="flex items-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
-                  <span className="hidden sm:inline text-sm">Share</span>
+                  <span className="hidden sm:inline text-sm">{t('share')}</span>
                 </Button>
               )}
+              <LanguageSwitcher />
               
               <Button
                 variant="ghost"

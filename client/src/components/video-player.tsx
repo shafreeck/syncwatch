@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RotateCcw, Share, Download, Upload } from "lucide-react";
+import { useT } from "@/i18n";
 import { useWebTorrent } from "@/hooks/use-webtorrent";
 
 // Type declaration for video.js
@@ -31,6 +32,7 @@ interface VideoPlayerProps {
 }
 
 export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress, onSyncToHost, isConnected, lastSync, statsByInfoHash = {}, userProgresses = {}, currentUser, hostUser, hostOnlyControl, canControl, setHostOnlyControl, sendWSMessage, room }: VideoPlayerProps) {
+  const t = useT('common');
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoJsPlayerRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -666,12 +668,12 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                   <>
                     <div className="flex items-center space-x-1">
                       <Share className="w-3 h-3 text-blue-400" />
-                      <span className="text-white/80">P2P</span>
+                      <span className="text-white/80">{t('p2p')}</span>
                     </div>
                     {currentProgress > 0 && (
                       <div className="text-green-400 flex items-center space-x-1" data-testid="text-download-progress">
                         <Download className="w-3 h-3" />
-                        <span>Recv: {Math.round(currentProgress)}%</span>
+                        <span>{t('recv')}: {Math.round(currentProgress)}%</span>
                       </div>
                     )}
                     {currentDownloadSpeed > 0 && (
@@ -718,9 +720,7 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
                         {hostOnlyControl ? 'Host Only' : 'All'}
                       </button>
                     )}
-                    {currentPeers > 0 && (
-                      <span className="text-white/80">{currentPeers} peers</span>
-                    )}
+                    {currentPeers > 0 && (<span className="text-white/80">{currentPeers} {t('peers')}</span>)}
                   </>
                 );
               })()}
@@ -733,8 +733,8 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
             <div className="text-center">
               <div className="text-6xl mb-4">🎬</div>
-              <p className="text-xl text-white mb-2">No video selected</p>
-              <p className="text-muted-foreground">Share or select a video to start watching together</p>
+              <p className="text-xl text-white mb-2">{t('noVideo')}</p>
+              <p className="text-muted-foreground">{t('share')}</p>
             </div>
           </div>
         )}
@@ -746,10 +746,10 @@ export default function VideoPlayer({ currentVideo, onVideoSync, onUserProgress,
               <div className="mb-4">
                 <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
               </div>
-              <p className="text-xl text-white mb-2">Loading video...</p>
+              <p className="text-xl text-white mb-2">{t('loadingVideo')}</p>
               <p className="text-white/70 text-sm">{currentVideo.name}</p>
               <div className="mt-3 text-xs text-white/50">
-                Connecting to peers and buffering content
+                {t('buffering')}
               </div>
             </div>
           </div>

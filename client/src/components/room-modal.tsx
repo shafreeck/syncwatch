@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { useT } from "@/i18n";
+import LanguageSwitcher from "@/components/language-switcher";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface RoomModalProps {
 }
 
 export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }: RoomModalProps) {
+  const t = useT('common');
   const [joinRoomCode, setJoinRoomCode] = useState("");
   const [joinUsername, setJoinUsername] = useState("");
   const [createRoomName, setCreateRoomName] = useState("");
@@ -45,23 +48,26 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-md [&>button]:hidden" data-testid="dialog-room-modal">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Join or Create Room</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold">{t('joinOrCreate')}</DialogTitle>
+            <LanguageSwitcher />
+          </div>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="join" data-testid="tab-join">Join Room</TabsTrigger>
-            <TabsTrigger value="create" data-testid="tab-create">Create Room</TabsTrigger>
+            <TabsTrigger value="join" data-testid="tab-join">{t('joinRoom')}</TabsTrigger>
+            <TabsTrigger value="create" data-testid="tab-create">{t('createRoom')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="join" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="join-username">Your Name</Label>
+              <Label htmlFor="join-username">{t('yourName')}</Label>
               <Input
                 id="join-username"
                 type="text"
                 autoComplete="name"
-                placeholder="Enter your display name"
+                placeholder={t('enterDisplayName')}
                 value={joinUsername}
                 onChange={(e) => setJoinUsername(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleJoin)}
@@ -70,11 +76,11 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="join-room-code">Room Password (if required)</Label>
+              <Label htmlFor="join-room-code">{t('roomPasswordIf')}</Label>
               <Input
                 id="join-room-code"
                 type="password"
-                placeholder="Enter room password (leave empty if no password)"
+                placeholder={t('enterRoomPasswordOpt')}
                 value={joinRoomCode}
                 onChange={(e) => setJoinRoomCode(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleJoin)}
@@ -88,16 +94,16 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
               className="w-full"
               data-testid="button-join-room"
             >
-              Join Room
+              {t('joinRoom')}
             </Button>
           </TabsContent>
           
           <TabsContent value="create" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="create-room-name">Room Name</Label>
+              <Label htmlFor="create-room-name">{t('roomName')}</Label>
               <Input
                 id="create-room-name"
-                placeholder="Enter room name"
+                placeholder={t('enterRoomName')}
                 value={createRoomName}
                 onChange={(e) => setCreateRoomName(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleCreate)}
@@ -106,12 +112,12 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="create-username">Your Name</Label>
+              <Label htmlFor="create-username">{t('yourName')}</Label>
               <Input
                 id="create-username"
                 type="text"
                 autoComplete="name"
-                placeholder="Enter your display name"
+                placeholder={t('enterDisplayName')}
                 value={createUsername}
                 onChange={(e) => setCreateUsername(e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, handleCreate)}
@@ -127,18 +133,16 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
                   onCheckedChange={setShowRoomCodeInput}
                   data-testid="switch-enable-room-code"
                 />
-                <Label htmlFor="enable-room-code" className="text-sm font-medium">
-                  Set Room Password
-                </Label>
+                <Label htmlFor="enable-room-code" className="text-sm font-medium">{t('setRoomPassword')}</Label>
               </div>
               
               {showRoomCodeInput && (
                 <div className="space-y-2">
-                  <Label htmlFor="create-room-code">Room Password</Label>
+                  <Label htmlFor="create-room-code">{t('roomPassword')}</Label>
                   <Input
                     id="create-room-code"
                     type="password"
-                    placeholder="Enter room password"
+                    placeholder={t('enterRoomPassword')}
                     value={createRoomCode}
                     onChange={(e) => setCreateRoomCode(e.target.value)}
                     onKeyPress={(e) => handleKeyPress(e, handleCreate)}
@@ -154,7 +158,7 @@ export default function RoomModal({ isOpen, onClose, onJoinRoom, onCreateRoom }:
               className="w-full"
               data-testid="button-create-room"
             >
-              Create Room
+              {t('createRoom')}
             </Button>
           </TabsContent>
         </Tabs>

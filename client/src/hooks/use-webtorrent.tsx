@@ -120,6 +120,11 @@ export function useWebTorrent() {
             }
 
             globalClient = webTorrentClient;
+            // Global seeding lock set to coordinate auto re-seed and UI resume actions
+            try {
+              const g: any = window as any;
+              if (!g.__wtSeedingLocks) g.__wtSeedingLocks = new Set<string>();
+            } catch {}
             // **ADD**: 设置到 window 对象，供其他组件使用
             (window as any).__webtorrentClient = webTorrentClient;
             return webTorrentClient;
@@ -177,14 +182,29 @@ export function useWebTorrent() {
                 s.name || file.name,
                 s.infoHash,
               );
-              shared.seed(file, (torrent: WebTorrentNS.Torrent) => {
+              // Deduplicate: if already present or seeding in progress, skip
+              try {
+                const g: any = window as any;
+                const hasLock = g.__wtSeedingLocks && g.__wtSeedingLocks.has(s.infoHash);
+                const exists = shared.torrents.find((t: any) => t.infoHash === s.infoHash);
+                if (hasLock || exists) {
+                  console.log('🔁 Skip auto re-seed (exists or locked):', s.infoHash, s.name);
+                  if (exists) { try { registerTorrent(exists); } catch {} }
+                  continue;
+                }
+                g.__wtSeedingLocks.add(s.infoHash);
+              } catch {}
+
+              const t = shared.seed(file, (torrent: WebTorrentNS.Torrent) => {
                 console.log(
                   "Auto re-seed: ready",
                   torrent.infoHash,
                   torrent.name,
                 );
                 registerTorrent(torrent);
+                try { (window as any).__wtSeedingLocks?.delete(torrent.infoHash); } catch {}
               });
+              t.on('error', () => { try { (window as any).__wtSeedingLocks?.delete(s.infoHash); } catch {} });
             } catch (e) {
               console.warn("Auto re-seed failed for", s.infoHash, e);
             }
@@ -447,6 +467,7 @@ export function useWebTorrent() {
         "wss://tracker.btorrent.xyz",
         "wss://tracker.openwebtorrent.com",
         "wss://tracker.webtorrent.dev",
+        "wss://tracker.fastcast.nz",
       ];
       const torrent = wt.add(
         magnetUri,

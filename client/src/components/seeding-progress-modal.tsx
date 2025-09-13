@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Share, Users, Activity } from "lucide-react";
+import { useT } from "@/i18n";
 
 interface SeedingProgressModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export default function SeedingProgressModal({
   peers,
   isCompleted
 }: SeedingProgressModalProps) {
+  const t = useT('common');
   const formatSpeed = (speed: number) => {
     if (speed < 1) {
       return `${(speed * 1024).toFixed(0)} KB/s`;
@@ -38,14 +40,12 @@ export default function SeedingProgressModal({
 
   const getStatusMessage = () => {
     if (progress >= 100) {
-      return peers > 0
-        ? "✅ Ready. Seeding to peers..."
-        : "✅ Ready. Waiting for peers...";
+      return peers > 0 ? t('statusReadySeed') : t('statusReadyWait');
     }
-    if (progress > 80) return "🔥 Almost ready...";
-    if (progress > 50) return "📡 Building peer connections...";
-    if (progress > 10) return "⚡ Creating torrent...";
-    return "🚀 Starting video seeding...";
+    if (progress > 80) return t('statusAlmost');
+    if (progress > 50) return t('statusBuilding');
+    if (progress > 10) return t('statusCreating');
+    return t('statusStarting');
   };
 
   return (
@@ -55,11 +55,11 @@ export default function SeedingProgressModal({
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <Share className="w-5 h-5 text-primary mr-2" />
-              Sharing Video
+              {t('sharingVideo')}
             </div>
           </DialogTitle>
           <DialogDescription>
-            Seeding your video over P2P. Keep this tab open to continue sharing.
+            {t('seedingHelp')}
           </DialogDescription>
         </DialogHeader>
         
@@ -77,7 +77,7 @@ export default function SeedingProgressModal({
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Progress</span>
+              <span>{t('progress')}</span>
               <span className="font-mono" data-testid="text-progress-percent">
                 {progress.toFixed(1)}%
               </span>
@@ -100,7 +100,7 @@ export default function SeedingProgressModal({
                   <div className="flex items-center space-x-2">
                     <Activity className="w-4 h-4 text-green-500" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Send Speed</p>
+                      <p className="text-xs text-muted-foreground">{t('sendSpeed')}</p>
                       <p className="text-sm font-mono" data-testid="text-upload-speed">
                         {formatSpeed(shareSpeed)}
                       </p>
@@ -112,7 +112,7 @@ export default function SeedingProgressModal({
                   <div className="flex items-center space-x-2">
                     <Users className="w-4 h-4 text-blue-500" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Connected Peers</p>
+                      <p className="text-xs text-muted-foreground">{t('connectedPeers')}</p>
                       <p className="text-sm font-mono" data-testid="text-peer-count">
                         {peers}
                       </p>
@@ -126,17 +126,9 @@ export default function SeedingProgressModal({
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2">
             {isCompleted ? (
-              <Button onClick={onClose} data-testid="button-done">
-                Done
-              </Button>
+              <Button onClick={onClose} data-testid="button-done">{t('done')}</Button>
             ) : (
-              <Button
-                variant="outline"
-                onClick={onClose}
-                data-testid="button-minimize"
-              >
-                Minimize
-              </Button>
+              <Button variant="outline" onClick={onClose} data-testid="button-minimize">{t('minimize')}</Button>
             )}
           </div>
         </div>

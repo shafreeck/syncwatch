@@ -18,6 +18,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/i18n";
 import SeedingProgressModal from "./seeding-progress-modal";
 
 interface Video {
@@ -44,6 +45,7 @@ interface FileShareProps {
 }
 
 export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare, videos, onSelectVideo, onDeleteVideo, shareSpeed = 0, peers = 0, statsByInfoHash = {}, currentUser }: FileShareProps) {
+  const t = useT('common');
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -70,8 +72,8 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     // Validate file type
     if (!file.type.startsWith("video/")) {
       toast({
-        title: "Invalid file type",
-        description: "Please select a video file",
+        title: t('invalidVideoType'),
+        description: t('pleaseSelectVideo'),
         variant: "destructive",
       });
       return;
@@ -81,8 +83,8 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
     if (file.size > maxSize) {
       toast({
-        title: "File too large",
-        description: "Please select a file smaller than 2GB",
+        title: t('fileTooLarge'),
+        description: t('pleaseSelectSmaller'),
         variant: "destructive",
       });
       return;
@@ -106,19 +108,14 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
 
       console.log("Video share initialized (seeding continues in background)");
       // Do not auto-close: keep the modal until user closes/minimizes
-      if (seedingProgress >= 100) {
-        toast({
-          title: "Video ready",
-          description: `${file.name} is now ready for streaming`,
-        });
-      }
+      if (seedingProgress >= 100) { toast({ title: t('videoReady'), description: `${file.name}` }); }
 
     } catch (error) {
       console.error("Video share failed:", error);
       setShowProgressModal(false);
       toast({
-        title: "Share failed",
-        description: "Failed to share video. Please try again.",
+        title: t('shareFailed'),
+        description: t('pleaseSelectVideo'),
         variant: "destructive",
       });
     } finally {
@@ -210,8 +207,8 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
     // Validate torrent file type
     if (!file.name.toLowerCase().endsWith('.torrent')) {
       toast({
-        title: "Invalid file type",
-        description: "Please select a .torrent file",
+        title: t('invalidTorrentType'),
+        description: t('pleaseSelectTorrent'),
         variant: "destructive",
       });
       return;
@@ -226,25 +223,19 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         
         console.log("🚀 Adding torrent placeholder:", torrentFileName);
         
-        toast({
-          title: "Processing torrent file",
-          description: `Loading "${torrentFileName}"...`,
-        });
+        toast({ title: t('processingTorrent'), description: `Loading "${torrentFileName}"...` });
         
         // **ASYNC PROCESSING**: The actual processing happens in background
         await onTorrentShare(file);
         console.log("Torrent share initialized");
         
-        toast({
-          title: "Torrent file ready",
-          description: "Video is now available for streaming",
-        });
+        toast({ title: t('torrentReady') });
       }
     } catch (error) {
       console.error("Torrent share failed:", error);
       toast({
-        title: "Share failed",
-        description: "Failed to load torrent file. Please try again.",
+        title: t('shareFailed'),
+        description: t('pleaseSelectTorrent'),
         variant: "destructive",
       });
     } finally {
@@ -255,21 +246,13 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
   const handleMagnetSubmit = async () => {
     const uri = magnetUri.trim();
     if (!uri) {
-      toast({
-        title: "Empty magnet link",
-        description: "Please enter a magnet link",
-        variant: "destructive",
-      });
+      toast({ title: t('emptyMagnet'), description: t('magnetLink'), variant: 'destructive' });
       return;
     }
 
     // Validate magnet URI format
     if (!uri.toLowerCase().startsWith('magnet:?')) {
-      toast({
-        title: "Invalid magnet link",
-        description: "Please enter a valid magnet link starting with 'magnet:?'",
-        variant: "destructive",
-      });
+      toast({ title: t('invalidMagnetLink'), description: t('pleaseEnterValidMagnet'), variant: 'destructive' });
       return;
     }
 
@@ -279,15 +262,12 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         
         // **INSTANT FEEDBACK**: Extract filename from magnet URI for immediate display
         const nameMatch = uri.match(/[&?]dn=([^&]+)/i);
-        const fileName = nameMatch ? decodeURIComponent(nameMatch[1]) : "Loading torrent...";
+        const fileName = nameMatch ? decodeURIComponent(nameMatch[1]) : t('loadingTorrent');
         
         console.log("🚀 Adding magnet placeholder:", fileName);
         
         // Show immediate feedback to user
-        toast({
-          title: "Processing magnet link",
-          description: `Loading "${fileName}"...`,
-        });
+        toast({ title: t('processingMagnet'), description: `${t('loadingMagnet')} "${fileName}"` });
         
         // **ASYNC PROCESSING**: The actual processing happens in background
         await onMagnetShare(uri);
@@ -301,11 +281,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       }
     } catch (error) {
       console.error("Magnet share failed:", error);
-      toast({
-        title: "Share failed",
-        description: "Failed to load magnet link. Please check the link and try again.",
-        variant: "destructive",
-      });
+      toast({ title: t('shareFailed'), description: t('failedLoadMagnet'), variant: 'destructive' });
     } finally {
       setIsUploading(false);
     }
@@ -512,8 +488,14 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       try {
         // 如果有空的 torrent，先移除它
         if (existingTorrent && !hasFileContent) {
-          console.log("🗑️ Removing empty torrent before re-seeding:", existingTorrent.name);
-          client.remove(existingTorrent.infoHash || existingTorrent);
+          // 如果同一 infoHash 正在自动做种，则不要删除，避免与自动流程竞态
+          const locks: Set<string> | undefined = (window as any).__wtSeedingLocks;
+          if (locks && video.infoHash && locks.has(video.infoHash)) {
+            console.log('⏳ Detected seeding lock in progress, skip removing placeholder torrent');
+          } else {
+            console.log("🗑️ Removing empty torrent before re-seeding:", existingTorrent.name);
+            client.remove(existingTorrent.infoHash || existingTorrent);
+          }
         }
         
         // 从 IndexedDB 获取文件句柄
@@ -647,7 +629,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold flex items-center">
           <Share2 className="w-5 h-5 text-primary mr-2" />
-          Share Video
+          {t('shareVideo')}
         </h3>
         
       </div>
@@ -657,15 +639,15 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="file" data-testid="tab-file-upload">
             <Upload className="w-4 h-4 mr-2" />
-            Local File
+            {t('localFile')}
           </TabsTrigger>
           <TabsTrigger value="torrent" data-testid="tab-torrent-upload">
             <FileText className="w-4 h-4 mr-2" />
-            Torrent File
+            {t('torrentFile')}
           </TabsTrigger>
           <TabsTrigger value="magnet" data-testid="tab-magnet-link">
             <Link className="w-4 h-4 mr-2" />
-            Magnet Link
+            {t('magnetLink')}
           </TabsTrigger>
         </TabsList>
         
@@ -686,10 +668,10 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
             <div className="space-y-2">
               <FileVideo className="w-12 h-12 text-muted-foreground mx-auto" />
               <p className="text-foreground">
-                {isUploading ? "Preparing / Seeding..." : "Drop video files here or click to browse"}
+                {isUploading ? t('preparingSeeding') : t('dropHere')}
               </p>
               <p className="text-sm text-muted-foreground">
-                Supports MP4, WebM, AVI, MKV • Max 2GB
+                {t('supportsTypes')}
               </p>
             </div>
             
@@ -736,7 +718,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
           {/* Magnet Link Input */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="magnet-uri">Magnet Link</Label>
+              <Label htmlFor="magnet-uri">{t('magnetLink')}</Label>
               <Input
                 id="magnet-uri"
                 type="text"
@@ -747,13 +729,9 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                 data-testid="input-magnet-uri"
               />
               <div className="text-xs text-muted-foreground space-y-1">
-                <p>Paste a magnet link to start downloading and sharing the video</p>
-                <p className="text-amber-600 dark:text-amber-400">
-                  ⚠️ Note: Only WebTorrent-compatible magnets work reliably. Traditional BitTorrent magnets may timeout.
-                </p>
-                <p className="text-blue-600 dark:text-blue-400">
-                  💡 Format tip: MP4/WebM work best. MKV may have audio issues due to advanced codecs.
-                </p>
+                <p>{t('magnetPasteHint')}</p>
+                <p className="text-amber-600 dark:text-amber-400">{t('magnetCompatNote')}</p>
+                <p className="text-blue-600 dark:text-blue-400">{t('magnetFormatTip')}</p>
               </div>
             </div>
             <Button
@@ -762,7 +740,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
               className="w-full"
               data-testid="button-magnet-submit"
             >
-              Start Download & Share
+              {t('startDownloadShare')}
             </Button>
           </div>
         </TabsContent>
@@ -771,9 +749,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
       {/* Recent Files with improved layout */}
       {videos.length > 0 && (
         <div className="mt-4">
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">
-            Available Videos
-          </h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">{t('availableVideos')}</h4>
           <div className="space-y-2">
             {videos.map((video) => (
               <div
@@ -802,7 +778,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                       {(video as any).status === 'error' && (
                         <div className="flex items-center gap-1 text-[10px] text-red-500">
                           <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                          <span>Failed</span>
+                          <span>{t('failed')}</span>
                         </div>
                       )}
                     </div>
@@ -818,7 +794,7 @@ export default function FileShare({ onVideoShare, onTorrentShare, onMagnetShare,
                       {currentFileName === video.name && (isUploading || seedingProgress < 100) && (
                         <div>
                           <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                            <span>Seeding progress</span>
+                            <span>{t('seedingProgress')}</span>
                             <span className="font-mono text-primary">{seedingProgress.toFixed(1)}%</span>
                           </div>
                           <div className="h-1.5 w-48 bg-secondary rounded overflow-hidden mt-1">
